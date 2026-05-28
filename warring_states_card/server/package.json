@@ -12,14 +12,17 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^5.10.0",
+    "@prisma/client": "^5.22.0",
     "jsonwebtoken": "^9.0.2",
     "nitropack": "^2.8.1",
     "redis": "^4.6.12"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.5",
-    "prisma": "^5.10.0",
+    "prisma": "^5.22.0",
     "typescript": "^5.3.3"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
