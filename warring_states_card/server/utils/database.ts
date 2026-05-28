@@ -3,17 +3,69 @@ import jwt from 'jsonwebtoken';
 
 // 环境变量
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:***@localhost:5432/warring_states';
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 const JWT_SECRET = process.env.JWT_SECRET || 'warring-states-secret-key-change-in-production';
 const ELO_K_FACTOR = 32;
 
-// 数据库连接
+// Prisma 连接池配置
 export const prisma = new PrismaClient({
   datasources: {
     db: { url: DATABASE_URL },
   },
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
 });
 
-// JWT验证
+// Redis 客户端
+let redisClient: any = null;
+
+async function getRedisClient() {
+  if (!redisClient) {
+    try {
+      const { createClient } = await import('redis');
+      redisClient = createClient({ url: REDIS_URL });
+      await redisClient.connect();
+      console.log('[Redis] Connected');
+    } catch (e) {
+      console.log('[Redis] Not available, using memory cache');
+      redisClient = { get: async () => null, set: async () => {}, del: async () => {} };
+    }
+  }
+  return redisClient;
+}
+
+// 内存缓存 (备用)
+const memoryCache = new Map<string, { data: any; expire: number }>();
+
+async function cacheGet(key: string): Promise<any | null> {
+  try {
+    const redis = await getRedisClient();
+    const data = await redis.get(key);
+    if (data) return JSON.parse(data);
+  } catch {}
+  // 内存缓存
+  const mem = memoryCache.get(key);
+  if (mem && mem.expire > Date.now()) return mem.data;
+  return null;
+}
+
+async function cacheSet(key: string, data: any, ttl: number = 60) {
+  try {
+    const redis = await getRedisClient();
+    await redis.set(key, JSON.stringify(data), { EX: ttl });
+  } catch {}
+  // 内存缓存
+  memoryCache.set(key, { data, expire: Date.now() + ttl * 1000 });
+}
+
+async function cacheDel(key: string) {
+  try {
+    const redis = await getRedisClient();
+    await redis.del(key);
+  } catch {}
+  memoryCache.delete(key);
+}
+
+// JWT
 export interface TokenPayload {
   playerId: string;
   guestToken: string;
@@ -67,7 +119,13 @@ export function getRankName(rank: number): string {
   return names[rank] || '青铜一';
 }
 
-// 内存匹配队列
+// 匹配队列 (Redis)
+async function getMatchQueueRedis() {
+  const redis = await getRedisClient();
+  return redis;
+}
+
+// 内存匹配队列 (备用)
 const matchQueue: Array<{ odID: string; odName: string; odHeroId: string; rating: number }> = [];
 
 export async function guestLogin(name: string) {
@@ -84,41 +142,81 @@ export async function guestLogin(name: string) {
 }
 
 export async function getPlayerProfile(playerId: string) {
-  return prisma.player.findUnique({ where: { id: playerId }, include: { decks: true, quests: true } });
+  const cacheKey = `player:${playerId}`;
+  const cached = await cacheGet(cacheKey);
+  if (cached) return cached;
+  
+  const profile = await prisma.player.findUnique({ 
+    where: { id: playerId }, 
+    include: { decks: true, quests: true } 
+  });
+  
+  if (profile) await cacheSet(cacheKey, profile, 300);
+  return profile;
 }
 
 export async function updatePlayerStats(playerId: string, won: boolean, opponentRating?: number) {
   const player = await prisma.player.findUnique({ where: { id: playerId } });
   if (!player) return null;
+  
   let newElo = player.elo;
   if (opponentRating) {
     const { winnerNew } = calculateElo(won ? player.elo : opponentRating, won ? opponentRating : player.elo);
     newElo = winnerNew;
   }
-  return prisma.player.update({
+  
+  const updated = await prisma.player.update({
     where: { id: playerId },
-    data: { wins: player.wins + (won ? 1 : 0), losses: player.losses + (won ? 0 : 1), elo: newElo, rank: calculateRank(newElo) },
+    data: { 
+      wins: player.wins + (won ? 1 : 0), 
+      losses: player.losses + (won ? 0 : 1), 
+      elo: newElo, 
+      rank: calculateRank(newElo) 
+    },
   });
+  
+  await cacheDel(`player:${playerId}`);
+  await cacheDel('leaderboard:top100');
+  return updated;
 }
 
 export async function getLeaderboard(limit: number = 100) {
-  return prisma.player.findMany({ orderBy: { elo: 'desc' }, take: limit, select: { id: true, name: true, elo: true, wins: true, rank: true } });
+  const cacheKey = `leaderboard:${limit}`;
+  const cached = await cacheGet(cacheKey);
+  if (cached) return cached;
+  
+  const leaderboard = await prisma.player.findMany({ 
+    orderBy: { elo: 'desc' }, 
+    take: limit, 
+    select: { id: true, name: true, elo: true, wins: true, rank: true } 
+  });
+  
+  await cacheSet(cacheKey, leaderboard, 60);
+  return leaderboard;
 }
 
 export async function getPlayerRank(playerId: string) {
+  const cacheKey = `rank:${playerId}`;
+  const cached = await cacheGet(cacheKey);
+  if (cached !== null) return cached;
+  
   const player = await prisma.player.findUnique({ where: { id: playerId } });
   if (!player) return null;
-  return await prisma.player.count({ where: { elo: { gt: player.elo } } }) + 1;
+  
+  const rank = await prisma.player.count({ where: { elo: { gt: player.elo } } }) + 1;
+  await cacheSet(cacheKey, rank, 300);
+  return rank;
 }
 
 export async function joinMatchQueue(entry: { odID: string; odName: string; odHeroId: string; rating: number }) {
   matchQueue.push(entry);
-  return { status: 'queued' };
+  return { status: 'queued', queueSize: matchQueue.length };
 }
 
 export async function leaveMatchQueue(odID: string) {
   const idx = matchQueue.findIndex(e => e.odID === odID);
   if (idx >= 0) matchQueue.splice(idx, 1);
+  return { success: true };
 }
 
 export async function checkMatchStatus(odID: string, odHeroId: string, rating: number) {
@@ -133,9 +231,14 @@ export async function checkMatchStatus(odID: string, odHeroId: string, rating: n
 }
 
 export async function initDatabase() {
-  console.log('Database URL:', DATABASE_URL.substring(0, 30) + '...');
+  console.log('[DB] Connecting to:', DATABASE_URL.substring(0, 40) + '...');
+  await prisma.$connect();
+  console.log('[DB] Connected');
 }
 
 export async function closeConnections() {
   await prisma.$disconnect();
+  if (redisClient) {
+    await redisClient.quit();
+  }
 }
