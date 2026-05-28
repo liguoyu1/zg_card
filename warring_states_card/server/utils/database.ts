@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 // 环境变量
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:***@localhost:5432/warring_states';
