@@ -62,6 +62,11 @@ export default defineEventHandler(async (event) => {
       return await checkMatchStatus(odID, odHeroId, rating);
     }
     
+    // Health
+    if (path === '/api/health' && method === 'GET') {
+      return { status: 'ok', timestamp: new Date().toISOString() };
+    }
+    
     return { error: 'Not found', path, method };
   } catch (e: any) {
     console.error('API error:', e);
