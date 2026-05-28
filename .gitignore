@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build output
+.dist/
+.output/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Flutter (client only)
+.dart_tool/
+.packages
+.pub-cache/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# iOS build
+ios/Pods/
+ios/.symlinks/
+ios/build/
+
+# Android
+android/.gradle/
+android/app/build/
+
+# nitro
+.serverless/

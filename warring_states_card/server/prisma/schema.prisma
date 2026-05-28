@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 玩家账号
+model Player {
+  id            String   @id @default(cuid())
+  guestToken    String   @unique @map("guest_token")
+  name          String   @default("无名氏")
+  avatar        String   @default("")
+  rank          Int      @default(0)        // 天梯等级
+  elo           Int      @default(1000)     // ELO积分
+  wins          Int      @default(0)
+  losses        Int      @default(0)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  // 关系
+  matches       Match[]
+  decks         Deck[]
+  quests        Quest[]
+  dailyRewards  DailyReward[]
+  
+  @@map("players")
+}
+
+// 卡组
+model Deck {
+  id        String   @id @default(cuid())
+  playerId  String   @map("player_id")
+  name      String
+  heroId    String
+  cards     String[] // JSON数组存储卡牌ID
+  isActive  Boolean  @default(false) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // 关系
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  @@map("decks")
+  @@index([playerId])
+}
+
+// 对战记录
+model Match {
+  id          String   @id @default(cuid())
+  playerId    String   @map("player_id")
+  opponentId  String   @map("opponent_id")  // 对方playerId或AI
+  winnerId    String   @map("winner_id")
+  playerDeck  String[] @map("player_deck")
+  opponentDeck String[] @map("opponent_deck")
+  turns       Int      @default(0)
+  duration    Int      @default(0)          // 秒
+  isRanked    Boolean  @default(false) @map("is_ranked")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  // 关系
+  player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  @@map("matches")
+  @@index([playerId])
+  @@index([createdAt])
+}
+
+// 每日任务
+model Quest {
+  id          String   @id @default(cuid())
+  playerId    String   @map("player_id")
+  type        String   // daily/weeklies/achievements
+  questType   String   @map("quest_type")    // win/play/special
+  target      Int      @default(1)
+  progress    Int      @default(0)
+  reward      Int      @default(100)         // 奖励金币
+  claimed     Boolean  @default(false)
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  // 关系
+  player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  @@map("quests")
+  @@index([playerId, type])
+}
+
+// 每日奖励记录
+model DailyReward {
+  id          String   @id @default(cuid())
+  playerId    String   @map("player_id")
+  date        String   // YYYY-MM-DD格式
+  streak      Int      @default(1)          // 连续天数
+  packType    String   @map("pack_type")    // standard/premium/legendary
+  claimed     Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  // 关系
+  player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  @@unique([playerId, date])
+  @@map("daily_rewards")
+  @@index([playerId])
+}
+
+// 玩家卡牌收藏
+model Collection {
+  id        String   @id @default(cuid())
+  playerId  String   @unique @map("player_id")
+  cards     String[] // 拥有的卡牌ID数组
+  dust      Int      @default(0)             // 分解获得的粉尘
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  @@map("collections")
+}
+
+// 天梯排行榜缓存
+model Leaderboard {
+  id        String   @id @default(cuid())
+  season    String   // 天梯赛季
+  rank      Int
+  playerId  String   @map("player_id")
+  playerName String  @map("player_name")
+  elo       Int
+  wins      Int
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  @@unique([season, rank])
+  @@map("leaderboard")
+  @@index([season, elo])
+}
