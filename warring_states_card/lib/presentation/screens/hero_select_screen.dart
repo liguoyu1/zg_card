@@ -5,10 +5,10 @@ import 'package:warring_states_card/domain/models/hero.dart' as h;
 import 'package:warring_states_card/domain/models/card.dart' as domain;
 import 'package:warring_states_card/domain/services/services.dart';
 import 'package:warring_states_card/data/heroes/heroes_data.dart';
+import 'package:warring_states_card/l10n/locale_service.dart';
 import '../providers/game_provider.dart';
 import 'game_screen.dart';
 
-/// 英雄选择界面
 class HeroSelectScreen extends ConsumerStatefulWidget {
   const HeroSelectScreen({super.key});
 
@@ -28,7 +28,7 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('选择英雄'),
+        title: Text(LocaleService.I.t('hero_select.title')),
         backgroundColor: Colors.brown[400],
         foregroundColor: Colors.white,
       ),
@@ -54,8 +54,16 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
   }
 
   Widget _buildClassTabs() {
-    final classes = ['all', 'bing', 'fa', 'ru', 'mo', 'dao', 'yin', 'zong'];
-    final names = {'all': '全部', 'bing': '兵家', 'fa': '法家', 'ru': '儒家', 'mo': '墨家', 'dao': '道家', 'yin': '阴阳家', 'zong': '纵横家'};
+    final classMap = {
+      'all': LocaleService.I.t('hero_select.all'),
+      'bingjia': LocaleService.I.t('owner.bingjia'),
+      'fajia': LocaleService.I.t('owner.fajia'),
+      'rujia': LocaleService.I.t('owner.rujia'),
+      'mojia': LocaleService.I.t('owner.mojia'),
+      'daojia': LocaleService.I.t('owner.daojia'),
+      'yinyangjia': LocaleService.I.t('owner.yinyangjia'),
+      'zonghengjia': LocaleService.I.t('owner.zonghengjia'),
+    };
     
     return Container(
       height: 50,
@@ -63,14 +71,14 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: classes.length,
+        itemCount: classMap.length,
         itemBuilder: (context, index) {
-          final cls = classes[index];
+          final cls = classMap.keys.elementAt(index);
           final isSelected = _selectedClass == cls;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
-              label: Text(names[cls]!),
+              label: Text(classMap[cls]!),
               selected: isSelected,
               onSelected: (selected) {
                 if (selected) {
@@ -88,30 +96,30 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('选择难度 - ${hero.name}'),
+        title: Text('${LocaleService.I.t('hero_select.select_difficulty')} - ${hero.name}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _DifficultyButton(
-              label: '简单',
+              label: LocaleService.I.t('difficulty.easy'),
               color: Colors.green,
               onTap: () => _startGame(context, hero, AIDifficulty.simple),
             ),
             const SizedBox(height: 8),
             _DifficultyButton(
-              label: '普通',
+              label: LocaleService.I.t('difficulty.normal'),
               color: Colors.blue,
               onTap: () => _startGame(context, hero, AIDifficulty.normal),
             ),
             const SizedBox(height: 8),
             _DifficultyButton(
-              label: '困难',
+              label: LocaleService.I.t('difficulty.hard'),
               color: Colors.orange,
               onTap: () => _startGame(context, hero, AIDifficulty.hard),
             ),
             const SizedBox(height: 8),
             _DifficultyButton(
-              label: '深渊',
+              label: LocaleService.I.t('difficulty.abyss'),
               color: Colors.red,
               onTap: () => _startGame(context, hero, AIDifficulty.abyss),
             ),
@@ -122,7 +130,7 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
   }
 
   void _startGame(BuildContext context, h.Hero hero, AIDifficulty difficulty) {
-    Navigator.pop(context); // 关闭对话框
+    Navigator.pop(context);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -154,11 +162,16 @@ class _HeroCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 30,
+                backgroundImage: hero.artAsset.isNotEmpty
+                    ? AssetImage(hero.artAsset) as ImageProvider
+                    : null,
                 backgroundColor: _getKingdomColor(hero.kingdom),
-                child: Text(
-                  hero.name[0],
-                  style: const TextStyle(fontSize: 24, color: Colors.white),
-                ),
+                child: hero.artAsset.isEmpty
+                    ? Text(
+                        hero.name[0],
+                        style: const TextStyle(fontSize: 24, color: Colors.white),
+                      )
+                    : null,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -174,7 +187,10 @@ class _HeroCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${_getClassName(hero.className)} · ${hero.kingdom}国',
+                      LocaleService.I.t('hero_select.class_and_kingdom', args: {
+                        'className': _getClassName(hero.className),
+                        'kingdom': hero.kingdom,
+                      }),
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 4),
@@ -214,16 +230,16 @@ class _HeroCard extends StatelessWidget {
   }
 
   String _getClassName(String className) {
-    final names = {
-      'bing': '兵家',
-      'fa': '法家',
-      'ru': '儒家',
-      'mo': '墨家',
-      'dao': '道家',
-      'yin': '阴阳家',
-      'zong': '纵横家',
-    };
-    return names[className] ?? className;
+    switch (className) {
+      case 'bingjia': return LocaleService.I.t('owner.bingjia');
+      case 'fajia': return LocaleService.I.t('owner.fajia');
+      case 'rujia': return LocaleService.I.t('owner.rujia');
+      case 'mojia': return LocaleService.I.t('owner.mojia');
+      case 'daojia': return LocaleService.I.t('owner.daojia');
+      case 'yinyangjia': return LocaleService.I.t('owner.yinyangjia');
+      case 'zonghengjia': return LocaleService.I.t('owner.zonghengjia');
+      default: return className;
+    }
   }
 }
 

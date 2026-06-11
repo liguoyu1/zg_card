@@ -110,8 +110,8 @@ void main() {
       );
       
       final result = GameRules.resolveCombat(attacker, defender);
-      expect(result.attackerDamage, 0); // 圣盾抵消伤害
-      expect(result.defenderDamage, 3); // 防守者造成3点伤害
+      expect(result.attackerDamage, 2); // 防守者反击2点
+      expect(result.defenderDamage, 3); // 攻击者造成3点（圣盾在调用方处理）
     });
     
     test('getTauntTargets', () {
@@ -404,10 +404,10 @@ void main() {
         rarity: Rarity.common,
       ));
       
-      final result = TurnService.drawInitialHands(deck, 3);
-      
-      expect(result.hand.length, 3);
-      expect(result.deck.length, 27);
+      final result = TurnService.drawInitialHands(deck, GameRules.initialHandSize);
+
+      expect(result.hand.length, GameRules.initialHandSize);
+      expect(result.deck.length, 30 - GameRules.initialHandSize);
     });
   });
 }

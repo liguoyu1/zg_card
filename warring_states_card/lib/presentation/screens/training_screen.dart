@@ -1,40 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:warring_states_card/domain/services/training_manager.dart';
 import 'package:warring_states_card/domain/services/adventure_manager.dart';
+import 'basic_card_screen.dart';
 
 /// 训练模式界面
-class TrainingScreen extends StatelessWidget {
+class TrainingScreen extends StatefulWidget {
   const TrainingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final manager = TrainingManager();
-    final trainings = manager.getUnlockedTrainings();
+  State<TrainingScreen> createState() => TrainingScreenState();
+}
 
+class TrainingScreenState extends State<TrainingScreen> {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('训练模式'),
         backgroundColor: Colors.amber[700],
       ),
-      body: ListView.builder(
-        itemCount: trainings.length,
-        itemBuilder: (context, index) {
-          final training = trainings[index];
-          final progress = manager.getProgress(training.id);
-          
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ListTile(
-              leading: _getMedalIcon(progress.medal?.level),
-              title: Text(training.name),
-              subtitle: Text(training.description),
-              trailing: _buildStatusBadge(progress.status),
-              onTap: () => _startTraining(context, training),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // 基础出牌 — 认识所有卡牌
+          _TrainingCard(
+            icon: Icons.collections_bookmark,
+            title: '基础出牌',
+            subtitle: '浏览所有卡牌，了解卡牌属性与效果',
+            color: Colors.blue,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BasicCardScreen()),
             ),
-          );
-        },
+          ),
+          const SizedBox(height: 12),
+          // 原有训练内容
+          ..._buildClassicTrainings(),
+        ],
       ),
     );
+  }
+
+  List<Widget> _buildClassicTrainings() {
+    try {
+      final manager = TrainingManager();
+      final trainings = manager.getUnlockedTrainings();
+      return trainings.map((t) {
+        final progress = manager.getProgress(t.id);
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          child: ListTile(
+            leading: _getMedalIcon(progress.medal?.level),
+            title: Text(t.name),
+            subtitle: Text(t.description),
+            trailing: _buildStatusBadge(progress.status),
+            onTap: () => _startTraining(context, t),
+          ),
+        );
+      }).toList();
+    } catch (_) {
+      return [const SizedBox.shrink()];
+    }
   }
 
   Widget _getMedalIcon(MedalLevel? level) {
@@ -77,6 +103,50 @@ class TrainingScreen extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => TrainingDetailScreen(training: training),
+      ),
+    );
+  }
+}
+
+class _TrainingCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _TrainingCard({
+    required this.icon, required this.title, required this.subtitle,
+    required this.color, required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              CircleAvatar(radius: 24, backgroundColor: color, child: Icon(icon, color: Colors.white, size: 28)),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.grey),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -11,6 +11,7 @@ class Player extends Equatable {
   final int mana;
   final int maxMana;
   final int spellPower; // 法术增强
+  final int fatigueCounter; // 疲劳计数器
   final List<Card> hand;
   final List<Card> deck;
   final List<Card> board; // 战场随从
@@ -24,6 +25,7 @@ class Player extends Equatable {
     this.mana = 0,
     this.maxMana = 0,
     this.spellPower = 0,
+    this.fatigueCounter = 0,
     this.hand = const [],
     this.deck = const [],
     this.board = const [],
@@ -56,6 +58,7 @@ class Player extends Equatable {
     int? mana,
     int? maxMana,
     int? spellPower,
+    int? fatigueCounter,
     List<Card>? hand,
     List<Card>? deck,
     List<Card>? board,
@@ -69,6 +72,7 @@ class Player extends Equatable {
       mana: mana ?? this.mana,
       maxMana: maxMana ?? this.maxMana,
       spellPower: spellPower ?? this.spellPower,
+      fatigueCounter: fatigueCounter ?? this.fatigueCounter,
       hand: hand ?? this.hand,
       deck: deck ?? this.deck,
       board: board ?? this.board,
@@ -77,5 +81,5 @@ class Player extends Equatable {
   }
   
   @override
-  List<Object?> get props => [id, hero, health, armor, mana, maxMana, spellPower, hand, deck, board, weapon];
+  List<Object?> get props => [id, hero, health, armor, mana, maxMana, spellPower, fatigueCounter, hand, deck, board, weapon];
 }

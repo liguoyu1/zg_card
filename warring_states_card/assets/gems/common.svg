@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" width="72" height="72">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8D5B7" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#C4B085" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#A89060" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="h" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFF8E7" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Gem shape: octagon -->
+  <polygon points="36,6 60,18 66,36 60,54 36,66 12,54 6,36 12,18" fill="url(#g)" stroke="#A89060" stroke-width="1.5"/>
+  <!-- Facet highlight -->
+  <polygon points="36,6 60,18 36,36 12,18" fill="url(#h)"/>
+  <!-- Center shine -->
+  <polygon points="36,22 48,28 36,38 24,28" fill="#FFFFFF" fill-opacity="0.3"/>
+</svg>

@@ -148,6 +148,9 @@ class OnlineGameService {
   Future<Map<String, dynamic>> _get(String path) async {
     final uri = Uri.parse('$_baseUrl$path');
     final response = await http.get(uri, headers: _headers);
+    if (response.statusCode >= 400) {
+      throw Exception('HTTP ${response.statusCode}: ${response.body}');
+    }
     return jsonDecode(response.body);
   }
 
@@ -158,6 +161,9 @@ class OnlineGameService {
       headers: _headers,
       body: jsonEncode(body),
     );
+    if (response.statusCode >= 400) {
+      throw Exception('HTTP ${response.statusCode}: ${response.body}');
+    }
     return jsonDecode(response.body);
   }
 

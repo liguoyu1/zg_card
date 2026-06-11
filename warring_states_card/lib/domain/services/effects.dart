@@ -20,10 +20,12 @@ class DamageEffect implements CardEffect {
   @override
   GameState execute(GameState state, String playerId, String? targetId) {
     final opponent = state.opponent;
+    final caster = state.getCurrentPlayer(playerId);
+    final totalDamage = damage + caster.spellPower;
     
     if (targetHero || targetId == null) {
       final newOpponent = opponent.copyWith(
-        health: opponent.health - damage,
+        health: opponent.health - totalDamage,
       );
       return state.updatePlayer(newOpponent);
     }
@@ -32,7 +34,7 @@ class DamageEffect implements CardEffect {
     if (targetIndex == -1) return state;
     
     final targetCard = opponent.board[targetIndex];
-    final newHealth = targetCard.health - damage;
+    final newHealth = targetCard.health - totalDamage;
     
     final newBoard = List<Card>.from(opponent.board);
     if (newHealth <= 0) {

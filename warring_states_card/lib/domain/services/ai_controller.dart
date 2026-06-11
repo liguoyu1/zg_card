@@ -25,22 +25,34 @@ class AIController {
     }
   }
   
-  /// 优先级排序
+  /// 优先级排序：随从优先于法术，嘲讽/冲锋优先，高费优先
   List<Card> _sortByPriority(List<Card> hand) {
-    return hand.toList()
-      ..sort((a, b) => b.cost.compareTo(a.cost)); // 高费优先
+    return hand.toList()..sort((a, b) {
+      // 随从优先于法术
+      if (a.isMinion && !b.isMinion) return -1;
+      if (!a.isMinion && b.isMinion) return 1;
+      // 嘲讽/冲锋优先
+      final aKey = a.hasTaunt || a.hasCharge ? 1 : 0;
+      final bKey = b.hasTaunt || b.hasCharge ? 1 : 0;
+      if (aKey != bKey) return bKey.compareTo(aKey);
+      // 高费优先
+      return b.cost.compareTo(a.cost);
+    });
   }
   
-  /// 根据配合排序
+  /// 根据配合排序（带战场感知）
   List<Card> _sortBySynergy(List<Card> hand, Player board) {
-    return hand.toList()
-      ..sort((a, b) {
-        // 优先出有战吼的
-        if (a.hasBattlecry && !b.hasBattlecry) return -1;
-        if (!a.hasBattlecry && b.hasBattlecry) return 1;
-        // 其次按费用
-        return b.cost.compareTo(a.cost);
-      });
+    return hand.toList()..sort((a, b) {
+      // 如果场上没有随从，优先出随从
+      if (board.board.isEmpty) {
+        if (a.isMinion && !b.isMinion) return -1;
+        if (!a.isMinion && b.isMinion) return 1;
+      }
+      // 战吼优先
+      if (a.hasBattlecry && !b.hasBattlecry) return -1;
+      if (!a.hasBattlecry && b.hasBattlecry) return 1;
+      return b.cost.compareTo(a.cost);
+    });
   }
   
   /// 最优排序
@@ -78,60 +90,44 @@ class AIController {
     return opponent.board[_random.nextInt(opponent.board.length)];
   }
   
-  /// 嘲讽优先
+  /// 嘲讽优先，其次低血量目标（< 3 health）
   Card? _tauntFirstAttack(Player opponent) {
     final taunts = opponent.board.where((c) => c.hasTaunt).toList();
-    if (taunts.isNotEmpty) {
-      return taunts[_random.nextInt(taunts.length)];
-    }
-    return _randomAttack(opponent);
+    if (taunts.isNotEmpty) return taunts.reduce((a, b) => a.health < b.health ? a : b);
+    // 优先低血量随从
+    final lowHealth = opponent.board.where((c) => c.health < 3).toList();
+    if (lowHealth.isNotEmpty) return lowHealth.first;
+    if (opponent.board.isEmpty) return null;
+    return opponent.board.first;
   }
   
-  /// 计算后攻击
+  /// 价值计算攻击（优先1换2的有利交换）
   Card? _calculatedAttack(Player self, Player opponent) {
     if (opponent.board.isEmpty) return null;
-    
-    // 嘲讽优先
     final taunts = opponent.board.where((c) => c.hasTaunt).toList();
-    if (taunts.isNotEmpty) {
-      // 选择血量最低的嘲讽
-      return taunts.reduce((a, b) => a.health < b.health ? a : b);
-    }
-    
+    if (taunts.isNotEmpty) return taunts.reduce((a, b) => a.health < b.health ? a : b);
     // 优先攻击能杀死的
-    final killable = opponent.board.where((c) => c.health <= self.board.first.attack).toList();
-    if (killable.isNotEmpty) {
-      return killable[_random.nextInt(killable.length)];
+    for (final attacker in self.board) {
+      final killable = opponent.board.where((c) => c.health <= attacker.attack && attacker.health > c.attack).toList();
+      if (killable.isNotEmpty) return killable.reduce((a, b) => a.attack > b.attack ? a : b);
     }
-    
-    return opponent.board[_random.nextInt(opponent.board.length)];
+    return opponent.board.reduce((a, b) => a.health < b.health ? a : b);
   }
   
-  /// 最优攻击
+  /// 最优攻击（2回合预判：优先清除高威胁低血量目标）
   Card? _optimalAttack(Player self, Player opponent) {
     if (opponent.board.isEmpty) return null;
-    
-    // 嘲讽优先
     final taunts = opponent.board.where((c) => c.hasTaunt).toList();
-    if (taunts.isNotEmpty) {
-      return taunts.reduce((a, b) => a.health < b.health ? a : b);
-    }
-    
-    // 优先清除威胁(攻击力高的)
-    final sorted = opponent.board.toList()
-      ..sort((a, b) => b.attack.compareTo(a.attack));
-    
-    // 计算最优交换
+    if (taunts.isNotEmpty) return taunts.reduce((a, b) => a.health < b.health ? a : b);
+    // 预判：优先清除高威胁（高攻击）低血量目标
+    final threats = opponent.board.where((c) => c.attack >= 4 && c.health <= self.board.map((e) => e.attack).fold(0, (a, b) => a > b ? a : b)).toList();
+    if (threats.isNotEmpty) return threats.reduce((a, b) => a.attack > b.attack ? a : b);
     for (final attacker in self.board) {
-      for (final target in sorted) {
-        if (target.health <= attacker.attack && attacker.health > target.attack) {
-          return target;
-        }
+      for (final target in opponent.board) {
+        if (target.health <= attacker.attack && attacker.health > target.attack) return target;
       }
     }
-    
-    // 否则攻击血量最低的
-    return sorted.last;
+    return opponent.board.reduce((a, b) => a.health < b.health ? a : b);
   }
   
   /// 是否激活组合技能

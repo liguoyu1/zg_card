@@ -1,0 +1,106 @@
+# 战国风8-bit像素卡牌提示词（可直接复制粘贴使用）
+# 基于pixlab24.com素材分析生成
+
+## ========== 如何使用 ==========
+1. 复制下面的任意一个提示词（从"--- 开始"到"--- 结束"之间的内容）
+2. 粘贴到AI绘画工具（Midjourney/Stable Diffusion/DALL-E 3）
+3. 点击生成即可
+
+## ========== 通用负面提示词（所有生成都需要添加） ==========
+# 复制这个到负面提示词框：
+blurry, low quality, distorted, ugly, deformed, modern clothing, contemporary style, futuristic, sci-fi, fantasy armor, European armor, photorealistic, 3D render, CGI, digital painting, vector art, low poly, isometric, flat design, minimalism, modernism, oil painting, acrylic painting, watercolor, gouache, pastel, charcoal, pencil sketch, photography, photograph, computer generated, game art, concept art, illustration, children's book, fantasy art, sci-fi art, smooth edges, anti-aliasing, gradients, more than 32 colors, anime, cartoon, messy pixels, inconsistent pixel size
+
+## ========== 角色卡（6种类型） ==========
+
+--- 兵家战士 开始 ---
+8-bit pixel art sprite of Qin kingdom warrior, bronze scale armor, holding halberd, fierce expression, centered pose, black pixel outline, subtle red rim light on armor edges, 16-color palette, game character sprite, 120x160 pixel area, warring states theme, facing forward, limited color palette, crisp pixel edges, no anti-aliasing, game asset quality
+--- 兵家战士 结束 ---
+
+--- 法家谋士 开始 ---
+8-bit pixel art sprite of Han kingdom official, black robes with high collar, holding bamboo scrolls, stern expression, centered pose, black pixel outline, subtle blue rim light on robe edges, 16-color palette, game character sprite, 120x160 pixel area, warring states theme, facing forward, limited color palette, crisp pixel edges, no anti-aliasing, game asset quality
+--- 法家谋士 结束 ---
+
+--- 儒家学者 开始 ---
+8-bit pixel art sprite of Qi kingdom scholar, gray-white robes, holding book scrolls, gentle expression, centered pose, black pixel outline, subtle gold rim light on robe edges, 16-color palette, game character sprite, 120x160 pixel area, warring states theme, facing forward, limited color palette, crisp pixel edges, no anti-aliasing, game asset quality
+--- 儒家学者 结束 ---
+
+--- 道家道士 开始 ---
+8-bit pixel art sprite of Chu kingdom Taoist, flowing white robes, holding wooden sword, serene expression, centered pose, black pixel outline, subtle green rim light on robe edges, 16-color palette, game character sprite, 120x160 pixel area, warring states theme, facing forward, limited color palette, crisp pixel edges, no anti-aliasing, game asset quality
+--- 道家道士 结束 ---
+
+--- 墨家工匠 开始 ---
+8-bit pixel art sprite of Zhao kingdom craftsman, brown work tunic, holding crossbow mechanism, focused expression, centered pose, black pixel outline, subtle orange rim light on clothing edges, 16-color palette, game character sprite, 120x160 pixel area, warring states theme, facing forward, limited color palette, crisp pixel edges, no anti-aliasing, game asset quality
+--- 墨家工匠 结束 ---
+
+--- 阴阳家术士 开始 ---
+8-bit pixel art sprite of Yan kingdom mystic, purple ritual robes, holding bronze bell, mysterious expression, centered pose, black pixel outline, subtle purple rim light on robe edges, 16-color palette, game character sprite, 120x160 pixel area, warring states theme, facing forward, limited color palette, crisp pixel edges, no anti-aliasing, game asset quality
+--- 阴阳家术士 结束 ---
+
+## ========== 卡牌边框（4种稀有度） ==========
+
+--- 普通边框（青铜色） 开始 ---
+8-bit pixel art card border frame, bronze color (#CD7F32), simple cloud pattern tile corners, thin black inner outline, 195x284 pixels card size, modular UI component, game asset, pixel card frame, minimal decoration, limited color palette, crisp pixel edges
+--- 普通边框（青铜色） 结束 ---
+
+--- 稀有边框（白银色） 开始 ---
+8-bit pixel art card border frame, silver color (#C0C0C0), kui dragon pattern tile corners, thin black inner outline, small blue gem pixel decoration, 195x284 pixels card size, modular UI component, game asset, pixel card frame, limited color palette, crisp pixel edges
+--- 稀有边框（白银色） 结束 ---
+
+--- 史诗边框（黄金色） 开始 ---
+8-bit pixel art card border frame, gold color (#FFD700), dragon pattern tile corners, thin black inner outline, small red gem pixel decoration, subtle gold glow pixels, 195x284 pixels card size, modular UI component, game asset, pixel card frame, limited color palette, crisp pixel edges
+--- 史诗边框（黄金色） 结束 ---
+
+--- 传说边框（玉色） 开始 ---
+8-bit pixel art card border frame, jade green color (#E6E6FA), dragon-phoenix pattern tile corners, thin black inner outline, rotating gem pixel animation, strong glow pixels, 195x284 pixels card size, modular UI component, game asset, pixel card frame, limited color palette, crisp pixel edges
+--- 传说边框（玉色） 结束 ---
+
+## ========== 卡背（7国） ==========
+
+--- 秦国卡背 开始 ---
+8-bit pixel art card back, dark red cardinal background (#8B0000), centered pixel dragon icon in gold, simple cloud pattern tile border, thin black outline, 195x284 pixels, modular card asset, game asset, Qin kingdom theme, limited color palette, crisp pixel edges
+--- 秦国卡背 结束 ---
+
+--- 燕国卡背 开始 ---
+8-bit pixel art card back, royal blue background (#4169E1), centered pixel phoenix icon in silver, simple wave pattern tile border, thin black outline, 195x284 pixels, modular card asset, game asset, Yan kingdom theme, limited color palette, crisp pixel edges
+--- 燕国卡背 结束 ---
+
+--- 赵国卡背 开始 ---
+8-bit pixel art card back, forest green background (#228B22), centered pixel tiger icon in bronze, simple mountain pattern tile border, thin black outline, 195x284 pixels, modular card asset, game asset, Zhao kingdom theme, limited color palette, crisp pixel edges
+--- 赵国卡背 结束 ---
+
+--- 韩国卡背 开始 ---
+8-bit pixel art card back, teal background (#008080), centered pixel serpent icon in silver, simple river pattern tile border, thin black outline, 195x284 pixels, modular card asset, game asset, Han kingdom theme, limited color palette, crisp pixel edges
+--- 韩国卡背 结束 ---
+
+--- 魏国卡背 开始 ---
+8-bit pixel art card back, dark orange background (#FF8C00), centered pixel lion icon in gold, simple sun pattern tile border, thin black outline, 195x284 pixels, modular card asset, game asset, Wei kingdom theme, limited color palette, crisp pixel edges
+--- 魏国卡背 结束 ---
+
+--- 楚国卡背 开始 ---
+8-bit pixel art card back, purple background (#800080), centered pixel phoenix icon in silver, simple cloud pattern tile border, thin black outline, 195x284 pixels, modular card asset, game asset, Chu kingdom theme, limited color palette, crisp pixel edges
+--- 楚国卡背 结束 ---
+
+--- 齐国卡背 开始 ---
+8-bit pixel art card back, goldenrod background (#DAA520), centered pixel dragon icon in bronze, simple wave pattern tile border, thin black outline, 195x284 pixels, modular card asset, game asset, Qi kingdom theme, limited color palette, crisp pixel edges
+--- 齐国卡背 结束 ---
+
+## ========== 完整卡牌组合（角色+边框） ==========
+
+--- 完整兵家卡牌 开始 ---
+8-bit pixel art trading card game asset, warring states China theme, full card layout 195x284 -- a Qin warrior in bronze armor centered, red-themed card frame with dragon pattern corners, stat bar at bottom with attack/defense icons, limited 16-color palette, black pixel outlines, subtle rim light on character, modular card design, clean pixel edges, game-ready sprite sheet quality
+--- 完整兵家卡牌 结束 ---
+
+--- 完整法家卡牌 开始 ---
+8-bit pixel art trading card game asset, warring states China theme, full card layout 195x284 -- a Han official in black robes centered, blue-themed card frame with scroll pattern corners, stat bar at bottom with intelligence/wisdom icons, limited 16-color palette, black pixel outlines, subtle rim light on character, modular card design, clean pixel edges, game-ready sprite sheet quality
+--- 完整法家卡牌 结束 ---
+
+## ========== 测试建议 ==========
+1. 先测试"完整兵家卡牌"看看整体效果
+2. 如果角色不满意，单独测试"兵家战士"
+3. 如果边框不满意，单独测试"普通边框"
+4. 最后组合：角色 + 边框 + 卡背
+
+## ========== AI工具参数 ==========
+# Midjourney: 添加 --ar 195:284 --style raw
+# Stable Diffusion: 设置宽195高284，CFG 4-6，步数20-30
+# DALL-E 3: 直接使用提示词，添加"195×284 pixels"

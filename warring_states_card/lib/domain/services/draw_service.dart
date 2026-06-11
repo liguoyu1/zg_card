@@ -34,7 +34,7 @@ class DrawService {
   
   final Random _random;
   
-  DrawService() : _random = Random.secure();
+  DrawService() : _random = Random();
   
   /// 抽一张卡
   DrawResult draw() {

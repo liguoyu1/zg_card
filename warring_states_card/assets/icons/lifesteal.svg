@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="h" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF5350"/>
+      <stop offset="100%" stop-color="#B71C1C"/>
+    </linearGradient>
+    <filter id="g">
+      <feGaussianBlur stdDeviation="1.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Heart shape -->
+  <path d="M24 40 Q10 28 6 18 Q2 8 12 4 Q18 2 24 10 Q30 2 36 4 Q46 8 42 18 Q38 28 24 40 Z" fill="url(#h)" stroke="#880E4F" stroke-width="1" filter="url(#g)"/>
+  <!-- Highlight -->
+  <ellipse cx="18" cy="14" rx="6" ry="4" fill="#FFFFFF" fill-opacity="0.3" transform="rotate(-20,18,14)"/>
+</svg>

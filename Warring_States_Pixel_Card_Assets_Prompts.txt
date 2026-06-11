@@ -1,0 +1,152 @@
+# Warring States Pixel Card Assets - Z-Image-Turbo Prompts
+# For international TCG market, English text preferred
+
+## ===== ASSET SPECIFICATIONS =====
+# All assets follow these standards:
+# - PNG format with alpha channel (transparent background)
+# - Pixel art style, 8-bit/16-bit aesthetic
+# - Limited color palette (max 32 colors)
+# - No anti-aliasing, crisp pixel edges
+# - Black pixel outlines
+# - White/transparent background for compositing
+
+## ===== CHARACTER SPRITES (120×160px) =====
+# For card center, transparent BG
+
+--- Military School - Qin Warrior ---
+Pixel art character sprite, Qin kingdom warrior in bronze scale armor, holding halberd, fierce expression, centered front-facing pose, black pixel outline, subtle red rim light on armor edges, 16-color palette, 120x160 pixels, transparent background, game asset quality, no anti-aliasing, limited palette, crisp pixel edges, warring states China theme
+
+--- Legalist School - Han Official ---
+Pixel art character sprite, Han kingdom official in black high-collar robe, holding bamboo scrolls, stern expression, centered front-facing pose, black pixel outline, subtle blue rim light on robe edges, 16-color palette, 120x160 pixels, transparent background, game asset quality, no anti-aliasing, limited palette, crisp pixel edges, warring states China theme
+
+--- Confucian School - Qi Scholar ---
+Pixel art character sprite, Qi kingdom scholar in gray-white robe, holding book scrolls, gentle expression, centered front-facing pose, black pixel outline, subtle gold rim light on robe edges, 16-color palette, 120x160 pixels, transparent background, game asset quality, no anti-aliasing, limited palette, crisp pixel edges, warring states China theme
+
+--- Taoist School - Chu Mystic ---
+Pixel art character sprite, Chu kingdom Taoist in flowing white robe, holding wooden sword, serene expression, centered front-facing pose, black pixel outline, subtle green rim light on robe edges, 16-color palette, 120x160 pixels, transparent background, game asset quality, no anti-aliasing, limited palette, crisp pixel edges, warring states China theme
+
+--- Mohist School - Zhao Engineer ---
+Pixel art character sprite, Zhao kingdom craftsman in brown work tunic, holding crossbow mechanism, focused expression, centered front-facing pose, black pixel outline, subtle orange rim light on clothing edges, 16-color palette, 120x160 pixels, transparent background, game asset quality, no anti-aliasing, limited palette, crisp pixel edges, warring states China theme
+
+--- Yin-Yang School - Yan Diviner ---
+Pixel art character sprite, Yan kingdom mystic in purple ritual robe, holding bronze bell, mysterious expression, centered front-facing pose, black pixel outline, subtle purple rim light on robe edges, 16-color palette, 120x160 pixels, transparent background, game asset quality, no anti-aliasing, limited palette, crisp pixel edges, warring states China theme
+
+## ===== CARD BORDERS (195×284px) =====
+# For card frame overlay, transparent center
+
+--- Common Border - Bronze ---
+Pixel art card border frame, bronze metal texture (#CD7F32), simple cloud pattern corner decorations, thin black inner outline, 195x284 pixels card size, transparent center area, modular UI component, game asset, limited color palette, crisp pixel edges, no anti-aliasing
+
+--- Rare Border - Silver ---
+Pixel art card border frame, silver metal texture (#C0C0C0), kui dragon pattern corner decorations, thin black inner outline, small blue gem pixel decoration, 195x284 pixels card size, transparent center area, modular UI component, game asset, limited color palette, crisp pixel edges, no anti-aliasing
+
+--- Epic Border - Gold ---
+Pixel art card border frame, gold metal texture (#FFD700), dragon pattern corner decorations, thin black inner outline, small red gem pixel decoration, subtle gold glow pixels around border, 195x284 pixels card size, transparent center area, modular UI component, game asset, limited color palette, crisp pixel edges, no anti-aliasing
+
+--- Legendary Border - Jade ---
+Pixel art card border frame, jade green semi-transparent texture (#E6E6FA), dragon-phoenix pattern corner decorations, thin black inner outline, rotating gem pixel animation effect, strong glow pixels around border, 195x284 pixels card size, transparent center area, modular UI component, game asset, limited color palette, crisp pixel edges, no anti-aliasing
+
+## ===== CARD BACKS (195×284px) =====
+# Complete card back design
+
+--- Qin Kingdom Card Back ---
+Pixel art card back design, dark red background (#8B0000), centered golden pixel dragon emblem, simple cloud pattern border corners, thin black outer outline, 195x284 pixels, modular card asset, game asset, limited color palette, crisp pixel edges, Qin kingdom theme
+
+--- Yan Kingdom Card Back ---
+Pixel art card back design, royal blue background (#4169E1), centered silver pixel phoenix emblem, simple wave pattern border corners, thin black outer outline, 195x284 pixels, modular card asset, game asset, limited color palette, crisp pixel edges, Yan kingdom theme
+
+--- Zhao Kingdom Card Back ---
+Pixel art card back design, forest green background (#228B22), centered bronze pixel tiger emblem, simple mountain pattern border corners, thin black outer outline, 195x284 pixels, modular card asset, game asset, limited color palette, crisp pixel edges, Zhao kingdom theme
+
+--- Han Kingdom Card Back ---
+Pixel art card back design, teal background (#008080), centered silver pixel serpent emblem, simple river pattern border corners, thin black outer outline, 195x284 pixels, modular card asset, game asset, limited color palette, crisp pixel edges, Han kingdom theme
+
+--- Wei Kingdom Card Back ---
+Pixel art card back design, dark orange background (#FF8C00), centered golden pixel lion emblem, simple sun pattern border corners, thin black outer outline, 195x284 pixels, modular card asset, game asset, limited color palette, crisp pixel edges, Wei kingdom theme
+
+--- Chu Kingdom Card Back ---
+Pixel art card back design, purple background (#800080), centered silver pixel phoenix emblem, simple cloud pattern border corners, thin black outer outline, 195x284 pixels, modular card asset, game asset, limited color palette, crisp pixel edges, Chu kingdom theme
+
+--- Qi Kingdom Card Back ---
+Pixel art card back design, goldenrod background (#DAA520), centered bronze pixel dragon emblem, simple wave pattern border corners, thin black outer outline, 195x284 pixels, modular card asset, game asset, limited color palette, crisp pixel edges, Qi kingdom theme
+
+## ===== WEAPON ICONS (64×64px) =====
+# Weapon card icons, transparent BG
+
+--- Weapon - Bronze Halberd ---
+Pixel art weapon icon, bronze halberd with long shaft and curved blade, 64x64 pixels, transparent background, game asset, limited color palette, black pixel outline, crisp pixel edges, warring states weapon
+
+--- Weapon - Crossbow ---
+Pixel art weapon icon, wooden crossbow with bronze mechanism, 64x64 pixels, transparent background, game asset, limited color palette, black pixel outline, crisp pixel edges, warring states weapon
+
+--- Weapon - Bronze Sword ---
+Pixel art weapon icon, bronze long sword with simple hilt, 64x64 pixels, transparent background, game asset, limited color palette, black pixel outline, crisp pixel edges, warring states weapon
+
+--- Weapon - War Chariot ---
+Pixel art weapon icon, two-horse war chariot with bronze wheels, 64x64 pixels, transparent background, game asset, limited color palette, black pixel outline, crisp pixel edges, warring states weapon
+
+--- Weapon - Bamboo Scroll ---
+Pixel art weapon icon, rolled bamboo scroll with red ribbon, 64x64 pixels, transparent background, game asset, limited color palette, black pixel outline, crisp pixel edges, warring states weapon
+
+--- Weapon - Bronze Bell ---
+Pixel art weapon icon, ritual bronze bell with intricate patterns, 64x64 pixels, transparent background, game asset, limited color palette, black pixel outline, crisp pixel edges, warring states weapon
+
+--- Weapon - Wooden Sword ---
+Pixel art weapon icon, wooden practice sword for training, 64x64 pixels, transparent background, game asset, limited color palette, black pixel outline, crisp pixel edges, warring states weapon
+
+--- Weapon - Mechanism Gear ---
+Pixel art weapon icon, intricate bronze gear mechanism, 64x64 pixels, transparent background, game asset, limited color palette, black pixel outline, crisp pixel edges, warring states weapon
+
+## ===== STAT ICONS (32×32px) =====
+# For card stats display
+
+--- Attack Icon ---
+Pixel art attack stat icon, crossed bronze swords, 32x32 pixels, transparent background, game UI element, limited color palette, black pixel outline, crisp pixel edges
+
+--- Defense Icon ---
+Pixel art defense stat icon, bronze shield with dragon pattern, 32x32 pixels, transparent background, game UI element, limited color palette, black pixel outline, crisp pixel edges
+
+--- Intelligence Icon ---
+Pixel art intelligence stat icon, glowing brain with scroll, 32x32 pixels, transparent background, game UI element, limited color palette, black pixel outline, crisp pixel edges
+
+--- Wisdom Icon ---
+Pixel art wisdom stat icon, ancient eye with light rays, 32x32 pixels, transparent background, game UI element, limited color palette, black pixel outline, crisp pixel edges
+
+--- Speed Icon ---
+Pixel art speed stat icon, running warrior silhouette, 32x32 pixels, transparent background, game UI element, limited color palette, black pixel outline, crisp pixel edges
+
+--- Mana Icon ---
+Pixel art mana stat icon, glowing blue orb with swirls, 32x32 pixels, transparent background, game UI element, limited color palette, black pixel outline, crisp pixel edges
+
+## ===== COMPLETE CARD TEMPLATES =====
+# For testing full card layout
+
+--- Complete Military Card ---
+Pixel art trading card game asset, warring states China theme, full card layout 195x284 pixels -- a Qin warrior in bronze armor centered, red-themed card frame with dragon pattern corners, stat bar at bottom with ATK/DEF icons and values, card title "Bronze Vanguard" at top, limited 16-color palette, black pixel outlines, subtle rim light on character, modular card design, clean pixel edges, game-ready asset, transparent elements for UI overlay
+
+--- Complete Legalist Card ---
+Pixel art trading card game asset, warring states China theme, full card layout 195x284 pixels -- a Han official in black robes centered, blue-themed card frame with scroll pattern corners, stat bar at bottom with INT/WIS icons and values, card title "Law Enforcer" at top, limited 16-color palette, black pixel outlines, subtle rim light on character, modular card design, clean pixel edges, game-ready asset, transparent elements for UI overlay
+
+## ===== Z-IMAGE-TURBO PARAMETERS =====
+# Recommended settings for pixel art:
+# - num_inference_steps: 8 (balanced quality/speed)
+# - acceleration: high (for fast generation)
+# - image_size: portrait_4_3 or square
+# - No negative prompts (Z-Image-Turbo doesn't support them)
+# - All constraints must be in positive prompt
+
+## ===== PRODUCTION WORKFLOW =====
+1. Generate character sprites (120×160px, transparent BG)
+2. Generate card borders (195×284px, transparent center)
+3. Generate weapon icons (64×64px, transparent BG)
+4. Generate stat icons (32×32px, transparent BG)
+5. Generate card backs (195×284px, full design)
+6. In game engine: Layer character + border + UI elements
+7. Add text programmatically (English card names/effects)
+
+## ===== FILE NAMING CONVENTION =====
+# Character: char_[school]_[name]_120x160.png
+# Border: border_[rarity]_195x284.png  
+# Weapon: weapon_[type]_64x64.png
+# Icon: icon_[stat]_32x32.png
+# Card Back: back_[kingdom]_195x284.png

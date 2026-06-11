@@ -31,7 +31,7 @@ void main() {
     });
 
     test('初始手牌数量正确', () {
-      expect(GameRules.initialHandSize, equals(3));
+      expect(GameRules.initialHandSize, equals(4));
     });
 
     test('最大手牌数正确', () {

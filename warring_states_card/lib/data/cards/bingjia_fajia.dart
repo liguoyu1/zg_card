@@ -9,7 +9,7 @@ const List<Card> bingjiaCards = [
   Card(id: 'B002', name: '秦锐士', type: CardType.minion, cost: 2, attack: 2, health: 3, 
        description: '冲锋', keywords: [Keyword.charge], owner: CardOwner.bingjia, rarity: Rarity.common,
        flavor: '秦之锐士，天下无双。'),
-  Card(id: 'B003', name: '赵边骑', type: CardType.minion, cost: 4, attack: 3, health: 5, 
+  Card(id: 'B003', name: '赵边骑', type: CardType.minion, cost: 4, attack: 2, health: 5,
        description: '风怒', keywords: [Keyword.windfury], owner: CardOwner.bingjia, rarity: Rarity.rare,
        flavor: '赵边骑天下闻名。'),
   Card(id: 'B004', name: '燕死士', type: CardType.minion, cost: 1, attack: 2, health: 1, 
@@ -71,7 +71,7 @@ const List<Card> bingjiaCards = [
   Card(id: 'BW002', name: '越王剑', type: CardType.weapon, cost: 3, attack: 4, health: 2, 
        description: '亡语：对敌方英雄造成2点伤害', keywords: [Keyword.deathrattle], owner: CardOwner.bingjia, rarity: Rarity.rare,
        flavor: '越王勾践剑，千年不锈。'),
-  Card(id: 'BW003', name: '丈八蛇矛', type: CardType.weapon, cost: 5, attack: 5, health: 3, 
+  Card(id: 'BW003', name: '丈八蛇矛', type: CardType.weapon, cost: 5, attack: 4, health: 3,
        description: '风怒', keywords: [Keyword.windfury], owner: CardOwner.bingjia, rarity: Rarity.epic,
        flavor: '丈八蛇矛，霸者之兵。'),
 ];

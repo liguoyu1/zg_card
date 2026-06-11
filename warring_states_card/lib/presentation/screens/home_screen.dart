@@ -1,21 +1,69 @@
-import 'package:flutter/material.dart' hide Card, Hero;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warring_states_card/domain/models/hero.dart' as h;
 import 'package:warring_states_card/domain/services/services.dart';
+import 'package:warring_states_card/domain/services/purchase_service.dart';
+import 'package:warring_states_card/domain/services/card_data_provider.dart';
+import 'package:warring_states_card/domain/models/models.dart' as domain;
+import 'package:warring_states_card/data/heroes/heroes_data.dart';
+import 'package:warring_states_card/presentation/screens/adventure_screen.dart';
+import 'package:warring_states_card/presentation/screens/pack_screen.dart';
+import 'package:warring_states_card/presentation/screens/collection_screen.dart';
+import 'package:warring_states_card/l10n/locale_service.dart';
 import 'hero_select_screen.dart';
-import 'training_screen.dart';
-import 'online_game_screen.dart';
+import 'training_screen.dart' show TrainingScreen;
+import 'online_game_screen.dart' hide LeaderboardScreen;
 import 'game_screen.dart';
+import 'leaderboard_screen.dart';
+import 'package:warring_states_card/data/persistence/save_manager.dart';
+import 'quest_screen.dart';
+import 'achievement_screen.dart';
+import 'battle_pass_screen.dart';
+import '../widgets/tutorial_overlay.dart';
 
 /// 主界面
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstRun();
+  }
+
+  Future<void> _checkFirstRun() async {
+    final data = await SaveManager.loadPlayerData();
+    if (data != null && data.firstRun) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => TutorialOverlay(onComplete: _onTutorialDone),
+        );
+      });
+    }
+  }
+
+  Future<void> _onTutorialDone() async {
+    final data = await SaveManager.loadPlayerData();
+    if (data != null) {
+      await SaveManager.savePlayerData(data.copyWith(firstRun: false));
+    }
+    if (mounted) Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('战国卡牌'),
+        title: Text(LocaleService.I.t('home.title')),
         centerTitle: true,
         backgroundColor: Colors.amber[800],
       ),
@@ -33,12 +81,12 @@ class HomeScreen extends StatelessWidget {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Column(
+            child: SingleChildScrollView(
+              child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 游戏标题
-                const Text(
-                  '🎴 战国卡牌',
+                Text(
+                  '🎴 ${LocaleService.I.t('home.title')}',
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
@@ -54,21 +102,18 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 48),
-                
-                // 主菜单按钮
                 _buildMenuButton(
                   context,
                   icon: Icons.play_arrow,
-                  label: '开始对战',
+                  label: LocaleService.I.t('home.btn_battle'),
                   color: Colors.red[600]!,
                   onTap: () => _startGame(context),
                 ),
                 const SizedBox(height: 16),
-                
                 _buildMenuButton(
                   context,
                   icon: Icons.sports_esports,
-                  label: '训练模式',
+                  label: LocaleService.I.t('home.btn_training'),
                   color: Colors.blue[600]!,
                   onTap: () => Navigator.push(
                     context,
@@ -76,34 +121,76 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
                 _buildMenuButton(
                   context,
                   icon: Icons.explore,
-                  label: '冒险模式',
+                  label: LocaleService.I.t('home.btn_adventure'),
                   color: Colors.orange[600]!,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AdventureScreen()),
-                  ),
+                  onTap: () {
+                    final heroes = getAllHeroes();
+                    if (heroes.isNotEmpty) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AdventureScreen(),
+                        ),
+                      );
+                    }
+                  },
                 ),
                 const SizedBox(height: 16),
-                
+                _buildMenuButton(
+                  context,
+                  icon: Icons.card_giftcard,
+                  label: LocaleService.I.t('home.btn_pack'),
+                  color: Colors.teal[600]!,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PackScreen(
+                          playerId: 'player_1',
+                          cardPool: CardDataProvider.getAllCards(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildMenuButton(
+                  context,
+                  icon: Icons.collections_bookmark,
+                  label: LocaleService.I.t('home.btn_collection'),
+                  color: Colors.indigo[600]!,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CollectionScreen(
+                          playerId: 'player_1',
+                          ownedCards: CardDataProvider.getAllCards().take(20).toList(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
                 _buildMenuButton(
                   context,
                   icon: Icons.leaderboard,
-                  label: '排行榜',
+                  label: LocaleService.I.t('home.btn_leaderboard'),
                   color: Colors.purple[600]!,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const LeaderboardScreen()),
                   ),
                 ),
-                const SizedBox(height: 32),
-                
-                // 版本信息
+                const SizedBox(height: 16),
+                if (!PurchaseService.I.isPurchased('starter_bundle'))
+                  _buildStarterBundleBanner(),
+                const SizedBox(height: 16),
                 Text(
-                  'v1.0.0 | Phase 14',
+                  LocaleService.I.t('home.version'),
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[500],
@@ -111,7 +198,59 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+            ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStarterBundleBanner() {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Colors.amber, width: 2),
+      ),
+      color: Colors.amber[50],
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.card_giftcard, color: Colors.amber, size: 32),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(LocaleService.I.t('home.starter_title'),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.brown)),
+                Text(LocaleService.I.t('home.starter_desc'),
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+              ],
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () async {
+                final ok = await PurchaseService.I.purchase('starter_bundle');
+                if (!context.mounted) return;
+                if (ok) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('购买成功！')),
+                  );
+                  setState(() {});
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber[700],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+              child: const Text('\$0.99'),
+            ),
+          ],
         ),
       ),
     );

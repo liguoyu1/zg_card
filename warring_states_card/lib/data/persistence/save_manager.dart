@@ -114,6 +114,7 @@ class PlayerData {
   final DateTime lastLogin;
   final int totalMatches;
   final int winCount;
+  final bool firstRun;
 
   PlayerData({
     required this.id,
@@ -131,6 +132,7 @@ class PlayerData {
     DateTime? lastLogin,
     this.totalMatches = 0,
     this.winCount = 0,
+    this.firstRun = true,
   }) : lastLogin = lastLogin ?? DateTime.now();
 
   double get winRate => totalMatches > 0 ? winCount / totalMatches : 0;
@@ -151,6 +153,7 @@ class PlayerData {
     DateTime? lastLogin,
     int? totalMatches,
     int? winCount,
+    bool? firstRun,
   }) {
     return PlayerData(
       id: id ?? this.id,
@@ -168,6 +171,7 @@ class PlayerData {
       lastLogin: lastLogin ?? this.lastLogin,
       totalMatches: totalMatches ?? this.totalMatches,
       winCount: winCount ?? this.winCount,
+      firstRun: firstRun ?? this.firstRun,
     );
   }
 
@@ -187,6 +191,7 @@ class PlayerData {
     'lastLogin': lastLogin.toIso8601String(),
     'totalMatches': totalMatches,
     'winCount': winCount,
+    'firstRun': firstRun,
   };
 
   factory PlayerData.fromJson(Map<String, dynamic> json) => PlayerData(
@@ -205,6 +210,7 @@ class PlayerData {
     lastLogin: DateTime.parse(json['lastLogin']),
     totalMatches: json['totalMatches'] ?? 0,
     winCount: json['winCount'] ?? 0,
+    firstRun: json['firstRun'] ?? true,
   );
 }
 

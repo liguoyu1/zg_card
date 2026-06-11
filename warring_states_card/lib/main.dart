@@ -1,9 +1,44 @@
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'presentation/screens/home_screen.dart';
+import 'presentation/screens/splash_screen.dart';
+import 'core/audio/audio.dart';
+import 'domain/services/ad_service.dart';
+import 'domain/services/google_ad_service.dart';
+import 'domain/services/purchase_service.dart';
+import 'domain/services/quest_manager.dart';
+import 'domain/services/battle_pass_service.dart';
 
-void main() {
+/// 全局广告服务引用
+AdService adService = NoOpAdService();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 预初始化音频（非阻塞）
+  try {
+    await AudioManager.instance.init();
+  } catch (_) {}
+
+  // 初始化广告 SDK
+  try {
+    final ads = GoogleAdService();
+    final ok = await ads.initialize();
+    if (ok) adService = ads;
+  } catch (_) {}
+
+  // 初始化 RevenueCat
+  try {
+    await PurchaseService.I.initialize();
+    await PurchaseService.I.loadProducts();
+  } catch (_) {}
+
+  // 初始化 QuestManager + BattlePass
+  try {
+    await QuestManager.I.init();
+    await BattlePassService.I.init();
+  } catch (_) {}
+
   runApp(const ProviderScope(child: WarringStatesApp()));
 }
 
@@ -13,7 +48,7 @@ class WarringStatesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '战国卡牌',
+      title: '\u6218\u56FD\u5361\u724C',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
@@ -29,7 +64,7 @@ class WarringStatesApp extends StatelessWidget {
         Locale('en', ''),
         Locale('zh', ''),
       ],
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }

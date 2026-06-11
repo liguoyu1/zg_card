@@ -1,12 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/models.dart';
-import '../../domain/services/services.dart' show AIDifficulty, TurnService, GameRules, BattlefieldService;
+import '../../domain/services/services.dart' show AIDifficulty, TurnService, GameRules, BattlefieldService, HeroPowerFactory;
 import '../../data/cards/cards.dart';
 import '../../data/heroes/heroes_data.dart';
 
 /// 游戏状态Notifier
 class GameStateNotifier extends StateNotifier<GameState?> {
   GameStateNotifier() : super(null);
+
+  // 复用服务实例（无状态，可安全复用）
+  final BattlefieldService _bfs = BattlefieldService();
+  final TurnService _turnService = TurnService();
 
   /// 初始化游戏
   void initGame({
@@ -16,6 +20,8 @@ class GameStateNotifier extends StateNotifier<GameState?> {
     required Hero player2Hero,
     List<Card>? player1Deck,
     List<Card>? player2Deck,
+    int? player1Health,
+    int? player2Health,
   }) {
     // 使用预设卡组或自定义卡组
     final deck1 = player1Deck ?? getPresetDeck(player1Hero.owner);
@@ -28,7 +34,7 @@ class GameStateNotifier extends StateNotifier<GameState?> {
     final player1 = Player(
       id: player1Id,
       hero: player1Hero,
-      health: GameRules.initialHealth,
+      health: player1Health ?? GameRules.initialHealth,
       mana: 1,
       maxMana: 1,
       hand: hand1.hand,
@@ -38,7 +44,7 @@ class GameStateNotifier extends StateNotifier<GameState?> {
     final player2 = Player(
       id: player2Id,
       hero: player2Hero,
-      health: GameRules.initialHealth,
+      health: player2Health ?? GameRules.initialHealth,
       mana: 1,
       maxMana: 1,
       hand: hand2.hand,
@@ -56,47 +62,50 @@ class GameStateNotifier extends StateNotifier<GameState?> {
   /// 出牌
   void playCard(String playerId, Card card, {String? targetId}) {
     if (state == null) return;
-    final service = BattlefieldService();
-    state = service.playCard(state!, playerId, card, targetId: targetId);
+    state = _bfs.playCard(state!, playerId, card, targetId: targetId);
   }
 
   /// 随从攻击
   void minionAttack(String playerId, Card attacker, String targetId) {
     if (state == null) return;
-    final service = BattlefieldService();
-    state = service.minionAttack(state!, playerId, attacker, targetId);
+    state = _bfs.minionAttack(state!, playerId, attacker, targetId);
+    // 检查游戏结束
+    _checkGameEnd();
   }
 
-  /// 英雄攻击
-  void heroAttack(String playerId, String targetId) {
+  /// 英雄攻击（攻击敌方英雄）
+  void heroAttackDirect(String playerId) {
     if (state == null) return;
-    final service = BattlefieldService();
-    state = service.heroAttack(state!, playerId, targetId);
+    state = _bfs.heroAttack(state!, playerId);
+    _checkGameEnd();
   }
 
-  /// 使用英雄技能
+  /// 随从攻击（暴击敌方英雄）
+  void minionAttackHero(String playerId, Card attacker) {
+    if (state == null) return;
+    state = _bfs.minionAttackHero(state!, playerId, attacker);
+    _checkGameEnd();
+  }
   void useHeroPower(String playerId, {String? targetId}) {
     if (state == null) return;
-    // 简化实现：扣除2点法力
     final player = state!.getCurrentPlayer(playerId);
     if (player.mana < 2) return;
-    
-    final updatedPlayer = player.copyWith(mana: player.mana - 2);
-    state = state!.updatePlayer(updatedPlayer);
+
+    final skill = HeroPowerFactory.create(player.hero.skillType);
+    state = skill.apply(state!, playerId, targetId: targetId);
+    _checkGameEnd();
   }
 
   /// 开始回合
   void startTurn(String playerId) {
     if (state == null) return;
-    final service = TurnService();
-    state = service.startTurn(state!, playerId);
+    state = _turnService.startTurn(state!, playerId);
   }
 
   /// 结束回合
   void endTurn(String playerId) {
     if (state == null) return;
-    final service = TurnService();
-    state = service.endTurn(state!, playerId);
+    state = _turnService.endTurn(state!, playerId);
     
     // 检查游戏结束
     _checkGameEnd();
@@ -153,6 +162,25 @@ class AIGameNotifier extends StateNotifier<GameState?> {
     state = _gameStateNotifier.state;
   }
 
+  /// 开始冒险任务（Roguelite模式）
+  void startMissionGame({
+    required String playerId,
+    required Hero playerHero,
+    required Hero opponentHero,
+    required AIDifficulty difficulty,
+    int? playerHealth,
+  }) {
+    _gameStateNotifier = GameStateNotifier();
+    _gameStateNotifier.initGame(
+      player1Id: playerId,
+      player2Id: 'ai_${difficulty.name}',
+      player1Hero: playerHero,
+      player2Hero: opponentHero,
+      player1Health: playerHealth,
+    );
+    state = _gameStateNotifier.state;
+  }
+
   // 代理方法
   void playCard(String playerId, Card card, {String? targetId}) {
     _gameStateNotifier.playCard(playerId, card, targetId: targetId);
@@ -162,11 +190,59 @@ class AIGameNotifier extends StateNotifier<GameState?> {
   void minionAttack(String playerId, Card attacker, String targetId) {
     _gameStateNotifier.minionAttack(playerId, attacker, targetId);
     state = _gameStateNotifier.state;
+    // AI模式检查游戏结束
+    final result = GameRules.checkGameEnd(state!.player1, state!.player2);
+    if (result != null) {
+      final winnerId = result ? state!.player1.id : state!.player2.id;
+      state = state!.copyWith(
+        phase: GamePhase.ended,
+        winnerId: winnerId,
+      );
+    }
+  }
+
+  void heroAttackDirect(String playerId) {
+    _gameStateNotifier.heroAttackDirect(playerId);
+    state = _gameStateNotifier.state;
+    final result = GameRules.checkGameEnd(state!.player1, state!.player2);
+    if (result != null) {
+      final winnerId = result ? state!.player1.id : state!.player2.id;
+      state = state!.copyWith(
+        phase: GamePhase.ended,
+        winnerId: winnerId,
+      );
+    }
+  }
+
+  void minionAttackHero(String playerId, Card attacker) {
+    _gameStateNotifier.minionAttackHero(playerId, attacker);
+    state = _gameStateNotifier.state;
+    final result = GameRules.checkGameEnd(state!.player1, state!.player2);
+    if (result != null) {
+      final winnerId = result ? state!.player1.id : state!.player2.id;
+      state = state!.copyWith(
+        phase: GamePhase.ended,
+        winnerId: winnerId,
+      );
+    }
   }
 
   void startTurn(String playerId) {
     _gameStateNotifier.startTurn(playerId);
     state = _gameStateNotifier.state;
+  }
+
+  void useHeroPower(String playerId, {String? targetId}) {
+    _gameStateNotifier.useHeroPower(playerId, targetId: targetId);
+    state = _gameStateNotifier.state;
+    final result = GameRules.checkGameEnd(state!.player1, state!.player2);
+    if (result != null) {
+      final winnerId = result ? state!.player1.id : state!.player2.id;
+      state = state!.copyWith(
+        phase: GamePhase.ended,
+        winnerId: winnerId,
+      );
+    }
   }
 
   void endTurn(String playerId) {

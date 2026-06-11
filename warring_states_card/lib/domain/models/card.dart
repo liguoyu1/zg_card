@@ -34,11 +34,20 @@ class Card extends Equatable {
   final int cost;
   final int attack;
   final int health;
+  final int maxHealth;
   final String description;
   final List<Keyword> keywords;
   final CardOwner owner;
   final Rarity rarity;
   final String flavor;
+  /// 卡牌图片资源路径
+  final String imageAsset;
+  /// 本回合是否已攻击
+  final bool hasAttackedThisTurn;
+  /// 是否休眠（本回合不能攻击，需要等下回合）
+  final bool isDormant;
+  /// 风怒第一次攻击是否已使用
+  final bool hasUsedFirstWindfuryAttack;
   
   const Card({
     required this.id,
@@ -47,14 +56,19 @@ class Card extends Equatable {
     required this.cost,
     this.attack = 0,
     this.health = 0,
+    this.maxHealth = 0,
     required this.description,
     this.keywords = const [],
     required this.owner,
     required this.rarity,
     this.flavor = '',
+    this.imageAsset = '',
+    this.hasAttackedThisTurn = false,
+    this.isDormant = false,
+    this.hasUsedFirstWindfuryAttack = false,
   });
   
-  // 便捷属性
+  /// 便捷属性
   bool get isMinion => type == CardType.minion;
   bool get isSpell => type == CardType.spell;
   bool get isWeapon => type == CardType.weapon;
@@ -68,14 +82,21 @@ class Card extends Equatable {
   bool get hasPoisonous => keywords.contains(Keyword.poisonous);
   bool get hasWindfury => keywords.contains(Keyword.windfury);
   bool get hasInspire => keywords.contains(Keyword.inspire);
-bool get hasLifesteal => keywords.contains(Keyword.lifesteal);
+  bool get hasLifesteal => keywords.contains(Keyword.lifesteal);
   bool get hasStealth => keywords.contains(Keyword.stealth);
 
-  /// 是否可以攻击（有冲锋或刚上场）
-  bool get canAttack => isMinion && (hasCharge || true);
+  /// 是否可以攻击（随从 + 非休眠 + 未攻击过，冲锋例外）
+  /// 风怒：首次攻击后 hasAttackedThisTurn=false / hasUsedFirstWindfuryAttack=true
+  ///       二次攻击后 hasAttackedThisTurn=true（即完全不可攻击）
+  bool get canAttack {
+    if (!isMinion || isDormant) return false;
+    if (hasCharge) return true;
+    if (hasWindfury) return !hasAttackedThisTurn || !hasUsedFirstWindfuryAttack;
+    return !hasAttackedThisTurn;
+  }
 
   @override
-  List<Object?> get props => [id, name, type, cost, attack, health, description, keywords, owner, rarity];
+  List<Object?> get props => [id, name, type, cost, attack, health, maxHealth, description, keywords, owner, rarity, imageAsset, hasAttackedThisTurn, hasUsedFirstWindfuryAttack];
   
   Card copyWith({
     String? id,
@@ -84,10 +105,15 @@ bool get hasLifesteal => keywords.contains(Keyword.lifesteal);
     int? cost,
     int? attack,
     int? health,
+    int? maxHealth,
     String? description,
     List<Keyword>? keywords,
     CardOwner? owner,
     Rarity? rarity,
+    String? imageAsset,
+    bool? hasAttackedThisTurn,
+    bool? isDormant,
+    bool? hasUsedFirstWindfuryAttack,
   }) {
     return Card(
       id: id ?? this.id,
@@ -96,10 +122,15 @@ bool get hasLifesteal => keywords.contains(Keyword.lifesteal);
       cost: cost ?? this.cost,
       attack: attack ?? this.attack,
       health: health ?? this.health,
+      maxHealth: maxHealth ?? this.maxHealth,
       description: description ?? this.description,
       keywords: keywords ?? this.keywords,
       owner: owner ?? this.owner,
       rarity: rarity ?? this.rarity,
+      imageAsset: imageAsset ?? this.imageAsset,
+      hasAttackedThisTurn: hasAttackedThisTurn ?? this.hasAttackedThisTurn,
+      isDormant: isDormant ?? this.isDormant,
+      hasUsedFirstWindfuryAttack: hasUsedFirstWindfuryAttack ?? this.hasUsedFirstWindfuryAttack,
     );
   }
 }
