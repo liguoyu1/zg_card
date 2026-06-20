@@ -2,10 +2,13 @@
 /// 根据卡牌ID映射到对应的图片资源路径
 /// 每张卡牌有唯一图片，无重复
 
+import 'package:warring_states_card/core/asset_style.dart';
+
 class CardImageService {
-  static const String _baseMinions = 'assets/minions/';
-  static const String _baseSpells = 'assets/spells/';
-  static const String _baseWeapons = 'assets/weapons/';
+  static String get _base => 'assets/${AssetStyle.current.dirName}/';
+  static String get _baseMinions => '${_base}minions/';
+  static String get _baseSpells => '${_base}spells/';
+  static String get _baseWeapons => '${_base}weapons/';
 
   /// 根据卡牌ID获取图片资源路径
   static String getImageAsset(String cardId) {
@@ -284,8 +287,8 @@ class CardImageService {
     'NW003': 'weapons_weapon_qinwangjian.png',
   };
 
-  /// 完整图片映射
-  static final Map<String, String> _imageMap = {
+  /// 完整图片映射（动态，跟随 AssetStyle.current）
+  static Map<String, String> get _imageMap => {
     ..._minionImageMap.map((k, v) => MapEntry(k, '$_baseMinions$v')),
     ..._spellImageMap.map((k, v) => MapEntry(k, '$_baseSpells$v')),
     ..._weaponImageMap.map((k, v) => MapEntry(k, '$_baseWeapons$v')),

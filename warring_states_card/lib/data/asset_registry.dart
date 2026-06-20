@@ -1,148 +1,148 @@
-/// 素材注册表 — 卡牌ID到资源路径的映射
-/// 所有素材位于 assets/ 目录下
-/// 素材注册表 — 卡牌ID到资源路径的映射
-/// 所有素材位于 assets/ 目录下
+import 'package:warring_states_card/core/asset_style.dart';
+
 class AssetRegistry {
-  /// 获取英雄头像路径
+  static String get _base => 'assets/${AssetStyle.current.dirName}/';
+
   static String heroAsset(String heroId) {
-    const map = {
-      'H_B001': 'assets/heroes/bingjia_sunbin.png',
-      'H_B002': 'assets/heroes/bingjia_wuqi.png',
-      'H_B003': 'assets/heroes/bingjia_lianpo.png',
-      'H_F001': 'assets/heroes/fajia_shangyang.png',
-      'H_F002': 'assets/heroes/fajia_hanfei.png',
-      'H_F003': 'assets/heroes/fajia_shenbuhai.png',
-      'H_R001': 'assets/heroes/rujia_kongzi.png',
-      'H_R002': 'assets/heroes/rujia_mengzi.png',
-      'H_R003': 'assets/heroes/rujia_xunzi.png',
-      'H_D001': 'assets/heroes/daojia_laozi.png',
-      'H_D002': 'assets/heroes/daojia_zhuangzi.png',
-      'H_D003': 'assets/heroes/daojia_liezi.png',
-      'H_M001': 'assets/heroes/mojia_mozi.png',
-      'H_M002': 'assets/heroes/mojia_gongshuban.png',
-      'H_M003': 'assets/heroes/mojia_qinhuali.png',
-      'H_Y001': 'assets/heroes/yinyangjia_zouyan.png',
-      'H_Y002': 'assets/heroes/yinyangjia_gande.png',
-      'H_Y003': 'assets/heroes/yinyangjia_shishen.png',
-      'H_Z001': 'assets/heroes/zonghengjia_suqin.png',
-      'H_Z002': 'assets/heroes/zonghengjia_zhangyi.png',
-      'H_Z003': 'assets/heroes/zonghengjia_guiguzi.png',
+    const names = {
+      'H_B001': 'bingjia_sunbin.png',
+      'H_B002': 'bingjia_wuqi.png',
+      'H_B003': 'bingjia_lianpo.png',
+      'H_F001': 'fajia_shangyang.png',
+      'H_F002': 'fajia_hanfei.png',
+      'H_F003': 'fajia_shenbuhai.png',
+      'H_R001': 'rujia_kongzi.png',
+      'H_R002': 'rujia_mengzi.png',
+      'H_R003': 'rujia_xunzi.png',
+      'H_D001': 'daojia_laozi.png',
+      'H_D002': 'daojia_zhuangzi.png',
+      'H_D003': 'daojia_liezi.png',
+      'H_M001': 'mojia_mozi.png',
+      'H_M002': 'mojia_gongshuban.png',
+      'H_M003': 'mojia_qinhuali.png',
+      'H_Y001': 'yinyangjia_zouyan.png',
+      'H_Y002': 'yinyangjia_gande.png',
+      'H_Y003': 'yinyangjia_shishen.png',
+      'H_Z001': 'zonghengjia_suqin.png',
+      'H_Z002': 'zonghengjia_zhangyi.png',
+      'H_Z003': 'zonghengjia_guiguzi.png',
     };
-    return map[heroId] ?? 'assets/icons/icons_icon_bingjia.png';
+    final file = names[heroId] ?? 'icons_icon_bingjia.png';
+    return '${_base}heroes/$file';
   }
 
-  /// 获取卡牌图片路径
   static String cardAsset(String cardId, String cardOwner) {
-    const map = {
-      'B008': 'assets/minions/bingjia_sunwu.png',
-      'B009': 'assets/minions/bingjia_wuqi_minion.png',
-      'B010': 'assets/minions/bingjia_sunbin_minion.png',
-      'B011': 'assets/minions/bingjia_lianpo_minion.png',
-      'B012': 'assets/minions/bingjia_li_mu.png',
-      'F006': 'assets/minions/fajia_dali.png',
-      'F008': 'assets/minions/fajia_shangyang_minion.png',
-      'F009': 'assets/minions/fajia_hanfei_minion.png',
-      'F010': 'assets/minions/fajia_dali.png',
-      'F011': 'assets/minions/fajia_shenbuhai.png',
-      'F012': 'assets/minions/fajia_wuqi_biange.png',
-      'R006': 'assets/minions/rujia_xianren.png',
-      'R008': 'assets/minions/rujia_kongzi_minion.png',
-      'R009': 'assets/minions/rujia_mengzi_minion.png',
-      'R010': 'assets/minions/rujia_xunzi_minion.png',
-      'R012': 'assets/minions/rujia_xunzi_minion.png',
-      'D008': 'assets/minions/daojia_laozi_minion.png',
-      'D009': 'assets/minions/daojia_zhuangzi_minion.png',
-      'D010': 'assets/minions/daojia_liezi_minion.png',
-      'D012': 'assets/minions/daojia_yinshi.png',
-      'M006': 'assets/minions/mojia_tianjiu.png',
-      'M008': 'assets/minions/mojia_mozi_minion.png',
-      'M009': 'assets/minions/mojia_gongshuban_minion.png',
-      'M012': 'assets/minions/mojia_gongcheng_juxie.png',
-      'Y006': 'assets/minions/yinyangjia_fangshushi.png',
-      'Y008': 'assets/minions/yinyangjia_zouyan_minion.png',
-      'Y009': 'assets/minions/yinyangjia_gande_minion.png',
-      'Y010': 'assets/minions/yinyangjia_shishen_minion.png',
-      'Z008': 'assets/minions/zonghengjia_guiguzi_minion.png',
-      'Z009': 'assets/minions/zonghengjia_suqin_minion.png',
-      'Z010': 'assets/minions/zonghengjia_zhangyi_minion.png',
-      'N028': 'assets/minions/neutral_bawang.png',
-      'N027': 'assets/minions/neutral_zhanshen.png',
-      'N025': 'assets/minions/neutral_tiandi.png',
-      'N026': 'assets/minions/neutral_shenlong.png',
+    const minions = {
+      'B008': 'bingjia_sunwu.png',
+      'B009': 'bingjia_wuqi_minion.png',
+      'B010': 'bingjia_sunbin_minion.png',
+      'B011': 'bingjia_lianpo_minion.png',
+      'B012': 'bingjia_li_mu.png',
+      'F006': 'fajia_dali.png',
+      'F008': 'fajia_shangyang_minion.png',
+      'F009': 'fajia_hanfei_minion.png',
+      'F010': 'fajia_dali.png',
+      'F011': 'fajia_shenbuhai.png',
+      'F012': 'fajia_wuqi_biange.png',
+      'R006': 'rujia_xianren.png',
+      'R008': 'rujia_kongzi_minion.png',
+      'R009': 'rujia_mengzi_minion.png',
+      'R010': 'rujia_xunzi_minion.png',
+      'R012': 'rujia_xunzi_minion.png',
+      'D008': 'daojia_laozi_minion.png',
+      'D009': 'daojia_zhuangzi_minion.png',
+      'D010': 'daojia_liezi_minion.png',
+      'D012': 'daojia_yinshi.png',
+      'M006': 'mojia_tianjiu.png',
+      'M008': 'mojia_mozi_minion.png',
+      'M009': 'mojia_gongshuban_minion.png',
+      'M012': 'mojia_gongcheng_juxie.png',
+      'Y006': 'yinyangjia_fangshushi.png',
+      'Y008': 'yinyangjia_zouyan_minion.png',
+      'Y009': 'yinyangjia_gande_minion.png',
+      'Y010': 'yinyangjia_shishen_minion.png',
+      'Z008': 'zonghengjia_guiguzi_minion.png',
+      'Z009': 'zonghengjia_suqin_minion.png',
+      'Z010': 'zonghengjia_zhangyi_minion.png',
+      'N028': 'neutral_bawang.png',
+      'N027': 'neutral_zhanshen.png',
+      'N025': 'neutral_tiandi.png',
+      'N026': 'neutral_shenlong.png',
     };
-    if (map.containsKey(cardId)) return map[cardId]!;
+    if (minions.containsKey(cardId)) {
+      return '${_base}minions/${minions[cardId]}';
+    }
 
-    // 尝试法术/武器路径
-    const spellMap = {
-      'B013': 'assets/spells/spells_andc.png',
-      'B014': 'assets/spells/spells_pofc.png',
-      'B015': 'assets/spells/spells_beis.png',
-      'B016': 'assets/spells/spells_andc.png',
-      'B017': 'assets/spells/spells_shengdx.png',
-      'B018': 'assets/spells/spells_shim.png',
-      'B019': 'assets/spells/spells_yidf.png',
-      'B020': 'assets/spells/spells_qinzq.png',
-      'F013': 'assets/spells/spells_xingmzf.png',
-      'F014': 'assets/spells/spells_junfy.png',
-      'F015': 'assets/spells/spells_yifz.png',
-      'F016': 'assets/spells/spells_yidf.png',
-      'F017': 'assets/spells/spells_lianzf.png',
-      'F018': 'assets/spells/spells_jianglg.png',
-      'F019': 'assets/spells/spells_feicjt.png',
-      'F020': 'assets/spells/spells_tongyd.png',
-      'R013': 'assets/spells/spells_renzh.png',
-      'R014': 'assets/spells/spells_lily.png',
-      'R015': 'assets/spells/spells_jiaoh.png',
-      'R016': 'assets/spells/spells_junfy.png',
-      'R017': 'assets/spells/spells_yide.png',
-      'R018': 'assets/spells/spells_shangr.png',
-      'R019': 'assets/spells/spells_sanxs.png',
-      'R020': 'assets/spells/spells_kejfl.png',
-      'D013': 'assets/spells/spells_daofz.png',
-      'D014': 'assets/spells/spells_wuwez.png',
-      'D015': 'assets/spells/spells_youjwl.png',
-      'D016': 'assets/spells/spells_xujw.png',
-      'D017': 'assets/spells/spells_zaiyq.png',
-      'D018': 'assets/spells/spells_danp.png',
-      'D019': 'assets/spells/spells_daofz.png',
-      'D020': 'assets/spells/spells_tianxy.png',
+    const spells = {
+      'B013': 'spells_andc.png',
+      'B014': 'spells_pofc.png',
+      'B015': 'spells_beis.png',
+      'B016': 'spells_andc.png',
+      'B017': 'spells_shengdx.png',
+      'B018': 'spells_shim.png',
+      'B019': 'spells_yidf.png',
+      'B020': 'spells_qinzq.png',
+      'F013': 'spells_xingmzf.png',
+      'F014': 'spells_junfy.png',
+      'F015': 'spells_yifz.png',
+      'F016': 'spells_yidf.png',
+      'F017': 'spells_lianzf.png',
+      'F018': 'spells_jianglg.png',
+      'F019': 'spells_feicjt.png',
+      'F020': 'spells_tongyd.png',
+      'R013': 'spells_renzh.png',
+      'R014': 'spells_lily.png',
+      'R015': 'spells_jiaoh.png',
+      'R016': 'spells_junfy.png',
+      'R017': 'spells_yide.png',
+      'R018': 'spells_shangr.png',
+      'R019': 'spells_sanxs.png',
+      'R020': 'spells_kejfl.png',
+      'D013': 'spells_daofz.png',
+      'D014': 'spells_wuwez.png',
+      'D015': 'spells_youjwl.png',
+      'D016': 'spells_xujw.png',
+      'D017': 'spells_zaiyq.png',
+      'D018': 'spells_danp.png',
+      'D019': 'spells_daofz.png',
+      'D020': 'spells_tianxy.png',
     };
-    if (spellMap.containsKey(cardId)) return spellMap[cardId]!;
+    if (spells.containsKey(cardId)) {
+      return '${_base}spells/${spells[cardId]}';
+    }
 
-    // 默认：按职业显示图标
     const classIcons = {
-      'bingjia': 'assets/icons/icons_icon_bingjia.png',
-      'fajia': 'assets/icons/icons_icon_fajia.png',
-      'rujia': 'assets/icons/icons_icon_rujia.png',
-      'daojia': 'assets/icons/icons_icon_daojia.png',
-      'mojia': 'assets/icons/icons_icon_mojia.png',
-      'yinyangjia': 'assets/icons/icons_icon_yinyangjia.png',
-      'zonghengjia': 'assets/icons/icons_icon_zonghengjia.png',
-      'neutral': 'assets/icons/icons_icon_bingjia.png',
+      'bingjia': 'icons_icon_bingjia.png',
+      'fajia': 'icons_icon_fajia.png',
+      'rujia': 'icons_icon_rujia.png',
+      'daojia': 'icons_icon_daojia.png',
+      'mojia': 'icons_icon_mojia.png',
+      'yinyangjia': 'icons_icon_yinyangjia.png',
+      'zonghengjia': 'icons_icon_zonghengjia.png',
+      'neutral': 'icons_icon_bingjia.png',
     };
-    return classIcons[cardOwner] ?? 'assets/icons/icons_icon_bingjia.png';
+    return 'assets/icons/${classIcons[cardOwner] ?? "icons_icon_bingjia.png"}';
   }
 
-  /// 获取武器图片路径
   static String weaponAsset(String cardId) {
-    const map = {
-      'BW001': 'assets/weapons/weapons_weapon_qinwangjian.png',
-      'BW002': 'assets/weapons/weapons_weapon_yuewangjian.png',
-      'BW003': 'assets/weapons/weapons_weapon_zhangbashemao.png',
-      'FW001': 'assets/weapons/weapons_weapon_fajialvchi.png',
-      'FW002': 'assets/weapons/weapons_weapon_xingding.png',
-      'R020': 'assets/weapons/weapons_weapon_rujiayugui.png',
-      'RW001': 'assets/weapons/weapons_weapon_rujiayugui.png',
-      'RW002': 'assets/weapons/weapons_weapon_liqibianzhong.png',
-      'DW001': 'assets/weapons/weapons_weapon_taijijian.png',
-      'DW002': 'assets/weapons/weapons_weapon_daojiafuchen.png',
-      'MW001': 'assets/weapons/weapons_weapon_gongshuchi.png',
-      'MW002': 'assets/weapons/weapons_weapon_mojiajgn.png',
-      'YW001': 'assets/weapons/weapons_weapon_zhanxingluopan.png',
-      'YW002': 'assets/weapons/weapons_weapon_wuxingzhang.png',
-      'ZW001': 'assets/weapons/weapons_weapon_zonghengjia_dj.png',
-      'ZW002': 'assets/weapons/weapons_weapon_hezhonglianhshu.png',
+    const names = {
+      'BW001': 'qinwangjian.png',
+      'BW002': 'yuewangjian.png',
+      'BW003': 'zhangbashemao.png',
+      'FW001': 'fajialvchi.png',
+      'FW002': 'xingding.png',
+      'RW001': 'rujiayugui.png',
+      'RW002': 'liqibianzhong.png',
+      'DW001': 'taijijian.png',
+      'DW002': 'daojiafuchen.png',
+      'MW001': 'gongshuchi.png',
+      'MW002': 'mojiajgn.png',
+      'YW001': 'zhanxingluopan.png',
+      'YW002': 'wuxingzhang.png',
+      'ZW001': 'zonghengjia_dj.png',
+      'ZW002': 'hezhonglianhshu.png',
     };
-    return map[cardId] ?? 'assets/weapons/weapons_weapon_qingtongjian.png';
+    final file = names[cardId] ?? 'qingtongjian.png';
+    return '${_base}weapons/$file';
   }
 }

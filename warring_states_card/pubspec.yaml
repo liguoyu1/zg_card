@@ -61,3 +61,11 @@ flutter:
     - assets/frame/
     - assets/back/
     - assets/l10n/
+    - assets/chibi_cute/heroes/
+    - assets/chibi_cute/minions/
+    - assets/chibi_cute/spells/
+    - assets/chibi_cute/weapons/
+    - assets/fantasy_rpg/heroes/
+    - assets/fantasy_rpg/minions/
+    - assets/fantasy_rpg/spells/
+    - assets/fantasy_rpg/weapons/

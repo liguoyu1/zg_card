@@ -16,6 +16,7 @@ import 'online_game_screen.dart' hide LeaderboardScreen;
 import 'game_screen.dart';
 import 'leaderboard_screen.dart';
 import 'package:warring_states_card/data/persistence/save_manager.dart';
+import 'package:warring_states_card/core/asset_style.dart';
 import 'quest_screen.dart';
 import 'achievement_screen.dart';
 import 'battle_pass_screen.dart';
@@ -66,6 +67,23 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(LocaleService.I.t('home.title')),
         centerTitle: true,
         backgroundColor: Colors.amber[800],
+        actions: [
+          IconButton(
+            icon: Icon(
+              AssetStyle.current == AssetStyle.chibiCute
+                  ? Icons.auto_awesome
+                  : Icons.auto_fix_high,
+            ),
+            tooltip: '切换画风',
+            onPressed: () {
+              setState(() {
+                AssetStyle.current = AssetStyle.current == AssetStyle.chibiCute
+                    ? AssetStyle.fantasyRpg
+                    : AssetStyle.chibiCute;
+              });
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(
