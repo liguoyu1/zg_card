@@ -1,34 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:warring_states_card/domain/models/hero.dart' as h;
-import 'package:warring_states_card/domain/services/services.dart';
-import 'package:warring_states_card/domain/services/purchase_service.dart';
-import 'package:warring_states_card/domain/services/card_data_provider.dart';
-import 'package:warring_states_card/domain/models/models.dart' as domain;
-import 'package:warring_states_card/data/heroes/heroes_data.dart';
-import 'package:warring_states_card/presentation/screens/adventure_screen.dart';
-import 'package:warring_states_card/presentation/screens/pack_screen.dart';
-import 'package:warring_states_card/presentation/screens/card_library_screen.dart';
-import 'package:warring_states_card/l10n/locale_service.dart';
-import 'hero_select_screen.dart';
-import 'training_screen.dart' show TrainingScreen;
-import 'online_game_screen.dart' hide LeaderboardScreen;
-import 'game_screen.dart';
-import 'leaderboard_screen.dart';
-import 'package:warring_states_card/data/persistence/save_manager.dart';
-import 'package:warring_states_card/core/asset_style.dart';
-import 'quest_screen.dart';
-import 'achievement_screen.dart';
-import 'battle_pass_screen.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/asset_style.dart';
+import '../../domain/models/hero.dart' as hero;
+import '../../domain/services/purchase_service.dart';
+import '../../data/persistence/save_manager.dart';
+import '../../l10n/locale_service.dart';
+import '../../domain/services/card_data_provider.dart';
+import '../../domain/services/hero_data_provider.dart';
+import '../../domain/models/card.dart' as domain;
 import '../widgets/tutorial_overlay.dart';
+import '../widgets/theme_widgets.dart';
+import 'hero_select_screen.dart';
+import 'training_screen.dart';
+import 'adventure_screen.dart';
+import 'pack_screen.dart';
+import 'card_library_screen.dart';
+import 'leaderboard_screen.dart';
 
-/// 主界面
+/// 主界面 — 战国风炉石式主菜单
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
-
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -63,187 +57,281 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(LocaleService.I.t('home.title')),
-        centerTitle: true,
-        backgroundColor: Colors.amber[800],
-        actions: [
-          IconButton(
-            icon: Icon(
-              AssetStyle.current == AssetStyle.chibiCute
-                  ? Icons.auto_awesome
-                  : Icons.auto_fix_high,
-            ),
-            tooltip: '切换画风',
-            onPressed: () {
-              setState(() {
-                AssetStyle.current = AssetStyle.current == AssetStyle.chibiCute
-                    ? AssetStyle.fantasyRpg
-                    : AssetStyle.chibiCute;
-              });
-            },
-          ),
-        ],
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.amber[100]!,
-              Colors.amber[50]!,
+      body: WThemeBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              _buildGoldDivider(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(top: 16, bottom: 24),
+                  child: Column(
+                    children: [
+                      _buildMenuButton(
+                        icon: Icons.shield_outlined,
+                        label: LocaleService.I.t('home.btn_battle'),
+                        color: AppTheme.healthRed,
+                        onTap: () => _startGame(context),
+                      ),
+                      _buildMenuButton(
+                        icon: Icons.sports_esports_outlined,
+                        label: LocaleService.I.t('home.btn_training'),
+                        color: AppTheme.manaBlue,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const TrainingScreen()),
+                        ),
+                      ),
+                      _buildMenuButton(
+                        icon: Icons.explore_outlined,
+                        label: LocaleService.I.t('home.btn_adventure'),
+                        color: AppTheme.damageOrange,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AdventureScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildMenuButton(
+                        icon: Icons.card_giftcard_outlined,
+                        label: LocaleService.I.t('home.btn_pack'),
+                        color: AppTheme.healGreen,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PackScreen(
+                                playerId: 'player_1',
+                                cardPool: CardDataProvider.getAllCards(),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildMenuButton(
+                        icon: Icons.collections_bookmark_outlined,
+                        label: LocaleService.I.t('home.btn_collection'),
+                        color: AppTheme.daojia,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const CardLibraryScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildMenuButton(
+                        icon: Icons.leaderboard_outlined,
+                        label: LocaleService.I.t('home.btn_leaderboard'),
+                        color: AppTheme.goldAccent,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LeaderboardScreen()),
+                        ),
+                      ),
+                      if (!PurchaseService.I.isPurchased('starter_bundle'))
+                        _buildStarterBanner(),
+                      const SizedBox(height: 24),
+                      _buildVersionText(),
+                    ],
+                  ),
+                ),
+              ),
             ],
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: SingleChildScrollView(
-              child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '🎴 ${LocaleService.I.t('home.title')}',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.brown,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Warring States Card',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.brown[400],
-                  ),
-                ),
-                const SizedBox(height: 48),
-                _buildMenuButton(
-                  context,
-                  icon: Icons.play_arrow,
-                  label: LocaleService.I.t('home.btn_battle'),
-                  color: Colors.red[600]!,
-                  onTap: () => _startGame(context),
-                ),
-                const SizedBox(height: 16),
-                _buildMenuButton(
-                  context,
-                  icon: Icons.sports_esports,
-                  label: LocaleService.I.t('home.btn_training'),
-                  color: Colors.blue[600]!,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TrainingScreen()),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildMenuButton(
-                  context,
-                  icon: Icons.explore,
-                  label: LocaleService.I.t('home.btn_adventure'),
-                  color: Colors.orange[600]!,
-                  onTap: () {
-                    final heroes = getAllHeroes();
-                    if (heroes.isNotEmpty) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const AdventureScreen(),
-                        ),
-                      );
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildMenuButton(
-                  context,
-                  icon: Icons.card_giftcard,
-                  label: LocaleService.I.t('home.btn_pack'),
-                  color: Colors.teal[600]!,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => PackScreen(
-                          playerId: 'player_1',
-                          cardPool: CardDataProvider.getAllCards(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildMenuButton(
-                  context,
-                  icon: Icons.collections_bookmark,
-                  label: LocaleService.I.t('home.btn_collection'),
-                  color: Colors.indigo[600]!,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const CardLibraryScreen(),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildMenuButton(
-                  context,
-                  icon: Icons.leaderboard,
-                  label: LocaleService.I.t('home.btn_leaderboard'),
-                  color: Colors.purple[600]!,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LeaderboardScreen()),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (!PurchaseService.I.isPurchased('starter_bundle'))
-                  _buildStarterBundleBanner(),
-                const SizedBox(height: 16),
-                Text(
-                  LocaleService.I.t('home.version'),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[500],
-                  ),
-                ),
-              ],
-            ),
-            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildStarterBundleBanner() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Colors.amber, width: 2),
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AppTheme.borderGold.withAlpha(60)),
+        ),
       ),
-      color: Colors.amber[50],
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          // 学派图标装饰
+          _buildSchoolEmblem(),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '战国卡牌',
+                  style: TextStyle(
+                    fontSize: AppTheme.fontSizeXl,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                    letterSpacing: 4,
+                  ),
+                ),
+                Text(
+                  'Warring States',
+                  style: TextStyle(
+                    fontSize: AppTheme.fontSizeXs,
+                    color: AppTheme.textMuted,
+                    letterSpacing: 3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // 画风切换
+          _buildStyleToggle(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSchoolEmblem() {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: AppTheme.borderGold, width: 1.5),
+        gradient: RadialGradient(
+          colors: [
+            AppTheme.goldAccent.withAlpha(30),
+            AppTheme.bgMedium,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Text(
+          '戰',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.goldAccent,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStyleToggle() {
+    final isChibi = AssetStyle.current == AssetStyle.chibiCute;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          AssetStyle.current = isChibi ? AssetStyle.fantasyRpg : AssetStyle.chibiCute;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppTheme.bgMedium.withAlpha(150),
+          borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+          border: Border.all(color: AppTheme.borderLight.withAlpha(80)),
+        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.card_giftcard, color: Colors.amber, size: 32),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(LocaleService.I.t('home.starter_title'),
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.brown)),
-                Text(LocaleService.I.t('home.starter_desc'),
-                    style: TextStyle(fontSize: 11, color: Colors.grey[600])),
-              ],
+            Icon(
+              isChibi ? Icons.auto_awesome : Icons.auto_fix_high,
+              size: 16,
+              color: AppTheme.goldAccent,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              isChibi ? 'Q版' : '写实',
+              style: TextStyle(
+                fontSize: AppTheme.fontSizeXs,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoldDivider() {
+    return Container(
+      height: 2,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.transparent,
+            AppTheme.borderGold.withAlpha(60),
+            AppTheme.borderGold.withAlpha(120),
+            AppTheme.borderGold.withAlpha(60),
+            Colors.transparent,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return WMenuPlaque(
+      icon: icon,
+      label: label,
+      accentColor: color,
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildStarterBanner() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppTheme.goldAccent.withAlpha(40),
+              AppTheme.bgLight.withAlpha(200),
+              AppTheme.goldAccent.withAlpha(20),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+          border: Border.all(
+            color: AppTheme.goldAccent.withAlpha(120),
+            width: 1.5,
+          ),
+        ),
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            Icon(Icons.card_giftcard, color: AppTheme.goldBright, size: 32),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    LocaleService.I.t('home.starter_title'),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: AppTheme.fontSizeMd,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    LocaleService.I.t('home.starter_desc'),
+                    style: TextStyle(
+                      fontSize: AppTheme.fontSizeXs,
+                      color: AppTheme.textMuted,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(width: 8),
             ElevatedButton(
@@ -252,16 +340,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (!context.mounted) return;
                 if (ok) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('购买成功！')),
+                    SnackBar(
+                      content: const Text('购买成功！'),
+                      backgroundColor: AppTheme.healGreen,
+                    ),
                   );
                   setState(() {});
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber[700],
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               ),
               child: const Text('\$0.99'),
             ),
@@ -271,31 +359,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMenuButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return SizedBox(
-      width: 220,
-      height: 56,
-      child: ElevatedButton.icon(
-        onPressed: onTap,
-        icon: Icon(icon, size: 28),
-        label: Text(
-          label,
-          style: const TextStyle(fontSize: 18),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-          ),
-          elevation: 4,
-        ),
+  Widget _buildVersionText() {
+    return Text(
+      LocaleService.I.t('home.version'),
+      style: TextStyle(
+        fontSize: AppTheme.fontSizeXs,
+        color: AppTheme.textMuted.withAlpha(120),
       ),
     );
   }
