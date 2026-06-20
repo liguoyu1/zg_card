@@ -8,12 +8,21 @@ import 'domain/services/google_ad_service.dart';
 import 'domain/services/purchase_service.dart';
 import 'domain/services/quest_manager.dart';
 import 'domain/services/battle_pass_service.dart';
+import 'domain/services/card_pool.dart';
+import 'data/persistence/save_manager.dart';
+import 'l10n/locale_service.dart';
 
 /// 全局广告服务引用
 AdService adService = NoOpAdService();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 初始化存档目录
+  await SaveManager.init();
+
+  // 种子初始卡牌（新玩家自动获得初始卡）
+  await CardPool.seedStarterCards();
 
   // 预初始化音频（非阻塞）
   try {
@@ -39,6 +48,11 @@ void main() async {
     await BattlePassService.I.init();
   } catch (_) {}
 
+  // 初始化国际化
+  try {
+    await LocaleService.I.init();
+  } catch (_) {}
+
   runApp(const ProviderScope(child: WarringStatesApp()));
 }
 
@@ -50,6 +64,7 @@ class WarringStatesApp extends StatelessWidget {
     return MaterialApp(
       title: '\u6218\u56FD\u5361\u724C',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const _NoOverscrollBehavior(),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
         useMaterial3: true,
@@ -66,5 +81,15 @@ class WarringStatesApp extends StatelessWidget {
       ],
       home: const SplashScreen(),
     );
+  }
+}
+
+/// 全局禁用 overscroll 拉伸
+class _NoOverscrollBehavior extends ScrollBehavior {
+  const _NoOverscrollBehavior();
+
+  @override
+  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
   }
 }

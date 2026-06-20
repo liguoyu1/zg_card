@@ -8,7 +8,7 @@ import 'package:warring_states_card/domain/models/models.dart' as domain;
 import 'package:warring_states_card/data/heroes/heroes_data.dart';
 import 'package:warring_states_card/presentation/screens/adventure_screen.dart';
 import 'package:warring_states_card/presentation/screens/pack_screen.dart';
-import 'package:warring_states_card/presentation/screens/collection_screen.dart';
+import 'package:warring_states_card/presentation/screens/card_library_screen.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
 import 'hero_select_screen.dart';
 import 'training_screen.dart' show TrainingScreen;
@@ -166,10 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CollectionScreen(
-                          playerId: 'player_1',
-                          ownedCards: CardDataProvider.getAllCards().take(20).toList(),
-                        ),
+                        builder: (_) => const CardLibraryScreen(),
                       ),
                     );
                   },

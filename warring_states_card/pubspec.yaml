@@ -33,6 +33,7 @@ dependencies:
   equatable: ^2.0.5
   collection: ^1.18.0
   fast_immutable_collections: ^9.1.0
+  path_provider: ^2.1.0
   google_mobile_ads: ^8.0.0
   purchases_flutter: ^10.2.2
 

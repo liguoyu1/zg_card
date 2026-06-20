@@ -1,63 +1,95 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:warring_states_card/domain/models/models.dart';
 import 'package:warring_states_card/domain/services/elo_system.dart';
 
 /// 存档管理器
 class SaveManager {
-  static const String _saveDir = 'saves';
+  static String _saveDir = '';
   static const String _playerDataFile = 'player_data.json';
   static const String _collectionFile = 'collection.json';
   static const String _matchHistoryFile = 'match_history.json';
 
   /// 初始化存档目录
   static Future<void> init() async {
-    final dir = Directory(_saveDir);
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      _saveDir = '${appDir.path}/saves';
+      final dir = Directory(_saveDir);
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+    } catch (_) {
+      // Web: dart:io 和 path_provider 不支持，所有读写静默失败
+      _saveDir = '';
     }
   }
 
   /// 保存玩家数据
   static Future<void> savePlayerData(PlayerData data) async {
-    final file = File('$_saveDir/$_playerDataFile');
-    await file.writeAsString(jsonEncode(data.toJson()));
+    if (_saveDir.isEmpty) return;
+    try {
+      final file = File('$_saveDir/$_playerDataFile');
+      await file.writeAsString(jsonEncode(data.toJson()));
+    } catch (_) {}
   }
 
   /// 加载玩家数据
   static Future<PlayerData?> loadPlayerData() async {
-    final file = File('$_saveDir/$_playerDataFile');
-    if (!await file.exists()) return null;
-    final json = jsonDecode(await file.readAsString());
-    return PlayerData.fromJson(json);
+    if (_saveDir.isEmpty) return null;
+    try {
+      final file = File('$_saveDir/$_playerDataFile');
+      if (!await file.exists()) return null;
+      final json = jsonDecode(await file.readAsString());
+      return PlayerData.fromJson(json);
+    } catch (_) {
+      return null;
+    }
   }
 
   /// 保存收藏
   static Future<void> saveCollection(Collection collection) async {
-    final file = File('$_saveDir/$_collectionFile');
-    await file.writeAsString(jsonEncode(collection.toJson()));
+    if (_saveDir.isEmpty) return;
+    try {
+      final file = File('$_saveDir/$_collectionFile');
+      await file.writeAsString(jsonEncode(collection.toJson()));
+    } catch (_) {}
   }
 
   /// 加载收藏
   static Future<Collection?> loadCollection() async {
-    final file = File('$_saveDir/$_collectionFile');
-    if (!await file.exists()) return null;
-    final json = jsonDecode(await file.readAsString());
-    return Collection.fromJson(json);
+    if (_saveDir.isEmpty) return null;
+    try {
+      final file = File('$_saveDir/$_collectionFile');
+      if (!await file.exists()) return null;
+      final json = jsonDecode(await file.readAsString());
+      return Collection.fromJson(json);
+    } catch (_) {
+      return null;
+    }
   }
 
   /// 保存对战历史
   static Future<void> saveMatchHistory(List<MatchRecord> records) async {
-    final file = File('$_saveDir/$_matchHistoryFile');
-    await file.writeAsString(jsonEncode(records.map((r) => r.toJson()).toList()));
+    if (_saveDir.isEmpty) return;
+    try {
+      final file = File('$_saveDir/$_matchHistoryFile');
+      await file.writeAsString(jsonEncode(records.map((r) => r.toJson()).toList()));
+    } catch (_) {}
   }
 
   /// 加载对战历史
   static Future<List<MatchRecord>> loadMatchHistory() async {
-    final file = File('$_saveDir/$_matchHistoryFile');
-    if (!await file.exists()) return [];
-    final List<dynamic> json = jsonDecode(await file.readAsString());
-    return json.map((j) => MatchRecord.fromJson(j)).toList();
+    if (_saveDir.isEmpty) return [];
+    try {
+      final file = File('$_saveDir/$_matchHistoryFile');
+      if (!await file.exists()) return [];
+      final List<dynamic> json = jsonDecode(await file.readAsString());
+      return json.map((j) => MatchRecord.fromJson(j)).toList();
+    } catch (_) {
+      return [];
+    }
   }
 
   /// 导出存档JSON
@@ -89,10 +121,13 @@ class SaveManager {
 
   /// 删除所有存档
   static Future<void> clearAll() async {
-    final dir = Directory(_saveDir);
-    if (await dir.exists()) {
-      await dir.delete(recursive: true);
-    }
+    if (_saveDir.isEmpty) return;
+    try {
+      final dir = Directory(_saveDir);
+      if (await dir.exists()) {
+        await dir.delete(recursive: true);
+      }
+    } catch (_) {}
     await init();
   }
 }
@@ -237,6 +272,18 @@ class Collection {
     cardCopies: Map<String, int>.from(json['cardCopies'] ?? {}),
     favoriteCards: List<String>.from(json['favoriteCards'] ?? []),
   );
+
+  Collection copyWith({
+    Map<String, int>? cards,
+    Map<String, int>? cardCopies,
+    List<String>? favoriteCards,
+  }) {
+    return Collection(
+      cards: cards ?? this.cards,
+      cardCopies: cardCopies ?? this.cardCopies,
+      favoriteCards: favoriteCards ?? this.favoriteCards,
+    );
+  }
 }
 
 /// 对战记录

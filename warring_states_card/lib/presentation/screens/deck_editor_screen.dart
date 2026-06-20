@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:warring_states_card/domain/models/card.dart' as domain;
 import 'package:warring_states_card/domain/models/deck.dart';
 import 'package:warring_states_card/domain/services/card_data_provider.dart';
+import 'package:warring_states_card/domain/services/card_pool.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
 
 const _bg = Color(0xFF2C1810);
@@ -31,17 +32,28 @@ class DeckEditorScreen extends StatefulWidget {
 class _DeckEditorScreenState extends State<DeckEditorScreen> {
   final _nameController = TextEditingController();
   final List<domain.Card> _selectedCards = [];
-
-  List<domain.Card> get _pool =>
-      CardDataProvider.getAllCards()..sort((a, b) => a.cost.compareTo(b.cost));
+  List<domain.Card> _poolCards = [];
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
+    _loadPool();
     if (widget.existingDeck != null) {
       _nameController.text = widget.existingDeck!.name;
       _selectedCards.addAll(widget.existingDeck!.cards);
     }
+  }
+
+  Future<void> _loadPool() async {
+    final ownedIds = await CardPool.loadOwnedIds();
+    final trialIds = await CardPool.getWeeklyTrials();
+    final allCards = CardDataProvider.getAllCards();
+    final usable = CardPool.getUsableCards(allCards, ownedIds, trialIds);
+    setState(() {
+      _poolCards = usable.toSet().toList()..sort((a, b) => a.cost.compareTo(b.cost));
+      _loading = false;
+    });
   }
 
   @override
@@ -250,9 +262,12 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final pool = _pool;
-    // Deduplicate pool cards for display
-    final poolCards = pool.toSet().toList()..sort((a, b) => a.cost.compareTo(b.cost));
+    if (_loading) {
+      return const Scaffold(
+        backgroundColor: _bg,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: _bg,
@@ -301,7 +316,7 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
                 Expanded(
                   child: _buildPanel(
                     title: '卡牌库 (点击添加)',
-                    cards: poolCards,
+                    cards: _poolCards,
                     inDeck: false,
                   ),
                 ),
