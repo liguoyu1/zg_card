@@ -183,44 +183,44 @@ class CardImageService {
   /// 法术卡牌图片映射 — 每张卡唯一素材
   static const Map<String, String> _spellImageMap = {
     // 儒家法术 (8, unique)
-    'R013': 'spells_renyz.png',
-    'R014': 'spells_renzh.png',
-    'R015': 'spells_sanxs.png',
-    'R016': 'spells_shangr.png',
-    'R017': 'spells_shengdx.png',
-    'R018': 'spells_shim.png',
-    'R019': 'spells_tongyd.png',
-    'R020': 'spells_weiwz.png',
+    'R013': 'spells_renzh.png',    // 仁政化民
+    'R014': 'spells_lily.png',     // 礼乐同春
+    'R015': 'spells_jiaoh.png',    // 教化众生
+    'R016': 'spells_junfy.png',    // 仁义之师
+    'R017': 'spells_yide.png',     // 以德服人
+    'R018': 'spells_shangr.png',   // 三省吾身
+    'R019': 'spells_sanxs.png',    // 有教无类
+    'R020': 'spells_kejfl.png',    // 克己复礼
 
     // 道家法术 (8, unique)
-    'D013': 'spells_daofz.png',
-    'D014': 'spells_feicjt.png',
-    'D015': 'spells_jianglg.png',
-    'D016': 'spells_jiaoh.png',
-    'D017': 'spells_junfy.png',
-    'D018': 'spells_kejfl.png',
-    'D019': 'spells_lianzf.png',
-    'D020': 'spells_lily.png',
+    'D013': 'spells_daofz.png',    // 道法自然
+    'D014': 'spells_wuwez.png',    // 无为而治
+    'D015': 'spells_youjwl.png',   // 上善若水
+    'D016': 'spells_xujw.png',     // 虚静无为
+    'D017': 'spells_zaiyq.png',    // 齐物论
+    'D018': 'spells_danp.png',     // 逍遥游
+    'D019': 'spells_daofz.png',    // 养生主
+    'D020': 'spells_tianxy.png',   // 庖丁解牛
 
     // 兵家法术 (8, unique)
-    'B013': 'spells_pofc.png',
-    'B014': 'spells_qinzq.png',
-    'B015': 'spells_wuwez.png',
-    'B016': 'spells_xingmzf.png',
-    'B017': 'spells_xujw.png',
-    'B018': 'spells_yide.png',
-    'B019': 'spells_yidf.png',
-    'B020': 'spells_yifz.png',
+    'B013': 'spells_weiwz.png',    // 围魏救赵
+    'B014': 'spells_pofc.png',     // 破釜沉舟
+    'B015': 'spells_beis.png',     // 背水一战
+    'B016': 'spells_andc.png',     // 暗度陈仓
+    'B017': 'spells_shengdx.png',  // 声东击西
+    'B018': 'spells_shim.png',     // 十面埋伏
+    'B019': 'spells_yidf.png',     // 以逸待劳
+    'B020': 'spells_qinzq.png',    // 擒贼擒王
 
     // 法家法术 (8, unique)
-    'F013': 'spells_yiyd.png',
-    'F014': 'spells_youjwl.png',
-    'F015': 'spells_zonghb.png',
-    'F016': 'spells_andc.png',
-    'F017': 'spells_beis.png',
-    'F018': 'spells_daofz.png',
-    'F019': 'spells_spell_tianzm.png',
-    'F020': 'spells_spell_wuxxs.png',
+    'F013': 'spells_xingmzf.png',  // 刑名之法
+    'F014': 'spells_junfy.png',    // 峻法严刑
+    'F015': 'spells_yifz.png',     // 一断于法
+    'F016': 'spells_yidf.png',     // 以法治国
+    'F017': 'spells_lianzf.png',   // 连坐之法
+    'F018': 'spells_jianglg.png',  // 奖励耕战
+    'F019': 'spells_feicjt.png',   // 废除井田
+    'F020': 'spells_tongyd.png',   // 统一度量
 
     // 墨家法术 (8, unique)
     'M013': 'spells_spell_wudzs.png',

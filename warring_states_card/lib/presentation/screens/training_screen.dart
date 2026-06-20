@@ -186,9 +186,9 @@ class TrainingDetailScreen extends StatelessWidget {
   }
 }
 
-/// 冒险模式界面
-class AdventureScreen extends StatelessWidget {
-  const AdventureScreen({super.key});
+/// 冒险模式界面（训练入口）
+class TrainingAdventureScreen extends StatelessWidget {
+  const TrainingAdventureScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
