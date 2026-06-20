@@ -29,124 +29,108 @@ class CardImageService {
     }
   }
 
-  /// 随从卡牌图片映射 — 英雄卡用自己肖像，兵卒卡按需分配
-  /// 英雄 = X008-X012（各学派代表人物）
-  /// 兵卒 = X001-X007（各学派普通单位）
+  /// 随从卡牌图片映射 — 每张卡独立图片
+  /// 兵卒 = X001-X007, 英雄 = X008-X012
   static const Map<String, String> _minionImageMap = {
-    // ===== 兵家 (5图/12卡) =====
-    // 兵卒: B001-B007（魏武卒/秦锐士/赵边骑/燕死士/楚锐卒/齐技击士/韩戟兵）
-    'B001': 'bingjia_sunwu.png',
-    'B002': 'bingjia_li_mu.png',
-    'B003': 'bingjia_lianpo_minion.png',
-    'B004': 'bingjia_sunbin_minion.png',
-    'B005': 'bingjia_wuqi_minion.png',
-    'B006': 'bingjia_sunwu.png',
-    'B007': 'bingjia_li_mu.png',
-    // 英雄: B008 孙武, B009 吴起, B010 孙膑, B011 廉颇, B012 李牧
-    'B008': 'bingjia_sunwu.png',
-    'B009': 'bingjia_wuqi_minion.png',
-    'B010': 'bingjia_sunbin_minion.png',
-    'B011': 'bingjia_lianpo_minion.png',
-    'B012': 'bingjia_li_mu.png',
+    // ===== 兵家 (12卡) =====
+    'B001': 'bingjia_wuwuzu.png',    // 魏武卒
+    'B002': 'bingjia_ruishi.png',    // 秦锐士
+    'B003': 'bingjia_bianqi.png',    // 赵边骑
+    'B004': 'bingjia_sishi.png',     // 燕死士
+    'B005': 'bingjia_ruiz.png',      // 楚锐卒
+    'B006': 'bingjia_jijishi.png',   // 齐技击士
+    'B007': 'bingjia_jibing.png',    // 韩戟兵
+    'B008': 'bingjia_sunwu.png',      // 孙武
+    'B009': 'bingjia_wuqi_minion.png',  // 吴起
+    'B010': 'bingjia_sunbin_minion.png', // 孙膑
+    'B011': 'bingjia_lianpo_minion.png', // 廉颇
+    'B012': 'bingjia_li_mu.png',      // 李牧
 
-    // ===== 法家 (5图/12卡) =====
-    // 兵卒: F001-F007（执法吏/刑徒/狱卒/律令官/司寇/大理/法家弟子）
-    'F001': 'fajia_dali.png',
-    'F002': 'fajia_hanfei_minion.png',
-    'F003': 'fajia_shangyang_minion.png',
-    'F004': 'fajia_wuqi_biange.png',
-    'F005': 'minions_fajia_shenbuhai.png',
-    'F006': 'fajia_dali.png',
-    'F007': 'fajia_hanfei_minion.png',
-    // 英雄: F008 商鞅, F009 韩非, F010 李悝, F011 申不害, F012 吴起变法
-    'F008': 'fajia_shangyang_minion.png',
-    'F009': 'fajia_hanfei_minion.png',
-    'F010': 'fajia_dali.png',
-    'F011': 'minions_fajia_shenbuhai.png',
-    'F012': 'fajia_wuqi_biange.png',
+    // ===== 法家 (12卡) =====
+    'F001': 'fajia_zhifuli.png',     // 执法吏
+    'F002': 'fajia_xingtu.png',      // 刑徒
+    'F003': 'fajia_yuzu.png',        // 狱卒
+    'F004': 'fajia_lvlingguan.png',  // 律令官
+    'F005': 'fajia_sikou.png',       // 司寇
+    'F006': 'fajia_dali.png',        // 大理
+    'F007': 'fajia_disciples.png',   // 法家弟子
+    'F008': 'fajia_shangyang_minion.png', // 商鞅
+    'F009': 'fajia_hanfei_minion.png',   // 韩非
+    'F010': 'fajia_dali_minion.png',     // 李悝
+    'F011': 'minions_fajia_shenbuhai.png', // 申不害
+    'F012': 'fajia_wuqi_biange.png',  // 吴起变法
 
-    // ===== 儒家 (4图/12卡) =====
-    // 兵卒: R001-R007（儒生/礼官/乐师/典狱官/君子/贤人/夫子）
-    'R001': 'rujia_kongzi_minion.png',
-    'R002': 'rujia_mengzi_minion.png',
-    'R003': 'rujia_xianren.png',
-    'R004': 'rujia_xunzi_minion.png',
-    'R005': 'rujia_kongzi_minion.png',
-    'R006': 'rujia_xianren.png',
-    'R007': 'rujia_mengzi_minion.png',
-    // 英雄: R008 孔子, R009 孟子, R010 荀子, R011 子路, R012 曾子
-    'R008': 'rujia_kongzi_minion.png',
-    'R009': 'rujia_mengzi_minion.png',
-    'R010': 'rujia_xunzi_minion.png',
-    'R011': 'rujia_xianren.png',
-    'R012': 'rujia_kongzi_minion.png',
+    // ===== 儒家 (12卡) =====
+    'R001': 'rujia_rusheng.png',     // 儒生
+    'R002': 'rujia_liguan.png',      // 礼官
+    'R003': 'rujia_yueshi.png',      // 乐师
+    'R004': 'rujia_dianyuguan.png',  // 典狱官
+    'R005': 'rujia_junzi.png',       // 君子
+    'R006': 'rujia_xianren_minion.png', // 贤人
+    'R007': 'rujia_fuzi.png',        // 夫子
+    'R008': 'rujia_kongzi_minion.png',  // 孔子
+    'R009': 'rujia_mengzi_minion.png',  // 孟子
+    'R010': 'rujia_xunzi_minion.png',   // 荀子
+    'R011': 'rujia_xianren.png',     // 子路（复用贤人）
+    'R012': 'rujia_xunzi.png',       // 曾子（复用荀子）
 
-    // ===== 道家 (4图/12卡) =====
-    // 兵卒: D001-D007（道童/守山人/观星者/符师/真人/隐士/方士）
-    'D001': 'daojia_laozi_minion.png',
-    'D002': 'daojia_zhuangzi_minion.png',
-    'D003': 'daojia_liezi_minion.png',
-    'D004': 'daojia_yinshi.png',
-    'D005': 'daojia_laozi_minion.png',
-    'D006': 'daojia_yinshi.png',
-    'D007': 'daojia_zhuangzi_minion.png',
-    // 英雄: D008 老子, D009 庄子, D010 列子, D011 关尹子, D012 文子
-    'D008': 'daojia_laozi_minion.png',
-    'D009': 'daojia_zhuangzi_minion.png',
-    'D010': 'daojia_liezi_minion.png',
-    'D011': 'daojia_yinshi.png',
-    'D012': 'daojia_liezi_minion.png',
+    // ===== 道家 (12卡) =====
+    'D001': 'daojia_daotong.png',    // 道童
+    'D002': 'daojia_shoushanren.png', // 守山人
+    'D003': 'daojia_guanxingzhe.png', // 观星者
+    'D004': 'daojia_fushi.png',       // 符师
+    'D005': 'daojia_zhenren.png',     // 真人
+    'D006': 'daojia_yinshi_minion.png', // 隐士
+    'D007': 'daojia_fangshi.png',     // 方士
+    'D008': 'daojia_laozi_minion.png', // 老子
+    'D009': 'daojia_zhuangzi_minion.png', // 庄子
+    'D010': 'daojia_liezi_minion.png',   // 列子
+    'D011': 'daojia_fangshi.png',     // 关尹子（复用方士）
+    'D012': 'daojia_yinshi_minion.png', // 文子（复用隐士）
 
-    // ===== 墨家 (4图/12卡) =====
-    // 兵卒: M001-M007（机关弩手/机关兽/墨家弟子/护城弩兵/守城工兵/攻城巨械/工匠大师）
-    'M001': 'mojia_gongshuban_minion.png',
-    'M002': 'mojia_gongcheng_juxie.png',
-    'M003': 'mojia_mozi_minion.png',
-    'M004': 'mojia_tianjiu.png',
-    'M005': 'mojia_gongshuban_minion.png',
-    'M006': 'mojia_gongcheng_juxie.png',
-    'M007': 'mojia_mozi_minion.png',
-    // 英雄: M008 墨子, M009 公输班, M010 禽滑厘, M011 田鸠, M012 腹䵍
-    'M008': 'mojia_mozi_minion.png',
-    'M009': 'mojia_gongshuban_minion.png',
-    'M010': 'mojia_gongcheng_juxie.png',
-    'M011': 'mojia_tianjiu.png',
-    'M012': 'mojia_gongshuban_minion.png',
+    // ===== 墨家 (12卡) =====
+    'M001': 'mojia_jiguanshou.png',   // 机关弩手
+    'M002': 'mojia_jiguanjiashi.png', // 机关兽
+    'M003': 'mojia_disciples.png',    // 墨家弟子
+    'M004': 'mojia_hucheng.png',      // 护城弩兵
+    'M005': 'mojia_shoucheng.png',    // 守城工兵
+    'M006': 'mojia_gongcheng_juxie.png', // 攻城巨械
+    'M007': 'mojia_gongjiang.png',    // 工匠大师
+    'M008': 'mojia_mozi_minion.png',  // 墨子
+    'M009': 'mojia_gongshuban_minion.png', // 公输班
+    'M010': 'mojia_tianjiu.png',      // 禽滑厘
+    'M011': 'minions_mojia_tianjiu.png', // 田鸠
+    'M012': 'mojia_gongshuban_minion.png', // 腹䵍（复用公输班）
 
-    // ===== 阴阳家 (4图/12卡) =====
-    // 兵卒: Y001-Y007（巫祝/占卜师/五行弟子/祭司/星象师/风水师/方术士）
-    'Y001': 'yinyangjia_zouyan_minion.png',
-    'Y002': 'yinyangjia_gande_minion.png',
-    'Y003': 'yinyangjia_shishen_minion.png',
-    'Y004': 'yinyangjia_fangshushi.png',
-    'Y005': 'yinyangjia_zouyan_minion.png',
-    'Y006': 'yinyangjia_gande_minion.png',
-    'Y007': 'yinyangjia_fangshushi.png',
-    // 英雄: Y008 邹衍, Y009 甘德, Y010 石申, Y011 南公, Y012 安期生
-    'Y008': 'yinyangjia_zouyan_minion.png',
-    'Y009': 'yinyangjia_gande_minion.png',
-    'Y010': 'yinyangjia_shishen_minion.png',
-    'Y011': 'yinyangjia_fangshushi.png',
-    'Y012': 'yinyangjia_shishen_minion.png',
+    // ===== 阴阳家 (12卡) =====
+    'Y001': 'yinyangjia_wuzhu.png',       // 巫祝
+    'Y002': 'yinyangjia_zhanbu.png',      // 占卜师
+    'Y003': 'yinyangjia_wuxing.png',      // 五行弟子
+    'Y004': 'yinyangjia_jisi.png',        // 祭司
+    'Y005': 'yinyangjia_xingxiang.png',   // 星象师
+    'Y006': 'yinyangjia_fengshui.png',    // 风水师
+    'Y007': 'yinyangjia_fangshushi.png',  // 方术士
+    'Y008': 'yinyangjia_zouyan_minion.png',  // 邹衍
+    'Y009': 'yinyangjia_gande_minion.png',   // 甘德
+    'Y010': 'yinyangjia_shishen_minion.png', // 石申
+    'Y011': 'yinyangjia_fangshushi_minion.png', // 南公
+    'Y012': 'yinyangjia_fangshushi_minion.png', // 安期生
 
-    // ===== 纵横家 (3图/12卡) =====
-    // 兵卒: Z001-Z007（辩士/说客/刺客/使者/谋士/外交官/策士）
-    'Z001': 'zonghengjia_suqin_minion.png',
-    'Z002': 'zonghengjia_zhangyi_minion.png',
-    'Z003': 'zonghengjia_guiguzi_minion.png',
-    'Z004': 'zonghengjia_suqin_minion.png',
-    'Z005': 'zonghengjia_zhangyi_minion.png',
-    'Z006': 'zonghengjia_guiguzi_minion.png',
-    'Z007': 'zonghengjia_suqin_minion.png',
-    // 英雄: Z008 苏秦, Z009 张仪, Z010 范雎, Z011 蔺相如, Z012 鬼谷子
-    'Z008': 'zonghengjia_suqin_minion.png',
-    'Z009': 'zonghengjia_zhangyi_minion.png',
-    'Z010': 'zonghengjia_guiguzi_minion.png',
-    'Z011': 'zonghengjia_suqin_minion.png',
-    'Z012': 'zonghengjia_guiguzi_minion.png',
+    // ===== 纵横家 (12卡) =====
+    'Z001': 'zonghengjia_bianshi.png',    // 辩士
+    'Z002': 'zonghengjia_suoke.png',      // 说客
+    'Z003': 'zonghengjia_cike.png',       // 刺客
+    'Z004': 'zonghengjia_shizhe.png',     // 使者
+    'Z005': 'zonghengjia_moushi.png',     // 谋士
+    'Z006': 'zonghengjia_waijiao.png',    // 外交官
+    'Z007': 'zonghengjia_ceshi.png',      // 策士
+    'Z008': 'zonghengjia_suqin_minion.png',  // 苏秦
+    'Z009': 'zonghengjia_zhangyi_minion.png', // 张仪
+    'Z010': 'zonghengjia_guiguzi_minion.png', // 范雎
+    'Z011': 'zonghengjia_shizhe.png',     // 蔺相如（复用使者）
+    'Z012': 'zonghengjia_guiguzi_minion.png', // 鬼谷子
 
-    // ===== 中立 (28卡/4专图+交叉复用) =====
-    // 一阶兵卒 N001-N008
+    // ===== 中立 (28卡, 8图循环+4顶级专图) =====
     'N001': 'minions_fajia_dali.png',
     'N002': 'minions_fajia_shenbuhai.png',
     'N003': 'minions_mojia_tianjiu.png',
@@ -155,7 +139,6 @@ class CardImageService {
     'N006': 'minions_yinyangjia_gande.png',
     'N007': 'minions_neutral_tiandi.png',
     'N008': 'minions_neutral_zhanshen.png',
-    // 二阶兵卒 N009-N016
     'N009': 'minions_fajia_dali.png',
     'N010': 'minions_fajia_shenbuhai.png',
     'N011': 'minions_mojia_tianjiu.png',
@@ -164,7 +147,6 @@ class CardImageService {
     'N014': 'minions_yinyangjia_gande.png',
     'N015': 'minions_neutral_tiandi.png',
     'N016': 'minions_neutral_zhanshen.png',
-    // 三阶兵卒 N017-N024
     'N017': 'minions_fajia_dali.png',
     'N018': 'minions_fajia_shenbuhai.png',
     'N019': 'minions_mojia_tianjiu.png',
@@ -173,7 +155,6 @@ class CardImageService {
     'N022': 'minions_yinyangjia_gande.png',
     'N023': 'minions_neutral_tiandi.png',
     'N024': 'minions_neutral_zhanshen.png',
-    // 顶级单位 N025-N028 (使用中立专属四图)
     'N025': 'neutral_zhanshen.png',
     'N026': 'neutral_bawang.png',
     'N027': 'neutral_tiandi.png',
