@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -29,24 +30,27 @@ void main() async {
     await AudioManager.instance.init();
   } catch (_) {}
 
-  // 初始化广告 SDK
-  try {
-    final ads = GoogleAdService();
-    final ok = await ads.initialize();
-    if (ok) adService = ads;
-  } catch (_) {}
+  // 原生插件仅在 Android/iOS 上初始化，Web 跳过
+  if (!kIsWeb) {
+    // 初始化广告 SDK
+    try {
+      final ads = GoogleAdService();
+      final ok = await ads.initialize();
+      if (ok) adService = ads;
+    } catch (_) {}
 
-  // 初始化 RevenueCat
-  try {
-    await PurchaseService.I.initialize();
-    await PurchaseService.I.loadProducts();
-  } catch (_) {}
+    // 初始化 RevenueCat
+    try {
+      await PurchaseService.I.initialize();
+      await PurchaseService.I.loadProducts();
+    } catch (_) {}
 
-  // 初始化 QuestManager + BattlePass
-  try {
-    await QuestManager.I.init();
-    await BattlePassService.I.init();
-  } catch (_) {}
+    // 初始化 QuestManager + BattlePass（使用 dart:io File）
+    try {
+      await QuestManager.I.init();
+      await BattlePassService.I.init();
+    } catch (_) {}
+  }
 
   // 初始化国际化
   try {
