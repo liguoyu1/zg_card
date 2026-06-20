@@ -17,7 +17,6 @@ class TrainingScreenState extends State<TrainingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('训练模式'),
-        backgroundColor: Colors.amber[700],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

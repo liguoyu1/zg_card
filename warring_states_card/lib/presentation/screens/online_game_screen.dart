@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' as mat show Card;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warring_states_card/domain/models/hero.dart' as h;
 import 'package:warring_states_card/data/online_game_service.dart';
+import '../../core/theme/app_theme.dart';
 
 /// 联机对战服务提供者
 final onlineGameServiceProvider = Provider((ref) => OnlineGameService());
@@ -91,9 +92,9 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.bgDark,
       appBar: AppBar(
         title: const Text('匹配对手'),
-        backgroundColor: Colors.deepPurple[700],
       ),
       body: Center(
         child: _buildContent(),
@@ -188,9 +189,9 @@ class LeaderboardScreen extends ConsumerWidget {
     final service = ref.read(onlineGameServiceProvider);
     
     return Scaffold(
+      backgroundColor: AppTheme.bgDark,
       appBar: AppBar(
         title: const Text('排行榜'),
-        backgroundColor: Colors.amber[800],
       ),
       body: FutureBuilder<List<LeaderboardEntry>>(
         future: service.getLeaderboard(limit: 50),

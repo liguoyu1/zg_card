@@ -94,8 +94,6 @@ class _DeckEditScreenState extends ConsumerState<DeckEditScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('编辑卡组 (${deckCards.length}/30)'),
-        backgroundColor: Colors.brown[400],
-        foregroundColor: Colors.white,
         actions: [
           if (_deck.length == 30)
             TextButton(

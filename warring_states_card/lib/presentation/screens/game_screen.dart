@@ -15,6 +15,7 @@ import '../../l10n/locale_service.dart';
 import '../../data/persistence/save_manager.dart';
 import '../../main.dart' show adService;
 import '../../core/theme/app_theme.dart';
+import '../widgets/theme_widgets.dart';
 
 /// 游戏主界面 - 战国卡牌游戏对战屏幕
 enum _InteractionMode { none, attackTargeting, heroPowerTargeting }
@@ -346,17 +347,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       backgroundColor: AppTheme.bgDark,
       body: SafeArea(
         child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppTheme.bgDark,
-                AppTheme.agedWood.withAlpha(179),
-                AppTheme.bgDark,
-              ],
-            ),
-          ),
+          decoration: AppTheme.boardDecoration,
           child: Column(
             children: [
               // === 对手区域 (顶部) ===
@@ -382,9 +373,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        AppTheme.goldAccent.withAlpha(128),
-                        AppTheme.goldAccent,
-                        AppTheme.goldAccent.withAlpha(128),
+                        AppTheme.borderGold.withAlpha(100),
+                        AppTheme.borderGold.withAlpha(150),
+                        AppTheme.borderGold.withAlpha(100),
                         Colors.transparent,
                       ],
                     ),

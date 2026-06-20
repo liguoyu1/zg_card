@@ -29,8 +29,6 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(LocaleService.I.t('hero_select.title')),
-        backgroundColor: Colors.brown[400],
-        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [
