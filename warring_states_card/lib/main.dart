@@ -12,6 +12,7 @@ import 'domain/services/battle_pass_service.dart';
 import 'domain/services/card_pool.dart';
 import 'data/persistence/save_manager.dart';
 import 'l10n/locale_service.dart';
+import 'core/theme/app_theme.dart';
 
 /// 全局广告服务引用
 AdService adService = NoOpAdService();
@@ -69,11 +70,7 @@ class WarringStatesApp extends StatelessWidget {
       title: '\u6218\u56FD\u5361\u724C',
       debugShowCheckedModeBanner: false,
       scrollBehavior: const _NoOverscrollBehavior(),
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
-        useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF5E6D3),
-      ),
+      theme: WarringStatesTheme.dark,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
