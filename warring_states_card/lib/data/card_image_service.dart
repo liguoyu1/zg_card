@@ -161,47 +161,47 @@ class CardImageService {
     'N028': 'neutral_shenlong.png',
   };
 
-  /// 法术卡牌图片映射 — 每张卡唯一素材
+  /// 法术卡牌图片映射 — 每张卡唯一素材 (spells_spell_=新版, spells_=废弃)
   static const Map<String, String> _spellImageMap = {
     // 儒家法术 (8, unique)
-    'R013': 'spells_renzh.png',    // 仁政化民
-    'R014': 'spells_lily.png',     // 礼乐同春
-    'R015': 'spells_jiaoh.png',    // 教化众生
-    'R016': 'spells_junfy.png',    // 仁义之师
-    'R017': 'spells_yide.png',     // 以德服人
-    'R018': 'spells_shangr.png',   // 三省吾身
-    'R019': 'spells_sanxs.png',    // 有教无类
-    'R020': 'spells_kejfl.png',    // 克己复礼
+    'R013': 'spells_spell_renzh.png',    // 仁政化民
+    'R014': 'spells_spell_lily.png',     // 礼乐同春
+    'R015': 'spells_spell_jiaoh.png',    // 教化众生
+    'R016': 'spells_spell_junfy.png',    // 仁义之师
+    'R017': 'spells_spell_yide.png',     // 以德服人
+    'R018': 'spells_spell_shangr.png',   // 三省吾身
+    'R019': 'spells_spell_sanxs.png',    // 有教无类
+    'R020': 'spells_spell_kejfl.png',    // 克己复礼
 
-    // 道家法术 (8, unique)
-    'D013': 'spells_daofz.png',    // 道法自然
-    'D014': 'spells_wuwez.png',    // 无为而治
-    'D015': 'spells_youjwl.png',   // 上善若水
-    'D016': 'spells_xujw.png',     // 虚静无为
-    'D017': 'spells_zaiyq.png',    // 齐物论
-    'D018': 'spells_danp.png',     // 逍遥游
-    'D019': 'spells_daofz.png',    // 养生主
-    'D020': 'spells_tianxy.png',   // 庖丁解牛
+    // 道家法术 (6+2待生成)
+    'D013': 'spells_spell_daofz.png',    // 道法自然
+    'D014': 'spells_spell_wuwez.png',    // 无为而治
+    'D015': 'spells_spell_youjwl.png',   // 上善若水
+    'D016': 'spells_spell_xujw.png',     // 虚静无为
+    // D017 齐物论 — 待生成新版素材
+    // D018 逍遥游 — 待生成新版素材
+    'D019': 'spells_spell_daofz.png',    // 养生主
+    'D020': 'spells_spell_tianxy.png',   // 庖丁解牛
 
     // 兵家法术 (8, unique)
-    'B013': 'spells_weiwz.png',    // 围魏救赵
-    'B014': 'spells_pofc.png',     // 破釜沉舟
-    'B015': 'spells_beis.png',     // 背水一战
-    'B016': 'spells_andc.png',     // 暗度陈仓
-    'B017': 'spells_shengdx.png',  // 声东击西
-    'B018': 'spells_shim.png',     // 十面埋伏
-    'B019': 'spells_yidf.png',     // 以逸待劳
-    'B020': 'spells_qinzq.png',    // 擒贼擒王
+    'B013': 'spells_spell_weiwz.png',    // 围魏救赵
+    'B014': 'spells_spell_pofc.png',     // 破釜沉舟
+    'B015': 'spells_spell_beis.png',     // 背水一战
+    'B016': 'spells_spell_andc.png',     // 暗度陈仓
+    'B017': 'spells_spell_shengdx.png',  // 声东击西
+    'B018': 'spells_spell_shim.png',     // 十面埋伏
+    'B019': 'spells_spell_yidf.png',     // 以逸待劳
+    'B020': 'spells_spell_qinzq.png',    // 擒贼擒王
 
     // 法家法术 (8, unique)
-    'F013': 'spells_xingmzf.png',  // 刑名之法
-    'F014': 'spells_junfy.png',    // 峻法严刑
-    'F015': 'spells_yifz.png',     // 一断于法
-    'F016': 'spells_yidf.png',     // 以法治国
-    'F017': 'spells_lianzf.png',   // 连坐之法
-    'F018': 'spells_jianglg.png',  // 奖励耕战
-    'F019': 'spells_feicjt.png',   // 废除井田
-    'F020': 'spells_tongyd.png',   // 统一度量
+    'F013': 'spells_spell_xingmzf.png',  // 刑名之法
+    'F014': 'spells_spell_junfy.png',    // 峻法严刑
+    'F015': 'spells_spell_yifz.png',     // 一断于法
+    'F016': 'spells_spell_yidf.png',     // 以法治国
+    'F017': 'spells_spell_lianzf.png',   // 连坐之法
+    'F018': 'spells_spell_jianglg.png',  // 奖励耕战
+    'F019': 'spells_spell_feicjt.png',   // 废除井田
+    'F020': 'spells_spell_tongyd.png',   // 统一度量
 
     // 墨家法术 (8, unique)
     'M013': 'spells_spell_wudzs.png',
