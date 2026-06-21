@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="s" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#BDBDBD"/>
+      <stop offset="100%" stop-color="#757575"/>
+    </linearGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M24 2 L42 10 L42 22 Q42 34 24 46 Q6 34 6 22 L6 10 Z" fill="url(#s)" stroke="#616161" stroke-width="1.5"/>
+  <!-- Shield emblem -->
+  <polygon points="24,12 30,20 28,22 32,32 24,28 16,32 20,22 18,20" fill="#E0E0E0" fill-opacity="0.6"/>
+</svg>

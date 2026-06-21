@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 436" width="320" height="436">
+  <defs>
+    <!-- Parchment background -->
+    <radialGradient id="bg" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#D4C5A9" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#C4B085" stop-opacity="0.15"/>
+    </radialGradient>
+    <!-- Border gradient -->
+    <linearGradient id="border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B7355"/>
+      <stop offset="20%" stop-color="#C4B085"/>
+      <stop offset="50%" stop-color="#A89060"/>
+      <stop offset="80%" stop-color="#C4B085"/>
+      <stop offset="100%" stop-color="#8B7355"/>
+    </linearGradient>
+    <!-- Corner ornament gradient -->
+    <linearGradient id="ornament" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B8860B"/>
+      <stop offset="100%" stop-color="#8B6914"/>
+    </linearGradient>
+  </defs>
+  <!-- Border frame -->
+  <rect x="4" y="4" width="312" height="428" rx="12" ry="12" fill="url(#bg)" stroke="url(#border)" stroke-width="3"/>
+  <!-- Inner border line -->
+  <rect x="10" y="10" width="300" height="416" rx="8" ry="8" fill="none" stroke="#A89060" stroke-width="0.5" stroke-opacity="0.4"/>
+  <!-- Corner ornaments -->
+  <!-- Top-left -->
+  <path d="M-8 12 Q16 12 12 40" fill="none" stroke="url(#ornament)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M12 -8 Q12 16 40 12" fill="none" stroke="url(#ornament)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="14" cy="14" r="2" fill="#B8860B" fill-opacity="0.6"/>
+  <!-- Top-right -->
+  <path d="M328 12 Q304 12 308 40" fill="none" stroke="url(#ornament)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M308 -8 Q308 16 280 12" fill="none" stroke="url(#ornament)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="306" cy="14" r="2" fill="#B8860B" fill-opacity="0.6"/>
+  <!-- Bottom-left -->
+  <path d="M-8 424 Q16 424 12 396" fill="none" stroke="url(#ornament)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M12 444 Q12 420 40 424" fill="none" stroke="url(#ornament)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="14" cy="422" r="2" fill="#B8860B" fill-opacity="0.6"/>
+  <!-- Bottom-right -->
+  <path d="M328 424 Q304 424 308 396" fill="none" stroke="url(#ornament)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M308 444 Q308 420 280 424" fill="none" stroke="url(#ornament)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="306" cy="422" r="2" fill="#B8860B" fill-opacity="0.6"/>
+  <!-- Decorative line top -->
+  <line x1="60" y1="4" x2="260" y2="4" stroke="#B8860B" stroke-width="0.5" stroke-opacity="0.3"/>
+  <!-- Decorative line bottom -->
+  <line x1="60" y1="432" x2="260" y2="432" stroke="#B8860B" stroke-width="0.5" stroke-opacity="0.3"/>
+</svg>

@@ -16,6 +16,7 @@ import 'adventure_screen.dart';
 import 'pack_screen.dart';
 import 'card_library_screen.dart';
 import 'leaderboard_screen.dart';
+import '../../data/card_image_service.dart' show CardImageService;
 
 /// 主界面 — 战国风炉石式主菜单
 class HomeScreen extends StatefulWidget {
