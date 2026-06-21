@@ -28,7 +28,7 @@ def gen_one(client, prompt, negative="bad image", width=752, height=1328,
             return img
     return None
 
-def download_result(client, out_dir):
+def download_result(client, out_dir, single_file=True):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     try:
@@ -36,14 +36,15 @@ def download_result(client, out_dir):
         if z:
             src = Path(str(z))
             if src.exists():
-                dst = out / src.name
-                shutil.copy2(str(src), str(dst))
-                print(f"  ZIP: {dst.name} ({src.stat().st_size//1024}KB)")
-                with zipfile.ZipFile(str(dst)) as zf:
-                    zf.extractall(str(out))
-                    for name in zf.namelist():
-                        print(f"  -> {name}")
-                return dst
+                import zipfile
+                with zipfile.ZipFile(str(src)) as zf:
+                    names = zf.namelist()
+                    if single_file and len(names) > 1:
+                        names = [max(names, key=lambda n: zf.getinfo(n).date_time)]
+                    for name in names:
+                        zf.extract(name, str(out))
+                        print(f"  -> {out/name}")
+                    return out / names[0]
     except Exception as e:
         print(f"  download error: {e}")
     return None
