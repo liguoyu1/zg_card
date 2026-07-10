@@ -1,0 +1,35 @@
+{
+    "name": "战国卡牌 · Warring States",
+    "short_name": "战国卡牌",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#2C1810",
+    "theme_color": "#2C1810",
+    "description": "集结诸子百家，决战乱世群雄。战国风策略卡牌对战游戏。",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

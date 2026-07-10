@@ -1,0 +1,39 @@
+{
+  "identifier" : "C830B044-1B87-4C9F-B8EF-55A7BC496FCA",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "$0.99",
+      "familyShareable" : false,
+      "groupNumber" : 1,
+      "id" : "gem_100",
+      "internalDescription" : "100钻石",
+      "referenceName" : "100钻石",
+      "subscription" : false,
+      "type" : "consumable"
+    },
+    {
+      "displayPrice" : "$4.99",
+      "familyShareable" : false,
+      "groupNumber" : 1,
+      "id" : "gem_500",
+      "internalDescription" : "500钻石",
+      "referenceName" : "500钻石",
+      "subscription" : false,
+      "type" : "consumable"
+    },
+    {
+      "displayPrice" : "$9.99",
+      "familyShareable" : false,
+      "groupNumber" : 1,
+      "id" : "gem_1300",
+      "internalDescription" : "1200+100钻石",
+      "referenceName" : "1200+100钻石",
+      "subscription" : false,
+      "type" : "consumable"
+    }
+  ],
+  "version" : 1
+}
