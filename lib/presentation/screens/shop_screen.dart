@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'dart:io' show Platform;
 
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -303,39 +305,49 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     });
   }
 
+  /// iOS → Apple IAP（合规）；Web → Xsolla；Android → Xsolla 优先，降级 IAP
   void _buyGem(int ga) async {
     try {
       if (!await _requireLogin()) return;
       final auth = ref.read(authProvider);
       if (auth == null) { _snack('请先登录'); return; }
-      final sku = _gemProductId(ga);
       final bonus = _gemBonus(ga);
       final total = ga + bonus;
 
-      // 尝试 Xsolla → 失败自动降级到旧 IAP
-      final xsollaOk = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
-      if (xsollaOk) {
-        _snack('支付页面已打开，完成支付后请返回刷新');
+      // iOS：强制 Apple IAP
+      if (!kIsWeb && Platform.isIOS) {
+        await _buyIAP(ga, total, auth.playerId);
+        return;
+      }
+
+      // Web / Android：Xsolla
+      final sku = _gemProductId(ga);
+      final ok = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
+      if (ok) {
+        _snack('支付页面已打开，完成支付后请刷新');
         await Future.delayed(const Duration(seconds: 3));
         await _refresh();
         return;
       }
 
-      // 降级：旧 IAP (Apple/Google)
-      _initRestoreListener();
-      final pid = _gemProductId(ga);
-      final ok = await PurchaseService.I.purchase(pid);
-      if (!ok) { _snack('购买失败'); return; }
-      final odID = auth.playerId;
-      final result = await BalanceService.addGems(odID, total, detail: '购买${ga}钻石');
-      if (result) {
-        bumpDataVersion();
-        await _refresh();
-        _snack('购买成功！获得 $total 钻石');
-      } else {
-        _snack('购买成功但同步失败，请重试');
-      }
+      // Android：Xsolla 失败 → 降级 Google IAP
+      if (!kIsWeb) await _buyIAP(ga, total, auth.playerId);
     } catch (_) { _snack('购买失败'); }
+  }
+
+  Future<void> _buyIAP(int ga, int total, String odID) async {
+    _initRestoreListener();
+    final pid = _gemProductId(ga);
+    final ok = await PurchaseService.I.purchase(pid);
+    if (!ok) { _snack('购买失败'); return; }
+    final result = await BalanceService.addGems(odID, total, detail: '购买${ga}钻石');
+    if (result) {
+      bumpDataVersion();
+      await _refresh();
+      _snack('购买成功！获得 $total 钻石');
+    } else {
+      _snack('购买成功但同步失败，请重试');
+    }
   }
 
   Future<void> _restorePurchases() async {
