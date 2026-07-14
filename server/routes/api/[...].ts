@@ -26,6 +26,7 @@ export default defineEventHandler(async (event) => {
     if (path === '/api/auth/register' && method === 'POST') {
       const { email, password, name } = await readBody(event);
       if (!email || !password) return { error: '邮箱和密码不能为空' };
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: '邮箱格式不正确' };
       if (password.length < 6) return { error: '密码至少6位' };
       return await register(email, password, name || email.split('@')[0]);
     }
@@ -130,7 +131,8 @@ export default defineEventHandler(async (event) => {
       if (!GEM_SKU_MAP[sku]) return { error: 'Invalid SKU' };
 
       const player = await getPlayerProfile(token.playerId);
-      const result = await createPaymentToken(token.playerId, sku, (player as any)?.name);
+      if (!(player as any)?.email) return { error: 'Registered email account required' };
+      const result = await createPaymentToken(token.playerId, sku, (player as any)?.name, (player as any).email);
       return result;
     }
 

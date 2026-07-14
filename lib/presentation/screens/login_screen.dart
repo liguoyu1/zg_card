@@ -37,6 +37,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() => _error = '请填写邮箱和密码');
       return;
     }
+    if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
+      setState(() => _error = '请输入有效邮箱');
+      return;
+    }
     if (_isRegister && name.isEmpty) {
       setState(() => _error = '请填写昵称');
       return;

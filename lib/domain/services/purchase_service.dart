@@ -57,7 +57,7 @@ class PurchaseService {
   Future<List<ProductDetails>> loadProducts() async {
     if (kIsWeb) return [];
     try {
-      const ids = <String>{'gem_100', 'gem_550', 'gem_1200'};
+      const ids = <String>{'gem_60', 'gem_300', 'gem_600', 'gem_1500', 'gem_3000'};
       final resp = await _iap.queryProductDetails(ids);
       _products
         ..clear()

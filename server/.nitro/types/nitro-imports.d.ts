@@ -1,5 +1,7 @@
 declare global {
+  const GEM_SKU_MAP: typeof import('../../utils/xsolla').GEM_SKU_MAP
   const addGems: typeof import('../../utils/database').addGems
+  const addGemsFromXsolla: typeof import('../../utils/database').addGemsFromXsolla
   const addGold: typeof import('../../utils/database').addGold
   const appendCorsHeaders: typeof import('../../../../../../../node_modules/h3').appendCorsHeaders
   const appendCorsPreflightHeaders: typeof import('../../../../../../../node_modules/h3').appendCorsPreflightHeaders
@@ -22,6 +24,7 @@ declare global {
   const createError: typeof import('../../../../../../../node_modules/h3').createError
   const createEvent: typeof import('../../../../../../../node_modules/h3').createEvent
   const createEventStream: typeof import('../../../../../../../node_modules/h3').createEventStream
+  const createPaymentToken: typeof import('../../utils/xsolla').createPaymentToken
   const createRoom: typeof import('../../utils/database').createRoom
   const createRouter: typeof import('../../../../../../../node_modules/h3').createRouter
   const createToken: typeof import('../../utils/database').createToken
@@ -147,6 +150,7 @@ declare global {
   const useSession: typeof import('../../../../../../../node_modules/h3').useSession
   const useStorage: typeof import('../../../../../../../node_modules/nitropack/dist/runtime/internal/storage').useStorage
   const verifyToken: typeof import('../../utils/database').verifyToken
+  const verifyWebhookSignature: typeof import('../../utils/xsolla').verifyWebhookSignature
   const writeEarlyHints: typeof import('../../../../../../../node_modules/h3').writeEarlyHints
 }
 // for type re-export
@@ -167,4 +171,5 @@ export { useEvent } from 'nitropack/runtime/internal/context';
 export { defineTask, runTask } from 'nitropack/runtime/internal/task';
 export { defineNitroErrorHandler } from 'nitropack/runtime/internal/error/utils';
 export { appendCorsHeaders, appendCorsPreflightHeaders, appendHeader, appendHeaders, appendResponseHeader, appendResponseHeaders, assertMethod, callNodeListener, clearResponseHeaders, clearSession, createApp, createAppEventHandler, createError, createEvent, createEventStream, createRouter, defaultContentType, defineEventHandler, defineLazyEventHandler, defineNodeListener, defineNodeMiddleware, defineRequestMiddleware, defineResponseMiddleware, defineWebSocket, defineWebSocketHandler, deleteCookie, dynamicEventHandler, eventHandler, fetchWithEvent, fromNodeMiddleware, fromPlainHandler, fromWebHandler, getCookie, getHeader, getHeaders, getMethod, getProxyRequestHeaders, getQuery, getRequestFingerprint, getRequestHeader, getRequestHeaders, getRequestHost, getRequestIP, getRequestPath, getRequestProtocol, getRequestURL, getRequestWebStream, getResponseHeader, getResponseHeaders, getResponseStatus, getResponseStatusText, getRouterParam, getRouterParams, getSession, getValidatedQuery, getValidatedRouterParams, handleCacheHeaders, handleCors, isCorsOriginAllowed, isError, isEvent, isEventHandler, isMethod, isPreflightRequest, isStream, isWebResponse, lazyEventHandler, parseCookies, promisifyNodeListener, proxyRequest, readBody, readFormData, readMultipartFormData, readRawBody, readValidatedBody, removeResponseHeader, sanitizeStatusCode, sanitizeStatusMessage, sealSession, send, sendError, sendIterable, sendNoContent, sendProxy, sendRedirect, sendStream, sendWebResponse, serveStatic, setCookie, setHeader, setHeaders, setResponseHeader, setResponseHeaders, setResponseStatus, splitCookiesString, toEventHandler, toNodeListener, toPlainHandler, toWebHandler, toWebRequest, unsealSession, updateSession, useBase, useSession, writeEarlyHints } from 'h3';
-export { prisma, verifyToken, createToken, calculateElo, calculateRank, getRankName, guestLogin, register, login, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, joinMatchQueue, leaveMatchQueue, checkMatchStatus, createRoom, submitGameAction, pollGameActions, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, initDatabase, closeConnections } from '/Users/guoyuli/Documents/code_s/zg_card/warring_states_card/server/utils/database';
+export { prisma, verifyToken, createToken, calculateElo, calculateRank, getRankName, guestLogin, register, login, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, joinMatchQueue, leaveMatchQueue, checkMatchStatus, createRoom, submitGameAction, pollGameActions, getBalance, addGemsFromXsolla, addGems, spendGems, addGold, spendGold, getTransactions, initDatabase, closeConnections } from '/Users/guoyuli/Documents/code_s/zg_card/warring_states_card/server/utils/database';
+export { GEM_SKU_MAP, createPaymentToken, verifyWebhookSignature } from '/Users/guoyuli/Documents/code_s/zg_card/warring_states_card/server/utils/xsolla';

@@ -86,13 +86,24 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   /// 检查登录状态，未登录则弹窗引导登录
   Future<bool> _requireLogin() async {
     if (ref.read(authProvider) != null) return true;
+    return _promptAccount('需要登录', '购买前需要先登录/注册');
+  }
+
+  /// 游客禁止购买；仅注册且带有效邮箱的账号可支付
+  Future<bool> _requirePaidAccount() async {
+    final auth = ref.read(authProvider);
+    if (auth?.email?.isNotEmpty == true) return true;
+    return _promptAccount('需要注册账号', '游客不能购买钻石，请使用有效邮箱注册并登录');
+  }
+
+  Future<bool> _promptAccount(String title, String message) async {
     if (!mounted) return false;
     final go = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.agedWood,
-        title: const Text('需要登录', style: TextStyle(color: AppTheme.parchment)),
-        content: const Text('购买前需要先登录/注册', style: TextStyle(color: AppTheme.textSecondary)),
+        title: Text(title, style: const TextStyle(color: AppTheme.parchment)),
+        content: Text(message, style: const TextStyle(color: AppTheme.textSecondary)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消', style: TextStyle(color: Colors.grey))),
           ElevatedButton(
@@ -103,9 +114,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         ],
       ),
     );
-    if (go == true && mounted) {
-      context.push('/auth/login');
-    }
+    if (go == true && mounted) context.push('/auth/login');
     return false;
   }
 
@@ -308,9 +317,9 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   /// iOS → Apple IAP（合规）；Web → Xsolla；Android → Xsolla 优先，降级 IAP
   void _buyGem(int ga) async {
     try {
-      if (!await _requireLogin()) return;
+      if (!await _requirePaidAccount()) return;
       final auth = ref.read(authProvider);
-      if (auth == null) { _snack('请先登录'); return; }
+      if (auth == null) { _snack('请先注册并登录'); return; }
       final bonus = _gemBonus(ga);
       final total = ga + bonus;
 

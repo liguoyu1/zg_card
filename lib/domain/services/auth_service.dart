@@ -8,12 +8,14 @@ class AuthState {
   final String token;
   final String playerId;
   final String playerName;
+  final String? email;
   final String? avatar;
 
   const AuthState({
     required this.token,
     required this.playerId,
     required this.playerName,
+    this.email,
     this.avatar,
   });
 }
@@ -43,6 +45,7 @@ class AuthService {
         token: token,
         playerId: pid,
         playerName: name,
+        email: prefs.getString(_emailKey),
         avatar: prefs.getString(_avatarKey),
       );
     }
@@ -65,6 +68,7 @@ class AuthService {
       token: token,
       playerId: pid,
       playerName: pname,
+      email: player['email'] as String?,
       avatar: player['avatar'] as String?,
     );
     return true;
@@ -76,6 +80,11 @@ class AuthService {
     await prefs.setString(_tokenKey, _state!.token);
     await prefs.setString(_playerIdKey, _state!.playerId);
     await prefs.setString(_playerNameKey, _state!.playerName);
+    if (_state!.email != null) {
+      await prefs.setString(_emailKey, _state!.email!);
+    } else {
+      await prefs.remove(_emailKey);
+    }
     if (_state!.avatar != null) {
       await prefs.setString(_avatarKey, _state!.avatar!);
     }

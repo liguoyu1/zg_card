@@ -43,3 +43,16 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Server
+server/node_modules/
+server/.output/
+server/dist/
+
+# Railway
+build/
+.railway/
+
+# Node (root)
+node_modules/
+
