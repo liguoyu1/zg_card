@@ -294,11 +294,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       const gemMap = {'gem_60': 60, 'gem_300': 300, 'gem_600': 600, 'gem_1500': 1500, 'gem_3000': 3000};
       final ga = gemMap[productId];
       if (ga == null) return;
+      final total = ga + _gemBonus(ga);
       final odID = ref.read(authProvider)?.playerId ?? '';
       if (odID.isNotEmpty) {
-        await BalanceService.addGems(odID, ga, detail: '恢复购买');
+        await BalanceService.addGems(odID, total, detail: '恢复购买');
       }
-      _snack('恢复购买成功！获得 $ga 钻石');
+      _snack('恢复购买成功！获得 $total 钻石');
     });
   }
 
@@ -308,15 +309,33 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       final auth = ref.read(authProvider);
       if (auth == null) { _snack('请先登录'); return; }
       final sku = _gemProductId(ga);
-      final ok = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
-      if (ok) {
+      final bonus = _gemBonus(ga);
+      final total = ga + bonus;
+
+      // 尝试 Xsolla → 失败自动降级到旧 IAP
+      final xsollaOk = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
+      if (xsollaOk) {
         _snack('支付页面已打开，完成支付后请返回刷新');
         await Future.delayed(const Duration(seconds: 3));
         await _refresh();
-      } else {
-        _snack('启动支付失败，请稍后重试');
+        return;
       }
-    } catch (_) { _snack('支付失败'); }
+
+      // 降级：旧 IAP (Apple/Google)
+      _initRestoreListener();
+      final pid = _gemProductId(ga);
+      final ok = await PurchaseService.I.purchase(pid);
+      if (!ok) { _snack('购买失败'); return; }
+      final odID = auth.playerId;
+      final result = await BalanceService.addGems(odID, total, detail: '购买${ga}钻石');
+      if (result) {
+        bumpDataVersion();
+        await _refresh();
+        _snack('购买成功！获得 $total 钻石');
+      } else {
+        _snack('购买成功但同步失败，请重试');
+      }
+    } catch (_) { _snack('购买失败'); }
   }
 
   Future<void> _restorePurchases() async {
@@ -336,10 +355,23 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     return map[ga] ?? 'gem_60';
   }
 
+  // ─── 赠送配置：修改此处即可调整各档位赠送额，不影响 SKU 映射 ───
+  static int _gemBonus(int ga) {
+    const bonus = {60: 0, 300: 50, 600: 150, 1500: 500, 3000: 1500};
+    return bonus[ga] ?? 0;
+  }
+
   Widget _gemCard(int diamonds, double usd, String? bonus) {
-    final eff = usd > 0 ? (diamonds / usd).round() : 0;
-    return _card(Icons.diamond, '$diamonds钻石${bonus != null ? ' ($bonus)' : ''}',
-        '\$${usd.toStringAsFixed(2)} ($eff💎/\$)',
+    final bonusActual = _gemBonus(diamonds);
+    final total = diamonds + bonusActual;
+    final eff = usd > 0 ? (total / usd).round() : 0;
+    final subtitle = bonusActual > 0
+        ? '\$${usd.toStringAsFixed(2)} ($eff💎/\$) · 送${bonusActual}颗'
+        : '\$${usd.toStringAsFixed(2)} ($eff💎/\$)';
+    final title = bonusActual > 0
+        ? '${diamonds}+${bonusActual}钻石'
+        : '${diamonds}钻石';
+    return _card(Icons.diamond, title, subtitle,
         Text('\$${usd.toStringAsFixed(2)}', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 16, fontWeight: FontWeight.bold)),
         () => _buyGem(diamonds));
   }
@@ -455,9 +487,9 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           const SizedBox(height: 6),
           _gemCard(600, 9.99, null),
           const SizedBox(height: 6),
-          _gemCard(1500, 19.99, '送150'),
+          _gemCard(1500, 19.99, null),
           const SizedBox(height: 6),
-          _gemCard(3000, 29.99, '送500'),
+          _gemCard(3000, 29.99, null),
           const SizedBox(height: 12),
           SizedBox(width: double.infinity,
             child: OutlinedButton.icon(
