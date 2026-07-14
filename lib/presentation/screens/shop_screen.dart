@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../core/theme/app_theme.dart';
 import '../../data/card_image_service.dart' show CardImageService;
 import '../../data/balance_service.dart';
@@ -14,6 +13,7 @@ import '../../domain/models/card.dart' as cm;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/hero_data_provider.dart';
 import '../../domain/services/purchase_service.dart';
+import '../../data/xsolla_payment_service.dart';
 import '../providers/auth_provider.dart';
 
 /// 商店 — 金币/钻石/卡包/单卡/英雄/每日特惠
@@ -291,7 +291,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   void _initRestoreListener() {
     _restoreSub?.cancel();
     _restoreSub = PurchaseService.I.restoredStream.listen((productId) async {
-      const gemMap = {'gem_100': 100, 'gem_550': 550, 'gem_1200': 1200};
+      const gemMap = {'gem_60': 60, 'gem_300': 300, 'gem_600': 600, 'gem_1500': 1500, 'gem_3000': 3000};
       final ga = gemMap[productId];
       if (ga == null) return;
       final odID = ref.read(authProvider)?.playerId ?? '';
@@ -305,21 +305,18 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   void _buyGem(int ga) async {
     try {
       if (!await _requireLogin()) return;
-      final odID = ref.read(authProvider)?.playerId ?? '';
-      _initRestoreListener();
-      final pid = _gemProductId(ga);
-      final ok = await PurchaseService.I.purchase(pid);
-      if (!ok) { _snack('购买失败'); return; }
-      // 购买成功后调后端加钻
-      final result = await BalanceService.addGems(odID, ga, detail: '购买${ga}钻石');
-      if (result) {
-        bumpDataVersion();
+      final auth = ref.read(authProvider);
+      if (auth == null) { _snack('请先登录'); return; }
+      final sku = _gemProductId(ga);
+      final ok = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
+      if (ok) {
+        _snack('支付页面已打开，完成支付后请返回刷新');
+        await Future.delayed(const Duration(seconds: 3));
         await _refresh();
-        _snack('购买成功！获得 $ga 钻石');
       } else {
-        _snack('购买成功但同步失败，请重试');
+        _snack('启动支付失败，请稍后重试');
       }
-    } catch (_) { _snack('购买失败'); }
+    } catch (_) { _snack('支付失败'); }
   }
 
   Future<void> _restorePurchases() async {
@@ -335,8 +332,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 
   String _gemProductId(int ga) {
-    const map = {100: 'gem_100', 550: 'gem_550', 1200: 'gem_1200'};
-    return map[ga] ?? 'gem_100';
+    const map = {60: 'gem_60', 300: 'gem_300', 600: 'gem_600', 1500: 'gem_1500', 3000: 'gem_3000'};
+    return map[ga] ?? 'gem_60';
   }
 
   Widget _gemCard(int diamonds, double usd, String? bonus) {
@@ -452,11 +449,15 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 
           // === 钻石 ===
           _sec('钻石'),
-          _gemCard(100, 0.99, null),
+          _gemCard(60, 0.99, null),
           const SizedBox(height: 6),
-          _gemCard(550, 4.99, '送50'),
+          _gemCard(300, 4.99, null),
           const SizedBox(height: 6),
-          _gemCard(1200, 9.99, '送200'),
+          _gemCard(600, 9.99, null),
+          const SizedBox(height: 6),
+          _gemCard(1500, 19.99, '送150'),
+          const SizedBox(height: 6),
+          _gemCard(3000, 29.99, '送500'),
           const SizedBox(height: 12),
           SizedBox(width: double.infinity,
             child: OutlinedButton.icon(

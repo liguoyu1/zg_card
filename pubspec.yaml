@@ -36,7 +36,9 @@ dependencies:
   path_provider: ^2.1.0
   google_mobile_ads: ^9.0.0
   pangle_flutter: ^3.0.2
-  # In-App Purchase (Apple StoreKit / Google Play Billing)
+  # Payment
+  url_launcher: ^6.3.0
+  # In-App Purchase (Apple StoreKit / Google Play Billing) — 已弃用，改用 Xsolla
   in_app_purchase: ^3.2.0
   go_router: ^17.3.0
 

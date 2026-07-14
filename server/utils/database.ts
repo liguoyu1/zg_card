@@ -386,6 +386,33 @@ async function _addBalance(odID: string, currency: string, amount: number, detai
   ]);
 }
 
+/** Xsolla webhook 专用：加钻 + 幂等检查 */
+export async function addGemsFromXsolla(odID: string, amount: number, externalId: string) {
+  try {
+    // 幂等检查：同一笔 transaction 不重复加
+    const existing = await prisma.transaction.findFirst({
+      where: { externalId },
+    });
+    if (existing) return { success: true, alreadyProcessed: true };
+
+    const player = await prisma.player.findUnique({ where: { id: odID } });
+    if (!player) return { error: 'player not found' };
+    const newBalance = player.gems + amount;
+    await prisma.$transaction([
+      prisma.player.update({
+        where: { id: odID, balanceVersion: player.balanceVersion },
+        data: { gems: newBalance, balanceVersion: { increment: 1 } },
+      }),
+      prisma.transaction.create({
+        data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount, balanceAfter: newBalance, detail: 'Xsolla购买', externalId },
+      }),
+    ]);
+    return { success: true, gems: newBalance };
+  } catch (e: any) {
+    return { error: e.message || 'add gems from xsolla failed' };
+  }
+}
+
 export async function addGems(odID: string, amount: number, detail: string = '', receiptId?: string) {
   try {
     const player = await prisma.player.findUnique({ where: { id: odID } });
