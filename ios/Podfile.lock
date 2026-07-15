@@ -1,47 +1,6 @@
 PODS:
-  - Ads-CN-Beta/BUAdLive (7.7.0.0)
-  - Ads-CN-Beta/BUAdLive-Framework (7.7.0.0):
-    - Ads-CN-Beta/BUAdLive
-    - BUTTSDKFramework/LivePull-Lite (= 1.48.2.3-premium)
-  - Ads-CN-Beta/BUAdSDK (7.7.0.0)
-  - Ads-CN-Beta/CSJMediation (7.7.0.0):
-    - Ads-CN-Beta/BUAdLive-Framework
-    - Ads-CN-Beta/CSJMediation-Only
-  - Ads-CN-Beta/CSJMediation-Only (7.7.0.0):
-    - Ads-CN-Beta/BUAdSDK
   - audioplayers_darwin (0.0.1):
     - Flutter
-  - BUTTSDKFramework/Core (1.48.2.3-premium)
-  - BUTTSDKFramework/LiveBase (1.48.2.3-premium):
-    - BUTTSDKFramework/Core
-    - BUTTSDKFramework/Reachability
-  - BUTTSDKFramework/LivePlayer/Base (1.48.2.3-premium):
-    - BUTTSDKFramework/Core
-    - BUTTSDKFramework/LiveBase
-    - BUTTSDKFramework/LivePull-VolcLog
-    - BUTTSDKFramework/Reachability
-  - BUTTSDKFramework/LivePlayer/Lite (1.48.2.3-premium):
-    - BUTTSDKFramework/LivePlayer/Base
-    - BUTTSDKFramework/PlayerCore/LiveLite
-  - BUTTSDKFramework/LivePull-Lite (1.48.2.3-premium):
-    - BUTTSDKFramework/LivePlayer/Lite
-    - BUTTSDKFramework/Strategy/Lite
-  - BUTTSDKFramework/LivePull-VolcLog (1.48.2.3-premium):
-    - BUTTSDKFramework/VolcLog
-  - BUTTSDKFramework/PlayerCore/Base (1.48.2.3-premium):
-    - BUTTSDKFramework/Core
-  - BUTTSDKFramework/PlayerCore/LiveLite (1.48.2.3-premium):
-    - BUTTSDKFramework/PlayerCore/Base
-    - BUTTSDKFramework/TTFFmpeg/LiveLite
-  - BUTTSDKFramework/Reachability (1.48.2.3-premium)
-  - BUTTSDKFramework/Strategy/Core (1.48.2.3-premium):
-    - BUTTSDKFramework/LiveBase
-    - BUTTSDKFramework/Reachability
-  - BUTTSDKFramework/Strategy/Lite (1.48.2.3-premium):
-    - BUTTSDKFramework/LivePlayer/Lite
-    - BUTTSDKFramework/Strategy/Core
-  - BUTTSDKFramework/TTFFmpeg/LiveLite (1.48.2.3-premium)
-  - BUTTSDKFramework/VolcLog (1.48.2.3-premium)
   - Flutter (1.0.0)
   - Google-Mobile-Ads-SDK (13.3.0):
     - GoogleUserMessagingPlatform (>= 1.1)
@@ -54,10 +13,6 @@ PODS:
     - Flutter
     - FlutterMacOS
   - integration_test (0.0.1):
-    - Flutter
-  - pangle_flutter (3.0.2):
-    - Ads-CN-Beta/BUAdSDK (~> 7.0)
-    - Ads-CN-Beta/CSJMediation (~> 7.0)
     - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
@@ -74,15 +29,12 @@ DEPENDENCIES:
   - google_mobile_ads (from `.symlinks/plugins/google_mobile_ads/ios`)
   - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/darwin`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
-  - pangle_flutter (from `.symlinks/plugins/pangle_flutter/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
 SPEC REPOS:
   trunk:
-    - Ads-CN-Beta
-    - BUTTSDKFramework
     - Google-Mobile-Ads-SDK
     - GoogleUserMessagingPlatform
 
@@ -97,8 +49,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/in_app_purchase_storekit/darwin"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
-  pangle_flutter:
-    :path: ".symlinks/plugins/pangle_flutter/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   url_launcher_ios:
@@ -107,16 +57,13 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
 
 SPEC CHECKSUMS:
-  Ads-CN-Beta: cba045b03f901d395885d55e811ef6eaedf8f9ea
   audioplayers_darwin: ccf9c770ee768abb07e26d90af093f7bab1c12ab
-  BUTTSDKFramework: 34f8f8d541da07e79e9c479eb71336d1e4d90fdd
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   Google-Mobile-Ads-SDK: 7692126a35ed859f20635af281c50a2162be8bea
   google_mobile_ads: bab325fd4e31c9705cab0cb298e4f5a9bdb7370f
   GoogleUserMessagingPlatform: befe603da6501006420c206222acd449bba45a9c
   in_app_purchase_storekit: 22cca7d08eebca9babdf4d07d0baccb73325d3c8
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
-  pangle_flutter: bdf1b47c8fdb73fdbecd7aec048fbbaf8435bb00
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   webview_flutter_wkwebview: 8ebf4fded22593026f7dbff1fbff31ea98573c8d

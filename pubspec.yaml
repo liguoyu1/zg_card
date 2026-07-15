@@ -35,7 +35,6 @@ dependencies:
   fast_immutable_collections: ^9.1.0
   path_provider: ^2.1.0
   google_mobile_ads: ^9.0.0
-  pangle_flutter: ^3.0.2
   # Payment
   url_launcher: ^6.3.0
   # In-App Purchase (Apple StoreKit / Google Play Billing) — 已弃用，改用 Xsolla

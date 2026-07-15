@@ -16,7 +16,7 @@ class ResponsiveShell extends StatefulWidget {
 
 class _ResponsiveShellState extends State<ResponsiveShell> {
   static const _tabPaths = ['/', '/collection', '/progress/achievement', '/shop/shop'];
-  static const _tabLabels = ['主页', '卡牌', '进度', '商店'];
+  static const _tabLabels = ['主页', '卡牌', '成就', '商店'];
   static const _tabIcons = [
     Icons.home_outlined, Icons.collections_bookmark_outlined,
     Icons.emoji_events_outlined, Icons.shopping_bag_outlined,

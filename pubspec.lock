@@ -668,14 +668,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  pangle_flutter:
-    dependency: "direct main"
-    description:
-      name: pangle_flutter
-      sha256: "29b28832ecf319fc672ef2e4f631d03f52bbf0d8ea0003323e4959256b5641db"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.2"
   path:
     dependency: transitive
     description:

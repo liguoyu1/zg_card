@@ -13,7 +13,6 @@ import 'domain/services/ad_service.dart';
 import 'domain/services/battle_pass_service.dart';
 import 'domain/services/card_pool.dart';
 import 'domain/services/google_ad_service.dart';
-import 'domain/services/pangle_ad_service.dart';
 import 'domain/services/purchase_service.dart';
 import 'domain/services/quest_manager.dart';
 import 'l10n/locale_service.dart';
@@ -56,14 +55,10 @@ bool _isChina() => Platform.localeName.startsWith('zh_');
 
 Future<void> _initAds() async {
   try {
-    late final AdService ads;
-    if (_isChina()) {
-      ads = PangleAdService();
-    } else {
-      ads = GoogleAdService();
-    }
-    final ok = await ads.initialize();
-    if (ok) adService = ads;
+    // 中国区暂不接入广告；海外使用 AdMob。
+    if (_isChina()) return;
+    final ok = await GoogleAdService().initialize();
+    if (ok) adService = GoogleAdService();
   } catch (_) {}
 }
 
