@@ -1,0 +1,32 @@
+{
+  "name": "warring-states-card-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build",
+    "start": "npx nitropack dev",
+    "preview": "node .output/server/index.mjs",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate deploy",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "jsonwebtoken": "^9.0.2",
+    "nitropack": "^2.8.1",
+    "redis": "^4.6.12"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.5",
+    "prisma": "^5.22.0",
+    "typescript": "^5.3.3"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "engines": {
+    "node": ">=18.0.0 <25.0.0"
+  }
+}

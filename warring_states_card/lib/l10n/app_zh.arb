@@ -1,0 +1,81 @@
+{
+  "@@locale": "zh",
+  "@@last_modified": "2024-01-01",
+  
+  "app_title": "战国卡牌",
+  
+  "menu_home": "首页",
+  "menu_deck": "卡组",
+  "menu_card_list": "卡牌列表",
+  "menu_heroes": "英雄",
+  "menu_settings": "设置",
+  "menu_about": "关于",
+  
+  "game_play": "对战",
+  "game_practice": "练习",
+  "game_challenge": "挑战",
+  "game_legend": "传说段位",
+  
+  "card_cost": "费用",
+  "card_attack": "攻击",
+  "card_health": "生命",
+  "card_type_minion": "随从",
+  "card_type_spell": "法术",
+  "card_type_weapon": "武器",
+  
+  "rarity_common": "普通",
+  "rarity_rare": "稀有",
+  "rarity_epic": "史诗",
+  "rarity_legendary": "传说",
+  
+  "keyword_battlecry": "战吼",
+  "keyword_deathrattle": "亡语",
+  "keyword_charge": "冲锋",
+  "keyword_taunt": "嘲讽",
+  "keyword_divine_shield": "圣盾",
+  "keyword_poisonous": "剧毒",
+  "keyword_windfury": "风怒",
+  
+  "class_bingjia": "兵家",
+  "class_fajia": "法家",
+  "class_rujia": "儒家",
+  "class_daojia": "道家",
+  "class_mojia": "墨家",
+  "class_yinyangjia": "阴阳家",
+  "class_zonghengjia": "纵横家",
+  
+  "kingdom_qi": "齐国",
+  "kingdom_zhao": "赵国",
+  "kingdom_wei": "魏国",
+  "kingdom_qin": "秦国",
+  "kingdom_chu": "楚国",
+  "kingdom_yan": "燕国",
+  "kingdom_han": "韩国",
+  
+  "draw_title": "抽卡",
+  "draw_pity": "保底计数",
+  "draw_guaranteed": "保底",
+  
+  "fusion_title": "合成",
+  "fusion_cost": "合成消耗",
+  "fusion_upgrade": "升级",
+  
+  "rank_bronze": "青铜",
+  "rank_silver": "白银",
+  "rank_gold": "黄金",
+  "rank_diamond": "钻石",
+  "rank_legend": "传说",
+  
+  "game_your_turn": "你的回合",
+  "game_end_turn": "结束回合",
+  "game_concede": "投降",
+  
+  "result_victory": "胜利",
+  "result_defeat": "失败",
+  "result_draw": "平局",
+  
+  "ok": "确定",
+  "cancel": "取消",
+  "confirm": "确认",
+  "close": "关闭"
+}

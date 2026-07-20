@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="战国卡牌 - 集结诸子百家，决战乱世群雄">
+  <meta name="theme-color" content="#2C1810">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="战国卡牌">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>战国卡牌 · Warring States</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    /* 战国风加载动画 */
+    body {
+      margin: 0;
+      background: #2C1810;
+      overflow: hidden;
+    }
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #2C1810;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+    #loading.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loading-symbol {
+      width: 80px;
+      height: 80px;
+      border: 3px solid #D4A84B;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .loading-symbol span {
+      color: #D4A84B;
+      font-size: 40px;
+      font-family: serif;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+    .loading-title {
+      margin-top: 24px;
+      color: #D4A84B;
+      font-size: 28px;
+      font-family: serif;
+      font-weight: bold;
+      letter-spacing: 8px;
+    }
+    .loading-subtitle {
+      margin-top: 8px;
+      color: #8B7355;
+      font-size: 14px;
+      font-family: serif;
+      letter-spacing: 4px;
+    }
+    .loading-bar-container {
+      margin-top: 32px;
+      width: 160px;
+      height: 3px;
+      background: #3D2B1F;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .loading-bar {
+      width: 30%;
+      height: 100%;
+      background: #D4A84B;
+      border-radius: 2px;
+      animation: loadBar 2s ease-in-out infinite;
+    }
+    @keyframes loadBar {
+      0% { width: 0%; margin-left: 0%; }
+      50% { width: 60%; margin-left: 20%; }
+      100% { width: 0%; margin-left: 100%; }
+    }
+    /* Flutter 嵌入 */
+    #flutter_target {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="loading-symbol">
+      <span>戰</span>
+    </div>
+    <div class="loading-title">战国卡牌</div>
+    <div class="loading-subtitle">WARRING STATES</div>
+    <div class="loading-bar-container">
+      <div class="loading-bar"></div>
+    </div>
+  </div>
+
+  <script>
+    // 隐藏加载动画
+    window.addEventListener('flutter-first-frame', function() {
+      setTimeout(function() {
+        var loading = document.getElementById('loading');
+        if (loading) {
+          loading.classList.add('fade-out');
+          setTimeout(function() { loading.remove(); }, 500);
+        }
+      }, 600);
+    });
+  </script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

@@ -1,0 +1,1072 @@
+{
+  "style": "Q版水墨战国",
+  "negative_prompt": "realistic, 3D, dark, scary, violence, gore, modern, futuristic, photorealistic, oil painting",
+  "cards": {
+    "B001": {
+      "name": "魏武卒",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, 魏武卒, character portrait"
+    },
+    "B002": {
+      "name": "秦锐士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, 秦锐士, character portrait"
+    },
+    "B003": {
+      "name": "赵边骑",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, striking, detailed, 赵边骑, character portrait"
+    },
+    "B004": {
+      "name": "燕死士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, 燕死士, character portrait"
+    },
+    "B005": {
+      "name": "楚锐卒",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, 楚锐卒, character portrait"
+    },
+    "B006": {
+      "name": "齐技击士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, striking, detailed, 齐技击士, character portrait"
+    },
+    "B007": {
+      "name": "韩戟兵",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, 韩戟兵, character portrait"
+    },
+    "B008": {
+      "name": "孙武",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, legendary figure, epic presence, glowing aura, 孙武, character portrait"
+    },
+    "B009": {
+      "name": "吴起",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, epic scene, impressive, magnificent, 吴起, character portrait"
+    },
+    "B010": {
+      "name": "孙膑",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, epic scene, impressive, magnificent, 孙膑, character portrait"
+    },
+    "B011": {
+      "name": "廉颇",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, epic scene, impressive, magnificent, 廉颇, character portrait"
+    },
+    "B012": {
+      "name": "李牧",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, legendary figure, epic presence, glowing aura, 李牧, character portrait"
+    },
+    "B013": {
+      "name": "围魏救赵",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, 围魏救赵, action scene, spell effect, dynamic composition"
+    },
+    "B014": {
+      "name": "破釜沉舟",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, striking, detailed, 破釜沉舟, action scene, spell effect, dynamic composition"
+    },
+    "B015": {
+      "name": "背水一战",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, striking, detailed, 背水一战, action scene, spell effect, dynamic composition"
+    },
+    "B016": {
+      "name": "暗度陈仓",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, epic scene, impressive, magnificent, 暗度陈仓, action scene, spell effect, dynamic composition"
+    },
+    "B017": {
+      "name": "声东击西",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, 声东击西, action scene, spell effect, dynamic composition"
+    },
+    "B018": {
+      "name": "十面埋伏",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, epic scene, impressive, magnificent, 十面埋伏, action scene, spell effect, dynamic composition"
+    },
+    "B019": {
+      "name": "以逸待劳",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, 以逸待劳, action scene, spell effect, dynamic composition"
+    },
+    "B020": {
+      "name": "擒贼擒王",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, striking, detailed, 擒贼擒王, action scene, spell effect, dynamic composition"
+    },
+    "BW001": {
+      "name": "吴钩",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, 吴钩, weapon showcase, item focus, detailed equipment"
+    },
+    "BW002": {
+      "name": "越王剑",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, striking, detailed, 越王剑, weapon showcase, item focus, detailed equipment"
+    },
+    "BW003": {
+      "name": "丈八蛇矛",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, military commander theme, armor and weapons, epic scene, impressive, magnificent, 丈八蛇矛, weapon showcase, item focus, detailed equipment"
+    },
+    "F001": {
+      "name": "执法吏",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, 执法吏, character portrait"
+    },
+    "F002": {
+      "name": "刑徒",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, 刑徒, character portrait"
+    },
+    "F003": {
+      "name": "狱卒",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, 狱卒, character portrait"
+    },
+    "F004": {
+      "name": "律令官",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, striking, detailed, 律令官, character portrait"
+    },
+    "F005": {
+      "name": "司寇",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, striking, detailed, 司寇, character portrait"
+    },
+    "F006": {
+      "name": "大理",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, epic scene, impressive, magnificent, 大理, character portrait"
+    },
+    "F007": {
+      "name": "法家弟子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, 法家弟子, character portrait"
+    },
+    "F008": {
+      "name": "商鞅",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, legendary figure, epic presence, glowing aura, 商鞅, character portrait"
+    },
+    "F009": {
+      "name": "韩非",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, epic scene, impressive, magnificent, 韩非, character portrait"
+    },
+    "F010": {
+      "name": "李悝",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, striking, detailed, 李悝, character portrait"
+    },
+    "F011": {
+      "name": "申不害",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, epic scene, impressive, magnificent, 申不害, character portrait"
+    },
+    "F012": {
+      "name": "吴起变法",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, legendary figure, epic presence, glowing aura, 吴起变法, character portrait"
+    },
+    "F013": {
+      "name": "刑名之法",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, 刑名之法, action scene, spell effect, dynamic composition"
+    },
+    "F014": {
+      "name": "峻法严刑",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, striking, detailed, 峻法严刑, action scene, spell effect, dynamic composition"
+    },
+    "F015": {
+      "name": "一断于法",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, 一断于法, action scene, spell effect, dynamic composition"
+    },
+    "F016": {
+      "name": "以法治国",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, epic scene, impressive, magnificent, 以法治国, action scene, spell effect, dynamic composition"
+    },
+    "F017": {
+      "name": "连坐之法",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, striking, detailed, 连坐之法, action scene, spell effect, dynamic composition"
+    },
+    "F018": {
+      "name": "奖励耕战",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, 奖励耕战, action scene, spell effect, dynamic composition"
+    },
+    "F019": {
+      "name": "废除井田",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, epic scene, impressive, magnificent, 废除井田, action scene, spell effect, dynamic composition"
+    },
+    "F020": {
+      "name": "统一度量",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, striking, detailed, 统一度量, action scene, spell effect, dynamic composition"
+    },
+    "FW001": {
+      "name": "法家律尺",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, 法家律尺, weapon showcase, item focus, detailed equipment"
+    },
+    "FW002": {
+      "name": "刑鼎",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, legal scholar theme, scrolls and laws, solemn atmosphere, striking, detailed, 刑鼎, weapon showcase, item focus, detailed equipment"
+    },
+    "M001": {
+      "name": "机关弩手",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 机关弩手, character portrait"
+    },
+    "M002": {
+      "name": "机关兽",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 机关兽, character portrait"
+    },
+    "M003": {
+      "name": "墨家弟子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 墨家弟子, character portrait"
+    },
+    "M004": {
+      "name": "护城弩兵",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, striking, detailed, 护城弩兵, character portrait"
+    },
+    "M005": {
+      "name": "守城工兵",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 守城工兵, character portrait"
+    },
+    "M006": {
+      "name": "攻城巨械",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, epic scene, impressive, magnificent, 攻城巨械, character portrait"
+    },
+    "M007": {
+      "name": "工匠大师",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, striking, detailed, 工匠大师, character portrait"
+    },
+    "M008": {
+      "name": "墨子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, legendary figure, epic presence, glowing aura, 墨子, character portrait"
+    },
+    "M009": {
+      "name": "公输班",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, epic scene, impressive, magnificent, 公输班, character portrait"
+    },
+    "M010": {
+      "name": "禽滑厘",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, striking, detailed, 禽滑厘, character portrait"
+    },
+    "M011": {
+      "name": "田鸠",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, epic scene, impressive, magnificent, 田鸠, character portrait"
+    },
+    "M012": {
+      "name": "腹䵍",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 腹䵍, character portrait"
+    },
+    "M013": {
+      "name": "兼爱非攻",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 兼爱非攻, action scene, spell effect, dynamic composition"
+    },
+    "M014": {
+      "name": "墨守成规",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 墨守成规, action scene, spell effect, dynamic composition"
+    },
+    "M015": {
+      "name": "机关之术",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, striking, detailed, 机关之术, action scene, spell effect, dynamic composition"
+    },
+    "M016": {
+      "name": "挡矢之术",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 挡矢之术, action scene, spell effect, dynamic composition"
+    },
+    "M017": {
+      "name": "节用节葬",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, striking, detailed, 节用节葬, action scene, spell effect, dynamic composition"
+    },
+    "M018": {
+      "name": "尚贤尚同",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, epic scene, impressive, magnificent, 尚贤尚同, action scene, spell effect, dynamic composition"
+    },
+    "M019": {
+      "name": "天志明鬼",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, striking, detailed, 天志明鬼, action scene, spell effect, dynamic composition"
+    },
+    "M020": {
+      "name": "非乐非命",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 非乐非命, action scene, spell effect, dynamic composition"
+    },
+    "MW001": {
+      "name": "墨家机关弩",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, 墨家机关弩, weapon showcase, item focus, detailed equipment"
+    },
+    "MW002": {
+      "name": "公输尺",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Mohist engineer theme, mechanical devices, gears, epic scene, impressive, magnificent, 公输尺, weapon showcase, item focus, detailed equipment"
+    },
+    "Y001": {
+      "name": "巫祝",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, 巫祝, character portrait"
+    },
+    "Y002": {
+      "name": "占卜师",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, 占卜师, character portrait"
+    },
+    "Y003": {
+      "name": "五行弟子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, 五行弟子, character portrait"
+    },
+    "Y004": {
+      "name": "祭司",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, striking, detailed, 祭司, character portrait"
+    },
+    "Y005": {
+      "name": "星象师",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, striking, detailed, 星象师, character portrait"
+    },
+    "Y006": {
+      "name": "风水师",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, 风水师, character portrait"
+    },
+    "Y007": {
+      "name": "方术士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, epic scene, impressive, magnificent, 方术士, character portrait"
+    },
+    "Y008": {
+      "name": "邹衍",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, legendary figure, epic presence, glowing aura, 邹衍, character portrait"
+    },
+    "Y009": {
+      "name": "甘德",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, epic scene, impressive, magnificent, 甘德, character portrait"
+    },
+    "Y010": {
+      "name": "石申",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, legendary figure, epic presence, glowing aura, 石申, character portrait"
+    },
+    "Y011": {
+      "name": "南公",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, striking, detailed, 南公, character portrait"
+    },
+    "Y012": {
+      "name": "安期生",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, striking, detailed, 安期生, character portrait"
+    },
+    "Y013": {
+      "name": "五行相生",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, 五行相生, action scene, spell effect, dynamic composition"
+    },
+    "Y014": {
+      "name": "阴阳调和",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, striking, detailed, 阴阳调和, action scene, spell effect, dynamic composition"
+    },
+    "Y015": {
+      "name": "天象异变",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, epic scene, impressive, magnificent, 天象异变, action scene, spell effect, dynamic composition"
+    },
+    "Y016": {
+      "name": "占星问卜",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, 占星问卜, action scene, spell effect, dynamic composition"
+    },
+    "Y017": {
+      "name": "大九州说",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, epic scene, impressive, magnificent, 大九州说, action scene, spell effect, dynamic composition"
+    },
+    "Y018": {
+      "name": "五德终始",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, striking, detailed, 五德终始, action scene, spell effect, dynamic composition"
+    },
+    "Y019": {
+      "name": "灾异谴告",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, 灾异谴告, action scene, spell effect, dynamic composition"
+    },
+    "Y020": {
+      "name": "符瑞祥兆",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, 符瑞祥兆, action scene, spell effect, dynamic composition"
+    },
+    "YW001": {
+      "name": "阴阳五行杖",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, striking, detailed, 阴阳五行杖, weapon showcase, item focus, detailed equipment"
+    },
+    "YW002": {
+      "name": "占星罗盘",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Yin-Yang theme, cosmic elements, stars and divination, epic scene, impressive, magnificent, 占星罗盘, weapon showcase, item focus, detailed equipment"
+    },
+    "Z001": {
+      "name": "辩士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, 辩士, character portrait"
+    },
+    "Z002": {
+      "name": "说客",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, 说客, character portrait"
+    },
+    "Z003": {
+      "name": "刺客",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, 刺客, character portrait"
+    },
+    "Z004": {
+      "name": "使者",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 使者, character portrait"
+    },
+    "Z005": {
+      "name": "谋士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 谋士, character portrait"
+    },
+    "Z006": {
+      "name": "外交官",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 外交官, character portrait"
+    },
+    "Z007": {
+      "name": "策士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 策士, character portrait"
+    },
+    "Z008": {
+      "name": "苏秦",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, epic scene, impressive, magnificent, 苏秦, character portrait"
+    },
+    "Z009": {
+      "name": "张仪",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, epic scene, impressive, magnificent, 张仪, character portrait"
+    },
+    "Z010": {
+      "name": "范雎",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 范雎, character portrait"
+    },
+    "Z011": {
+      "name": "蔺相如",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 蔺相如, character portrait"
+    },
+    "Z012": {
+      "name": "鬼谷子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, legendary figure, epic presence, glowing aura, 鬼谷子, character portrait"
+    },
+    "Z013": {
+      "name": "连横",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, 连横, action scene, spell effect, dynamic composition"
+    },
+    "Z014": {
+      "name": "合纵",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, 合纵, action scene, spell effect, dynamic composition"
+    },
+    "Z015": {
+      "name": "远交近攻",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 远交近攻, action scene, spell effect, dynamic composition"
+    },
+    "Z016": {
+      "name": "纵横捭阖",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 纵横捭阖, action scene, spell effect, dynamic composition"
+    },
+    "Z017": {
+      "name": "完璧归赵",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 完璧归赵, action scene, spell effect, dynamic composition"
+    },
+    "Z018": {
+      "name": "离间计",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 离间计, action scene, spell effect, dynamic composition"
+    },
+    "Z019": {
+      "name": "空城计",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, 空城计, action scene, spell effect, dynamic composition"
+    },
+    "Z020": {
+      "name": "调虎离山",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, 调虎离山, action scene, spell effect, dynamic composition"
+    },
+    "ZW001": {
+      "name": "纵横家短剑",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, 纵横家短剑, weapon showcase, item focus, detailed equipment"
+    },
+    "ZW002": {
+      "name": "合纵连横书",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, diplomat theme, strategic, sophisticated, striking, detailed, 合纵连横书, weapon showcase, item focus, detailed equipment"
+    },
+    "N001": {
+      "name": "民兵",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 民兵, character portrait"
+    },
+    "N002": {
+      "name": "斥候",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 斥候, character portrait"
+    },
+    "N003": {
+      "name": "流浪者",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 流浪者, character portrait"
+    },
+    "N004": {
+      "name": "侍卫",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 侍卫, character portrait"
+    },
+    "N005": {
+      "name": "剑客",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 剑客, character portrait"
+    },
+    "N006": {
+      "name": "谋士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 谋士, character portrait"
+    },
+    "N007": {
+      "name": "药师",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 药师, character portrait"
+    },
+    "N008": {
+      "name": "甲士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 甲士, character portrait"
+    },
+    "N009": {
+      "name": "弓手",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 弓手, character portrait"
+    },
+    "N010": {
+      "name": "骑兵",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 骑兵, character portrait"
+    },
+    "N011": {
+      "name": "方士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 方士, character portrait"
+    },
+    "N012": {
+      "name": "医师",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 医师, character portrait"
+    },
+    "N013": {
+      "name": "将领",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 将领, character portrait"
+    },
+    "N014": {
+      "name": "校尉",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 校尉, character portrait"
+    },
+    "N015": {
+      "name": "武士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 武士, character portrait"
+    },
+    "N016": {
+      "name": "刺客",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 刺客, character portrait"
+    },
+    "N017": {
+      "name": "都尉",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 都尉, character portrait"
+    },
+    "N018": {
+      "name": "猛将",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 猛将, character portrait"
+    },
+    "N019": {
+      "name": "谋主",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, epic scene, impressive, magnificent, 谋主, character portrait"
+    },
+    "N020": {
+      "name": "猛犸",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 猛犸, character portrait"
+    },
+    "N021": {
+      "name": "将军",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, epic scene, impressive, magnificent, 将军, character portrait"
+    },
+    "N022": {
+      "name": "勇士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 勇士, character portrait"
+    },
+    "N023": {
+      "name": "宗师",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 宗师, character portrait"
+    },
+    "N024": {
+      "name": "上将军",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, epic scene, impressive, magnificent, 上将军, character portrait"
+    },
+    "N025": {
+      "name": "战神",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, legendary figure, epic presence, glowing aura, 战神, character portrait"
+    },
+    "N026": {
+      "name": "霸王",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, legendary figure, epic presence, glowing aura, 霸王, character portrait"
+    },
+    "N027": {
+      "name": "天帝",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, legendary figure, epic presence, glowing aura, 天帝, character portrait"
+    },
+    "N028": {
+      "name": "神龙",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, legendary figure, epic presence, glowing aura, 神龙, character portrait"
+    },
+    "N029": {
+      "name": "调兵遣将",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 调兵遣将, action scene, spell effect, dynamic composition"
+    },
+    "N030": {
+      "name": "四面楚歌",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 四面楚歌, action scene, spell effect, dynamic composition"
+    },
+    "N031": {
+      "name": "知己知彼",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 知己知彼, action scene, spell effect, dynamic composition"
+    },
+    "N032": {
+      "name": "坚壁清野",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 坚壁清野, action scene, spell effect, dynamic composition"
+    },
+    "N033": {
+      "name": "以少胜多",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 以少胜多, action scene, spell effect, dynamic composition"
+    },
+    "N034": {
+      "name": "奇袭",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 奇袭, action scene, spell effect, dynamic composition"
+    },
+    "N035": {
+      "name": "增援",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 增援, action scene, spell effect, dynamic composition"
+    },
+    "N036": {
+      "name": "决胜局",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 决胜局, action scene, spell effect, dynamic composition"
+    },
+    "N037": {
+      "name": "横扫千军",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, epic scene, impressive, magnificent, 横扫千军, action scene, spell effect, dynamic composition"
+    },
+    "N038": {
+      "name": "反戈一击",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, striking, detailed, 反戈一击, action scene, spell effect, dynamic composition"
+    },
+    "NW001": {
+      "name": "青铜剑",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 青铜剑, weapon showcase, item focus, detailed equipment"
+    },
+    "NW002": {
+      "name": "长戟",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, 长戟, weapon showcase, item focus, detailed equipment"
+    },
+    "NW003": {
+      "name": "秦王剑",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, commoner theme, everyday life of Warring States, legendary figure, epic presence, glowing aura, 秦王剑, weapon showcase, item focus, detailed equipment"
+    },
+    "R001": {
+      "name": "儒生",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, 儒生, character portrait"
+    },
+    "R002": {
+      "name": "礼官",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, 礼官, character portrait"
+    },
+    "R003": {
+      "name": "乐师",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, 乐师, character portrait"
+    },
+    "R004": {
+      "name": "典狱官",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, striking, detailed, 典狱官, character portrait"
+    },
+    "R005": {
+      "name": "君子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, striking, detailed, 君子, character portrait"
+    },
+    "R006": {
+      "name": "贤人",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, epic scene, impressive, magnificent, 贤人, character portrait"
+    },
+    "R007": {
+      "name": "夫子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, 夫子, character portrait"
+    },
+    "R008": {
+      "name": "孔子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, legendary figure, epic presence, glowing aura, 孔子, character portrait"
+    },
+    "R009": {
+      "name": "孟子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, legendary figure, epic presence, glowing aura, 孟子, character portrait"
+    },
+    "R010": {
+      "name": "荀子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, epic scene, impressive, magnificent, 荀子, character portrait"
+    },
+    "R011": {
+      "name": "子路",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, striking, detailed, 子路, character portrait"
+    },
+    "R012": {
+      "name": "曾子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, striking, detailed, 曾子, character portrait"
+    },
+    "R013": {
+      "name": "仁政化民",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, striking, detailed, 仁政化民, action scene, spell effect, dynamic composition"
+    },
+    "R014": {
+      "name": "礼乐同春",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, 礼乐同春, action scene, spell effect, dynamic composition"
+    },
+    "R015": {
+      "name": "教化众生",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, epic scene, impressive, magnificent, 教化众生, action scene, spell effect, dynamic composition"
+    },
+    "R016": {
+      "name": "仁义之师",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, epic scene, impressive, magnificent, 仁义之师, action scene, spell effect, dynamic composition"
+    },
+    "R017": {
+      "name": "以德服人",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, 以德服人, action scene, spell effect, dynamic composition"
+    },
+    "R018": {
+      "name": "三省吾身",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, 三省吾身, action scene, spell effect, dynamic composition"
+    },
+    "R019": {
+      "name": "有教无类",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, striking, detailed, 有教无类, action scene, spell effect, dynamic composition"
+    },
+    "R020": {
+      "name": "克己复礼",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, striking, detailed, 克己复礼, action scene, spell effect, dynamic composition"
+    },
+    "RW001": {
+      "name": "儒家玉圭",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, 儒家玉圭, weapon showcase, item focus, detailed equipment"
+    },
+    "RW002": {
+      "name": "礼器编钟",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Confucian scholar theme, elegant robes, classical Chinese, epic scene, impressive, magnificent, 礼器编钟, weapon showcase, item focus, detailed equipment"
+    },
+    "D001": {
+      "name": "道童",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, 道童, character portrait"
+    },
+    "D002": {
+      "name": "守山人",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, 守山人, character portrait"
+    },
+    "D003": {
+      "name": "观星者",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, 观星者, character portrait"
+    },
+    "D004": {
+      "name": "符师",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, striking, detailed, 符师, character portrait"
+    },
+    "D005": {
+      "name": "真人",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, striking, detailed, 真人, character portrait"
+    },
+    "D006": {
+      "name": "隐士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, epic scene, impressive, magnificent, 隐士, character portrait"
+    },
+    "D007": {
+      "name": "方士",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, 方士, character portrait"
+    },
+    "D008": {
+      "name": "老子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, legendary figure, epic presence, glowing aura, 老子, character portrait"
+    },
+    "D009": {
+      "name": "庄子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, legendary figure, epic presence, glowing aura, 庄子, character portrait"
+    },
+    "D010": {
+      "name": "列子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, epic scene, impressive, magnificent, 列子, character portrait"
+    },
+    "D011": {
+      "name": "关尹子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, striking, detailed, 关尹子, character portrait"
+    },
+    "D012": {
+      "name": "文子",
+      "type": "minion",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, striking, detailed, 文子, character portrait"
+    },
+    "D013": {
+      "name": "道法自然",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, 道法自然, action scene, spell effect, dynamic composition"
+    },
+    "D014": {
+      "name": "无为而治",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, striking, detailed, 无为而治, action scene, spell effect, dynamic composition"
+    },
+    "D015": {
+      "name": "上善若水",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, 上善若水, action scene, spell effect, dynamic composition"
+    },
+    "D016": {
+      "name": "虚静无为",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, striking, detailed, 虚静无为, action scene, spell effect, dynamic composition"
+    },
+    "D017": {
+      "name": "齐物论",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, epic scene, impressive, magnificent, 齐物论, action scene, spell effect, dynamic composition"
+    },
+    "D018": {
+      "name": "逍遥游",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, epic scene, impressive, magnificent, 逍遥游, action scene, spell effect, dynamic composition"
+    },
+    "D019": {
+      "name": "养生主",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, 养生主, action scene, spell effect, dynamic composition"
+    },
+    "D020": {
+      "name": "庖丁解牛",
+      "type": "spell",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, striking, detailed, 庖丁解牛, action scene, spell effect, dynamic composition"
+    },
+    "DW001": {
+      "name": "道家拂尘",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, 道家拂尘, weapon showcase, item focus, detailed equipment"
+    },
+    "DW002": {
+      "name": "太极剑",
+      "type": "weapon",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, Daoist theme, mystical, natural elements, striking, detailed, 太极剑, weapon showcase, item focus, detailed equipment"
+    }
+  },
+  "heroes": {
+    "H_B001": {
+      "name": "孙膑",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 孙膑, bingjia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_B002": {
+      "name": "吴起",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 吴起, bingjia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_B003": {
+      "name": "廉颇",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 廉颇, bingjia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_F001": {
+      "name": "商鞅",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 商鞅, fajia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_F002": {
+      "name": "韩非",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 韩非, fajia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_F003": {
+      "name": "申不害",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 申不害, fajia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_R001": {
+      "name": "孔子",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 孔子, rujia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_R002": {
+      "name": "孟子",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 孟子, rujia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_R003": {
+      "name": "荀子",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 荀子, rujia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_D001": {
+      "name": "老子",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 老子, daojia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_D002": {
+      "name": "庄子",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 庄子, daojia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_D003": {
+      "name": "列子",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 列子, daojia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_M001": {
+      "name": "墨子",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 墨子, mojia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_M002": {
+      "name": "公输班",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 公输班, mojia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_M003": {
+      "name": "禽滑厘",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 禽滑厘, mojia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_Y001": {
+      "name": "邹衍",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 邹衍, yinyangjia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_Y002": {
+      "name": "甘德",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 甘德, yinyangjia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_Y003": {
+      "name": "石申",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 石申, yinyangjia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_Z001": {
+      "name": "苏秦",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 苏秦, zonghengjia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_Z002": {
+      "name": "张仪",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 张仪, zonghengjia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    },
+    "H_Z003": {
+      "name": "鬼谷子",
+      "prompt": "cute chibi ink-wash painting style, Warring States period China, watercolor texture, soft colors, adorable character design, clean lines, vibrant but tasteful, 2D illustration, character portrait of 鬼谷子, zonghengjia philosopher-general, full body portrait, majestic pose, Q版水墨战国 style"
+    }
+  }
+}

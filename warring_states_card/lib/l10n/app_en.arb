@@ -1,0 +1,81 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2024-01-01",
+  
+  "app_title": "Warring States Card",
+  
+  "menu_home": "Home",
+  "menu_deck": "Deck",
+  "menu_card_list": "Card List",
+  "menu_heroes": "Heroes",
+  "menu_settings": "Settings",
+  "menu_about": "About",
+  
+  "game_play": "Play",
+  "game_practice": "Practice",
+  "game_challenge": "Challenge",
+  "game_legend": "Legend Rank",
+  
+  "card_cost": "Cost",
+  "card_attack": "Attack",
+  "card_health": "Health",
+  "card_type_minion": "Minion",
+  "card_type_spell": "Spell",
+  "card_type_weapon": "Weapon",
+  
+  "rarity_common": "Common",
+  "rarity_rare": "Rare",
+  "rarity_epic": "Epic",
+  "rarity_legendary": "Legendary",
+  
+  "keyword_battlecry": "Battlecry",
+  "keyword_deathrattle": "Deathrattle",
+  "keyword_charge": "Charge",
+  "keyword_taunt": "Taunt",
+  "keyword_divine_shield": "Divine Shield",
+  "keyword_poisonous": "Poisonous",
+  "keyword_windfury": "Windfury",
+  
+  "class_bingjia": "Military",
+  "class_fajia": "Legalist",
+  "class_rujia": "Confucian",
+  "class_daojia": "Daoist",
+  "class_mojia": "Mohist",
+  "class_yinyangjia": "Yin-Yang",
+  "class_zonghengjia": "Strategist",
+  
+  "kingdom_qi": "Qi",
+  "kingdom_zhao": "Zhao",
+  "kingdom_wei": "Wei",
+  "kingdom_qin": "Qin",
+  "kingdom_chu": "Chu",
+  "kingdom_yan": "Yan",
+  "kingdom_han": "Han",
+  
+  "draw_title": "Draw Cards",
+  "draw_pity": "Pity Counter",
+  "draw_guaranteed": "Guaranteed",
+  
+  "fusion_title": "Fusion",
+  "fusion_cost": "Fusion Cost",
+  "fusion_upgrade": "Upgrade",
+  
+  "rank_bronze": "Bronze",
+  "rank_silver": "Silver",
+  "rank_gold": "Gold",
+  "rank_diamond": "Diamond",
+  "rank_legend": "Legend",
+  
+  "game_your_turn": "Your Turn",
+  "game_end_turn": "End Turn",
+  "game_concede": "Concede",
+  
+  "result_victory": "Victory",
+  "result_defeat": "Defeat",
+  "result_draw": "Draw",
+  
+  "ok": "OK",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "close": "Close"
+}

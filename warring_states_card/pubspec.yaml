@@ -1,0 +1,82 @@
+name: warring_states_card
+description: Warring States themed card battle game
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  
+  # State Management
+  flutter_riverpod: ^2.4.0
+  riverpod_annotation: ^2.3.0
+  
+  # Storage
+  shared_preferences: ^2.2.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # Animation
+  lottie: ^3.0.0
+  
+  # Audio
+  audioplayers: ^5.2.0
+  
+  # Utils
+  uuid: ^4.2.0
+  equatable: ^2.0.5
+  collection: ^1.18.0
+  fast_immutable_collections: ^9.1.0
+  path_provider: ^2.1.0
+  google_mobile_ads: ^9.0.0
+  # Payment
+  url_launcher: ^6.3.0
+  # In-App Purchase (Apple StoreKit / Google Play Billing) — 已弃用，改用 Xsolla
+  in_app_purchase: ^3.2.0
+  go_router: ^17.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  mockito: ^5.4.0
+  build_runner: ^2.4.0
+  riverpod_generator: ^2.3.0
+  integration_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  image_path: "assets/icons/app_icon.png"
+  android: true
+  ios: true
+  web:
+    generate: true
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/heroes/
+    - assets/minions/
+    - assets/spells/
+    - assets/weapons/
+    - assets/icons/
+    - assets/sounds/
+    - assets/gems/
+    - assets/frame/
+    - assets/back/
+    - assets/l10n/
+    - assets/chibi_cute/heroes/
+    - assets/chibi_cute/minions/
+    - assets/chibi_cute/spells/
+    - assets/chibi_cute/weapons/
+    - assets/fantasy_rpg/heroes/
+    - assets/fantasy_rpg/minions/
+    - assets/fantasy_rpg/spells/
+    - assets/fantasy_rpg/weapons/
