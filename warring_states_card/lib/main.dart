@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:async';
 
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_localizations/flutter_localizations.dart';

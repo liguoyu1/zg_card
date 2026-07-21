@@ -787,7 +787,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         AudioManager.I.attack();
         AudioManager.I.damage();
         _showDamage(card.id, attacker.attack, DamageIndicatorState.damage);
-        _log('${attacker.name} 攻击 ${card.name}');
+        _log(LocaleService.I.t('game.log_attack', args: {'attacker': attacker.name, 'target': card.name}));
         ref.read(aiGameProvider.notifier).minionAttack(
           widget.playerId,
           attacker,
@@ -921,7 +921,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       // 直接释放
       ref.read(aiGameProvider.notifier).useHeroPower(widget.playerId);
       AudioManager.I.buttonClick();
-      _log('使用英雄技能：${skill.runtimeType}');
+      _log(LocaleService.I.t('game.log_hero_power', args: {'skill': '${skill.runtimeType}'}));
       _flashCard('hero_${widget.playerId}');
       setState(() => _selectedMinion = null);
     }
@@ -1038,7 +1038,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     ref.read(aiGameProvider.notifier).playCard(widget.playerId, card);
     AudioManager.I.playCard();
-    _log('打出 ${card.name}（费用 ${card.cost}）');
+    _log(LocaleService.I.t('game.log_play_card', args: {'name': card.name, 'cost': '${card.cost}'}));
   }
 
   Widget _confirmExitButton() {
@@ -1434,7 +1434,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       }
       AudioManager.I.attack();
       AudioManager.I.damage();
-      _log('AI ${attacker.name} 攻击');
+      _log(LocaleService.I.t('game.log_ai_attack', args: {'attacker': attacker.name}));
       await Future.delayed(const Duration(milliseconds: 400));
       if (!mounted) return;
     }
@@ -1446,7 +1446,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     for (final ach in unlocked) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('🏆 ${ach.title}: ${ach.description} (${ach.goldReward}金币)'),
+          content: Text(LocaleService.I.t('game.battle_log_gold', args: {'title': ach.title, 'desc': ach.description, 'reward': '${ach.goldReward}'})),
           backgroundColor: const Color(0xFF2D1B00),
           duration: const Duration(seconds: 4),
           behavior: SnackBarBehavior.floating,

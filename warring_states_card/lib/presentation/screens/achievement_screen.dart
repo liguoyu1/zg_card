@@ -183,14 +183,22 @@ class _AchievementScreenState extends State<AchievementScreen>
     final history = _history;
     return SingleChildScrollView(padding: const EdgeInsets.all(16), child: Column(
       crossAxisAlignment: CrossAxisAlignment.start, children: [
-        _st(Icons.sports_kabaddi, LocaleService.I.t('achievement.stats_battle'), '${data.totalMatches} 场  ${data.winCount} 胜  '
-            '${data.totalMatches > 0 ? (data.winCount * 100 ~/ data.totalMatches) : 0}%胜率'),
-        _st(Icons.local_fire_department, LocaleService.I.t('achievement.stats_damage'), '累计 ${data.stats['totalDamage'] ?? 0}'),
-        _st(Icons.monetization_on, LocaleService.I.t('achievement.stats_gold'), '累计获得 ${data.stats['totalGoldEarned'] ?? 0}'),
-        _st(Icons.auto_awesome, LocaleService.I.t('achievement.stats_win_streak'), '最高 ${data.stats['maxWinStreak'] ?? 0} 连胜'),
-        _st(Icons.collections_bookmark, LocaleService.I.t('achievement.stats_collection'), '${data.unlockedCards.length} 张'),
+        _st(Icons.sports_kabaddi, LocaleService.I.t('achievement.stats_battle'),
+            LocaleService.I.t('achievement.stats_battle_format', args: {
+              'matches': '${data.totalMatches}', 'wins': '${data.winCount}',
+              'winrate': '${data.totalMatches > 0 ? (data.winCount * 100 ~/ data.totalMatches) : 0}',
+            })),
+        _st(Icons.local_fire_department, LocaleService.I.t('achievement.stats_damage'),
+            LocaleService.I.t('achievement.stats_total_damage', args: {'value': '${data.stats['totalDamage'] ?? 0}'})),
+        _st(Icons.monetization_on, LocaleService.I.t('achievement.stats_gold'),
+            LocaleService.I.t('achievement.stats_total_gold', args: {'value': '${data.stats['totalGoldEarned'] ?? 0}'})),
+        _st(Icons.auto_awesome, LocaleService.I.t('achievement.stats_win_streak'),
+            LocaleService.I.t('achievement.stats_max_streak', args: {'value': '${data.stats['maxWinStreak'] ?? 0}'})),
+        _st(Icons.collections_bookmark, LocaleService.I.t('achievement.stats_collection'),
+            LocaleService.I.t('achievement.stats_collection_count', args: {'value': '${data.unlockedCards.length}'})),
         if (data.stats['heroAnyWins'] != null && data.stats['heroAnyWins']! > 0)
-          _st(Icons.person, LocaleService.I.t('achievement.stats_hero'), '总胜场 ${data.stats['heroAnyWins']}'),
+          _st(Icons.person, LocaleService.I.t('achievement.stats_hero'),
+              LocaleService.I.t('achievement.stats_hero_wins', args: {'value': '${data.stats['heroAnyWins']}'})),
         const SizedBox(height: 16),
         if (history.isNotEmpty) ...[
           Text(LocaleService.I.t('achievement.recent_matches'), style: const TextStyle(color: AppTheme.goldAccent, fontSize: 16, fontWeight: FontWeight.bold)),

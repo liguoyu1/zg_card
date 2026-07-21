@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Card;
 import '../../../data/card_image_service.dart';
 import '../../../domain/models/card.dart';
+import '../../../l10n/locale_service.dart';
 
 /// 卡牌动画状态枚举
 enum CardAnimationState {
@@ -503,35 +504,35 @@ class _BoardCardState extends State<BoardCard> with TickerProviderStateMixin {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.orange.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u51B2\u950B', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_charge'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.taunt)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.brown.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u8BBD\u8BAE', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_taunt'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.divineShield)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.cyan.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u5723\u76FE', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_divine_shield'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.windfury)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.lime.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u98CE\u6012', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_windfury'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.lifesteal)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.pink.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u5438\u8840', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_lifesteal'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
 

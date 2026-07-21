@@ -128,7 +128,7 @@ class _PackScreenState extends State<PackScreen> with TickerProviderStateMixin {
               children: [
                 const Icon(Icons.monetization_on, color: AppTheme.goldAccent, size: 24),
                 const SizedBox(width: 8),
-                Text('$_playerGold ${LocaleService.I.t('pack.gold')}',
+                Text(LocaleService.I.t('pack.gold_display', args: {'gold': '$_playerGold', 'label': LocaleService.I.t('pack.gold')}),
                     style: const TextStyle(color: AppTheme.goldAccent, fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(width: 20),
                 Text(LocaleService.I.t('pack.gold_price'),
@@ -229,7 +229,7 @@ class _PackScreenState extends State<PackScreen> with TickerProviderStateMixin {
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Text(c.name, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                       ),
-                      Text('${c.cost}费 ${c.attack}/${c.health}',
+                      Text(LocaleService.I.t('pack.card_stats', args: {'cost': '${c.cost}', 'attack': '${c.attack}', 'health': '${c.health}'}),
                           style: TextStyle(color: color.withAlpha(200), fontSize: 10)),
                     ],
                   ),

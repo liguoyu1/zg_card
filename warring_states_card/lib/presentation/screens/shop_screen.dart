@@ -411,8 +411,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         ? '\$${usd.toStringAsFixed(2)} ($eff💎/\$) · 送${bonusActual}颗'
         : '\$${usd.toStringAsFixed(2)} ($eff💎/\$)';
     final title = bonusActual > 0
-        ? '${diamonds}+${bonusActual}钻石'
-        : '${diamonds}钻石';
+        ? LocaleService.I.t('shop.gem_title_bonus', args: {'base': '$diamonds', 'bonus': '$bonusActual'})
+        : LocaleService.I.t('shop.gem_title', args: {'base': '$diamonds'});
     return _card(Icons.diamond, title, subtitle,
         Text('\$${usd.toStringAsFixed(2)}', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 16, fontWeight: FontWeight.bold)),
         () => _buyGem(diamonds));
@@ -494,7 +494,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     }
     return Scaffold(
       backgroundColor: AppTheme.bgDark,
-      appBar: AppBar(title: const Text('商店', style: TextStyle(color: AppTheme.parchment)),
+      appBar: AppBar(title: Text(LocaleService.I.t('shop.title_bar'), style: const TextStyle(color: AppTheme.parchment)),
           backgroundColor: AppTheme.agedWood, foregroundColor: AppTheme.parchment),
       body: SingleChildScrollView(padding: const EdgeInsets.all(16), child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -546,11 +546,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           // === 金币 ===
           _foldable(LocaleService.I.t('shop.gold_title'), _goldExpanded, (v) => setState(() => _goldExpanded = v), LocaleService.I.t('shop.gold_exchange')),
           if (_goldExpanded) ...[
-            _card(Icons.monetization_on, '1000金币', '100💎兑换', const Text('100💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldBundle(100, 1000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '1000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '100'}), const Text('100💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldBundle(100, 1000)),
             const SizedBox(height: 4),
-            _card(Icons.monetization_on, '5000金币', '500💎兑换', const Text('500💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldBundle(500, 5000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '5000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '500'}), const Text('500💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldBundle(500, 5000)),
             const SizedBox(height: 4),
-            _card(Icons.monetization_on, '10000金币', '1000💎兑换', const Text('1000💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldBundle(1000, 10000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '10000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '1000'}), const Text('1000💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldBundle(1000, 10000)),
           ],
           const SizedBox(height: 16),
 

@@ -218,7 +218,7 @@ class _HeroCard extends StatelessWidget {
                     ],
                   ]),
                   const SizedBox(height: 4),
-                  Text('${_className(hero.className)} · ${hero.kingdom}国',
+                  Text(LocaleService.I.t('hero_select.class_and_kingdom', args: {'className': _className(hero.className), 'kingdom': hero.kingdom}),
                       style: const TextStyle(color: AppTheme.textMuted, fontSize: 12)),
                   const SizedBox(height: 4),
                   Row(children: [

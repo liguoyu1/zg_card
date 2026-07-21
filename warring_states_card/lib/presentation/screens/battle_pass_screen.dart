@@ -44,7 +44,7 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          Text('${LocaleService.I.t('bp.level')} ${bp.level}/30',
+          Text('${LocaleService.I.t('bp.level', args: {'level': '${bp.level}'})} ${bp.level}/30',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.goldAccent)),
           const SizedBox(height: 8),
           Text(bp.premium ? LocaleService.I.t('bp.premium') : LocaleService.I.t('bp.free'),
@@ -63,7 +63,7 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('XP: ${bp.xp}/${bp.xpToNext}', style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
+              Text(LocaleService.I.t('battle_pass.xp_progress', args: {'xp': '${bp.xp}', 'xpToNext': '${bp.xpToNext}'}), style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
             ],
           ),
           const SizedBox(height: 4),

@@ -186,7 +186,7 @@ class _CardGridViewState extends State<_CardGridView> {
                     style: const TextStyle(color: AppTheme.textMuted, fontSize: 12)),
                 const SizedBox(height: 6),
                 if (card.isMinion)
-                  Text('${card.cost}费 ⚔${card.attack} ❤${card.health}',
+                  Text(LocaleService.I.t('card_library.card_stats', args: {'cost': '${card.cost}', 'attack': '${card.attack}', 'health': '${card.health}'}),
                       style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16)),
                 Text(card.description, textAlign: TextAlign.center,
                     style: TextStyle(color: AppTheme.parchment.withAlpha(200), fontSize: 13, fontStyle: FontStyle.italic)),

@@ -235,7 +235,7 @@ class TrainingAdventureScreen extends StatelessWidget {
         color: mission.isBoss ? Colors.red : Colors.grey,
       ),
       title: Text(mission.name),
-      subtitle: Text('奖励: ${mission.rewardGold}金币 + ${mission.rewardCards.length}张卡'),
+      subtitle: Text(LocaleService.I.t('training.mission_reward', args: {'gold': '${mission.rewardGold}', 'cards': '${mission.rewardCards.length}'})),
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(

@@ -53,7 +53,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
 
     try {
       if (!_loggedIn) {
-        _playerName = '玩家${DateTime.now().millisecondsSinceEpoch % 10000}';
+        _playerName = LocaleService.I.t('matchmaking.default_name', args: {'id': '${DateTime.now().millisecondsSinceEpoch % 10000}'});
         final loginResult = await _service.guestLogin(_playerName);
         if (!loginResult) {
           setState(() {

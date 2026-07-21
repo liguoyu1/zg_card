@@ -209,7 +209,7 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 16)),
               if (!inDeck)
-                Text('${_selectedCards.length}/30',
+                Text(LocaleService.I.t('deck_editor.card_count', args: {'count': '${_selectedCards.length}'}),
                     style: TextStyle(
                         color: _selectedCards.length == 30
                             ? Colors.redAccent

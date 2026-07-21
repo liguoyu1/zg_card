@@ -174,7 +174,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
         const SizedBox(width: 4),
         Text('${_run!.gold}', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 14)),
         const SizedBox(width: 8),
-        Text('${LocaleService.I.t('roguelite.layer')} ${_run!.currentLayer + 1}/${_run!.layers.length}',
+        Text('${LocaleService.I.t('roguelite.layer', args: {'layer': '${_run!.currentLayer + 1}'})} ${_run!.currentLayer + 1}/${_run!.layers.length}',
             style: TextStyle(color: AppTheme.parchment.withAlpha(150), fontSize: 12)),
         // 失败次数
         if (_run!.failCount > 0) ...[

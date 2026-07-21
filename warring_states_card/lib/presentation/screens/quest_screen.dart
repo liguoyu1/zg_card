@@ -133,7 +133,7 @@ class _QuestScreenState extends State<QuestScreen> {
   Widget _buildRefreshInfo() {
     return Center(
       child: Text(
-        '${LocaleService.I.t('quest.refresh_count')}: ${_qm.canRefresh ? 1 : 0}/1',
+        '${LocaleService.I.t('quest.refresh_count', args: {'remaining': q.refreshRemaining.toString()})}: ${_qm.canRefresh ? 1 : 0}/1',
         style: TextStyle(color: AppTheme.parchment.withAlpha(120)),
       ),
     );

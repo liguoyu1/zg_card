@@ -250,10 +250,10 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
               children: [
                 Text(card.name, style: const TextStyle(color: AppTheme.parchment, fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text('费用: ${card.cost}  |  类型: ${_typeName(card.type)}', style: TextStyle(color: AppTheme.parchment.withAlpha(179), fontSize: 13)),
+                Text(LocaleService.I.t('basic_card.cost_type', args: {'cost': '${card.cost}', 'type': _typeName(card.type)}), style: TextStyle(color: AppTheme.parchment.withAlpha(179), fontSize: 13)),
                 if (card.isMinion) ...[
                   const SizedBox(height: 4),
-                  Text('攻击: ${card.attack}  |  生命: ${card.health}', style: TextStyle(color: AppTheme.parchment.withAlpha(179), fontSize: 13)),
+                  Text(LocaleService.I.t('basic_card.attack_health', args: {'attack': '${card.attack}', 'health': '${card.health}'}), style: TextStyle(color: AppTheme.parchment.withAlpha(179), fontSize: 13)),
                 ],
                 if (card.keywords.isNotEmpty) ...[
                   const SizedBox(height: 4),
