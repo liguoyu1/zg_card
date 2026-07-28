@@ -201,9 +201,9 @@ class _AdventureScreenState extends State<AdventureScreen> {
       Text(chapter.description, textAlign: TextAlign.center,
           style: TextStyle(color: AppTheme.parchment.withAlpha(180), fontSize: 14)),
       const SizedBox(height: 48),
-      _buildChapterStat('roguelite.missions_total', '${chapter.missions.length}'),
+      _buildChapterStat('roguelite.missions_total', '${chapter.missions.length}', args: {'cleared': '${chapter.clearedCount}', 'total': '${chapter.missions.length}'}),
       const SizedBox(height: 8),
-      _buildChapterStat('roguelite.segments', '2'),
+      _buildChapterStat('roguelite.segments', '2', args: {'current': '…', 'total': '2'}),
       const Spacer(),
       Padding(
         padding: const EdgeInsets.all(24),
@@ -223,9 +223,9 @@ class _AdventureScreenState extends State<AdventureScreen> {
     ]);
   }
 
-  Widget _buildChapterStat(String key, String value) {
+  Widget _buildChapterStat(String key, String value, {Map<String, String>? args}) {
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text('${LocaleService.I.t(key)}: ', style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
+      Text('${LocaleService.I.t(key, args: args)}: ', style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
       Text(value, style: const TextStyle(color: AppTheme.parchment, fontWeight: FontWeight.bold)),
     ]);
   }

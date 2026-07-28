@@ -174,7 +174,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
         const SizedBox(width: 4),
         Text('${_run!.gold}', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 14)),
         const SizedBox(width: 8),
-        Text('${LocaleService.I.t('roguelite.layer')} ${_run!.currentLayer + 1}/${_run!.layers.length}',
+        Text('${LocaleService.I.t('roguelite.layer', args: {'layer': '${_run!.currentLayer + 1}'})} ${_run!.currentLayer + 1}/${_run!.layers.length}',
             style: TextStyle(color: AppTheme.parchment.withAlpha(150), fontSize: 12)),
         // 失败次数
         if (_run!.failCount > 0) ...[
@@ -201,9 +201,9 @@ class _AdventureScreenState extends State<AdventureScreen> {
       Text(chapter.description, textAlign: TextAlign.center,
           style: TextStyle(color: AppTheme.parchment.withAlpha(180), fontSize: 14)),
       const SizedBox(height: 48),
-      _buildChapterStat('roguelite.missions_total', '${chapter.missions.length}'),
+      _buildChapterStat('roguelite.missions_total', '${chapter.missions.length}', args: {'cleared': '${chapter.clearedCount}', 'total': '${chapter.missions.length}'}),
       const SizedBox(height: 8),
-      _buildChapterStat('roguelite.segments', '2'),
+      _buildChapterStat('roguelite.segments', '2', args: {'current': '…', 'total': '2'}),
       const Spacer(),
       Padding(
         padding: const EdgeInsets.all(24),
@@ -223,9 +223,9 @@ class _AdventureScreenState extends State<AdventureScreen> {
     ]);
   }
 
-  Widget _buildChapterStat(String key, String value) {
+  Widget _buildChapterStat(String key, String value, {Map<String, String>? args}) {
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text('${LocaleService.I.t(key)}: ', style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
+      Text('${LocaleService.I.t(key, args: args)}: ', style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
       Text(value, style: const TextStyle(color: AppTheme.parchment, fontWeight: FontWeight.bold)),
     ]);
   }
@@ -251,15 +251,15 @@ class _AdventureScreenState extends State<AdventureScreen> {
         Icon(won ? Icons.emoji_events : Icons.sentiment_dissatisfied,
             size: 64, color: won ? AppTheme.goldAccent : Colors.red[300]),
         const SizedBox(height: 16),
-        Text(won ? '征途胜利！' : '征途失败',
+        Text(won ? LocaleService.I.t('adventure.run_victory') : LocaleService.I.t('adventure.run_defeat'),
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,
                 color: won ? AppTheme.goldAccent : Colors.red[300])),
         const SizedBox(height: 8),
-        Text('获得金币: ${_run?.gold ?? 0}',
+        Text(LocaleService.I.t('adventure.gold_earned', args: {'gold': '${_run?.gold ?? 0}'}),
             style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
         if (failed) ...[
           const SizedBox(height: 12),
-          Text('失败 ${_run?.failCount ?? 0}/${_run?.maxFails ?? 3} 次',
+          Text(LocaleService.I.t('adventure.fail_count', args: {'count': '${_run?.failCount ?? 0}', 'max': '${_run?.maxFails ?? 3}'}),
               style: TextStyle(color: Colors.orange[300])),
         ],
         const SizedBox(height: 32),
@@ -384,7 +384,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
         _saveRun();
         setState(() {});
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('失败 ${run.failCount}/${run.maxFails}，继续挑战吧！')),
+          SnackBar(content: Text(LocaleService.I.t('roguelite.fail_continue', args: {'count': '${run.failCount}', 'max': '${run.maxFails}'}))),
         );
       }
     }
@@ -396,9 +396,9 @@ class _AdventureScreenState extends State<AdventureScreen> {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.agedWood,
-        title: const Text('征途失败', style: TextStyle(color: AppTheme.parchment)),
-        content: const Text('你已经失败三次了。看广告可以重置失败次数继续挑战。',
-            style: TextStyle(color: AppTheme.parchment)),
+        title: Text(LocaleService.I.t('adventure.fail_dialog_title'), style: const TextStyle(color: AppTheme.parchment)),
+        content: Text(LocaleService.I.t('adventure.fail_dialog_content'),
+            style: const TextStyle(color: AppTheme.parchment)),
         actions: [
           TextButton(
             onPressed: () {
@@ -407,7 +407,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
               _saveRun();
               setState(() {});
             },
-            child: const Text('结束征途', style: TextStyle(color: Colors.red)),
+            child: Text(LocaleService.I.t('adventure.end_run'), style: const TextStyle(color: Colors.red)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -419,14 +419,14 @@ class _AdventureScreenState extends State<AdventureScreen> {
                 _saveRun();
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('看广告复活成功！失败次数已重置')),
+                  SnackBar(content: Text(LocaleService.I.t('adventure.revival_success'))),
                 );
                 }
                 setState(() {});
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.goldAccent),
-            child: const Text('看广告复活', style: TextStyle(color: Colors.white)),
+            child: Text(LocaleService.I.t('adventure.revive'), style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),

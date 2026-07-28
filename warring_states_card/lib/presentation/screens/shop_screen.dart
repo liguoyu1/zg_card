@@ -19,7 +19,7 @@ import '../../data/xsolla_payment_service.dart';
 import '../../l10n/locale_service.dart';
 import '../providers/auth_provider.dart';
 
-/// 商店 — 金币/钻石/卡包/单卡/英雄/每日特惠
+/// 商店 — 钻石/金币/英雄/卡牌直购（不含随机抽卡/宝箱）
 class ShopScreen extends ConsumerStatefulWidget {
   const ShopScreen({super.key});
   @override
@@ -29,13 +29,8 @@ class ShopScreen extends ConsumerStatefulWidget {
 class _ShopScreenState extends ConsumerState<ShopScreen> {
   PlayerData? _data;
   bool _loading = true;
-  bool _dailyDealBought = false;
-  // 折叠状态
-  bool _cardShopExpanded = true;
   bool _heroShopExpanded = true;
   bool _goldExpanded = true;
-  // 缓存刷新
-  String _cardShopCache = '';
   String _heroShopCache = '';
 
   @override
@@ -43,11 +38,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 
   Future<void> _load() async {
     final d = await SaveManager.loadPlayerData();
-    final tk = 'ddeal_${DateTime.now().month}_${DateTime.now().day}';
-    // 刷新种子：卡牌商店每2h，英雄商店每8h
-    _cardShopCache = 'cs_${_cycleKey(2)}';
     _heroShopCache = 'hs_${_cycleKey(8)}';
-    if (mounted) setState(() { _data = d; _dailyDealBought = d?.stats[tk] != null; _loading = false; });
+    if (mounted) setState(() { _data = d; _loading = false; });
   }
 
   @override
@@ -119,156 +111,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     return false;
   }
 
-  // ===== 卡包 =====
-  Future<void> _buyPackNormal() async {
-    if (!await _spendGold(500)) return;
-    final all = CardDataProvider.getAllCards();
-    final owned = Set<String>.from(_data!.unlockedCards);
-    // 普通卡包：最多3张，全是普通
-    final commons = all.where((c) => c.rarity == cm.Rarity.common && !owned.contains(c.id)).toList()..shuffle();
-    final picks = <cm.Card>[];
-    picks.addAll(commons.take(min(3, commons.length)));
-    if (picks.isEmpty) { picks.addAll((all..shuffle()).take(3)); }
-    _finishPack(picks, LocaleService.I.t('shop.pack_normal'), _data!.gold);
-  }
-
-  Future<void> _buyPackRare() async {
-    if (!await _spendGold(1000)) return;
-    final all = CardDataProvider.getAllCards();
-    final owned = Set<String>.from(_data!.unlockedCards);
-    final rares = all.where((c) => c.rarity == cm.Rarity.rare && !owned.contains(c.id)).toList()..shuffle();
-    final commons = all.where((c) => c.rarity == cm.Rarity.common && !owned.contains(c.id)).toList()..shuffle();
-    final picks = <cm.Card>[];
-    final rareCount = min(Random().nextInt(3) + 1, rares.length); // 1-2张稀有
-    picks.addAll(rares.take(rareCount));
-    final commonCount = min(4 - rareCount, commons.length);
-    picks.addAll(commons.take(commonCount));
-    if (picks.isEmpty) { picks.addAll((all..shuffle()).take(4)); }
-    _finishPack(picks, LocaleService.I.t('shop.pack_rare'), _data!.gold);
-  }
-
-  Future<void> _buyPackEpic() async {
-    if (!await _spendGold(2000)) return;
-    final all = CardDataProvider.getAllCards();
-    final owned = Set<String>.from(_data!.unlockedCards);
-    final epics = all.where((c) => c.rarity == cm.Rarity.epic && !owned.contains(c.id)).toList()..shuffle();
-    final rares = all.where((c) => c.rarity == cm.Rarity.rare && !owned.contains(c.id)).toList()..shuffle();
-    final commons = all.where((c) => c.rarity == cm.Rarity.common && !owned.contains(c.id)).toList()..shuffle();
-    final picks = <cm.Card>[];
-    if (Random().nextBool() && epics.isNotEmpty) picks.add(epics.first);
-    final rareCount = min(3 - picks.length, rares.length);
-    picks.addAll(rares.take(rareCount));
-    final commonCount = min(4 - picks.length, commons.length);
-    picks.addAll(commons.take(commonCount));
-    if (picks.isEmpty) { picks.addAll((all..shuffle()).take(4)); }
-    final bonusGold = 20 + Random().nextInt(81);
-    _finishPack(picks, LocaleService.I.t('shop.pack_epic'), _data!.gold, bonusGold: bonusGold);
-  }
-
-  Future<void> _buyPackLegendary() async {
-    if (!await _spendGold(5000)) return;
-    final all = CardDataProvider.getAllCards();
-    final owned = Set<String>.from(_data!.unlockedCards);
-    final rng = Random();
-    final legends = all.where((c) => c.rarity == cm.Rarity.legendary && !owned.contains(c.id)).toList()..shuffle();
-    final epics = all.where((c) => c.rarity == cm.Rarity.epic && !owned.contains(c.id)).toList()..shuffle();
-    final rares = all.where((c) => c.rarity == cm.Rarity.rare && !owned.contains(c.id)).toList()..shuffle();
-    final commons = all.where((c) => c.rarity == cm.Rarity.common && !owned.contains(c.id)).toList()..shuffle();
-    final picks = <cm.Card>[];
-    final total = rng.nextInt(3) + 3;
-    if (rng.nextDouble() < 0.05 && legends.isNotEmpty) picks.add(legends.first);
-    if (rng.nextDouble() < 0.30 && epics.isNotEmpty && picks.where((c) => c.rarity == cm.Rarity.epic).isEmpty) picks.add(epics.first);
-    final remaining = total - picks.length;
-    final rareCount = min(remaining > 1 ? rng.nextInt(remaining) + 1 : remaining, rares.length);
-    picks.addAll(rares.take(rareCount));
-    final commonCount = min(total - picks.length, commons.length);
-    picks.addAll(commons.take(commonCount));
-    if (picks.length < total || picks.isEmpty) {
-      final fill = (all..shuffle()).where((c) => !picks.contains(c)).take(total - picks.length).toList();
-      picks.addAll(fill);
-    }
-    final bonusGold = 500 + rng.nextInt(1001);
-    _finishPack(picks, LocaleService.I.t('shop.pack_legendary'), _data!.gold, bonusGold: bonusGold);
-  }
-
-  void _finishPack(List<cm.Card> picks, String label, int currentGold, {int bonusGold = 0}) async {
-    final ids = [..._data!.unlockedCards, ...picks.map((c) => c.id)];
-    final pd = _data!.copyWith(unlockedCards: ids, gold: currentGold);
-    SaveManager.savePlayerData(pd);
-    if (bonusGold > 0) {
-      final odID = ref.read(authProvider)?.playerId ?? '';
-      if (odID.isNotEmpty) {
-        await BalanceService.addGold(odID, bonusGold, detail: '$label奖励金币');
-      }
-    }
-    bumpDataVersion();
-    _refresh();
-    if (!mounted) return;
-    _showPackResult(picks, bonusGold > 0 ? '$label (+$bonusGold💰)' : label);
-  }
-
-  void _showPackResult(List<cm.Card> picks, String label) {
-    showDialog(
-      context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppTheme.cardBack,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.goldAccent.withAlpha(80)),
-          ),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(label, style: const TextStyle(color: AppTheme.goldAccent, fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            ...picks.map((c) {
-              final imgPath = CardImageService.getImageByType(c.id, _typeEng(c));
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                margin: const EdgeInsets.only(bottom: 4),
-                decoration: BoxDecoration(
-                  color: _rc(c.rarity).withAlpha(25),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: _rc(c.rarity).withAlpha(60)),
-                ),
-                child: Row(children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: SizedBox(width: 36, height: 48,
-                      child: imgPath.isNotEmpty
-                          ? Image.asset(imgPath, fit: BoxFit.cover, alignment: Alignment.topCenter,
-                              errorBuilder: (_, __, ___) => _imgPlaceholder(c))
-                          : _imgPlaceholder(c),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(c.name, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.bold)),
-                    Text(_rn(c.rarity), style: TextStyle(color: _rc(c.rarity), fontSize: 11)),
-                  ])),
-                ]),
-              );
-            }),
-            const SizedBox(height: 12),
-            SizedBox(width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.goldAccent),
-                child: Text(LocaleService.I.t('shop.good'), style: const TextStyle(color: Colors.white)),
-              ),
-            ),
-          ]),
-        ),
-      ),
-    );
-  }
-
-  Widget _imgPlaceholder(cm.Card c) => Container(
-    color: _rc(c.rarity).withAlpha(80),
-    child: Center(child: Text(c.name[0], style: TextStyle(color: _rc(c.rarity), fontSize: 16))),
-  );
-
+  // ===== 单卡直购 =====
   void _buySingleCard(cm.Card card) async {
     final price = _cardPrice(card);
     if (!await _spendGold(price)) return;
@@ -280,7 +123,6 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 
   int _cardPrice(cm.Card c) {
-    // 保底100，按稀有度+属性
     int base;
     switch (c.rarity) {
       case cm.Rarity.common: base = 100;
@@ -342,7 +184,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       final sku = _gemProductId(ga);
       final ok = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
       if (ok) {
-        _snack('支付页面已打开，完成支付后请刷新');
+        _snack(LocaleService.I.t('shop.payment_opened'));
         await Future.delayed(const Duration(seconds: 3));
         await _refresh();
         return;
@@ -365,7 +207,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       return;
     }
     final auth = ref.read(authProvider);
-    if (auth == null) { _snack('请先注册并登录'); return; }
+    if (auth == null) { _snack(LocaleService.I.t('shop.please_login')); return; }
     final resp = await BalanceService.verifyIAPReceipt(
       playerId: auth.playerId,
       token: auth.token,
@@ -408,8 +250,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     final total = diamonds + bonusActual;
     final eff = usd > 0 ? (total / usd).round() : 0;
     final subtitle = bonusActual > 0
-        ? '\$${usd.toStringAsFixed(2)} ($eff💎/\$) · 送${bonusActual}颗'
-        : '\$${usd.toStringAsFixed(2)} ($eff💎/\$)';
+        ? LocaleService.I.t('shop.gem_subtitle_bonus', args: {'price': usd.toStringAsFixed(2), 'eff': '$eff', 'bonus': '$bonusActual'})
+        : LocaleService.I.t('shop.gem_subtitle', args: {'price': usd.toStringAsFixed(2), 'eff': '$eff'});
     final title = bonusActual > 0
         ? LocaleService.I.t('shop.gem_title_bonus', args: {'base': '$diamonds', 'bonus': '$bonusActual'})
         : LocaleService.I.t('shop.gem_title', args: {'base': '$diamonds'});
@@ -426,39 +268,6 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     final ok = await BalanceService.addGold(odID, goldReward, detail: '兑换$goldReward金币');
     if (ok) { _snack(LocaleService.I.t('shop.exchange_success', args: {'gold': '$goldReward'})); } else { _snack(LocaleService.I.t('shop.exchange_failed')); }
     bumpDataVersion(); await _refresh();
-  }
-
-  // ===== 每日特惠 =====
-  void _buyDailyDeal() async {
-    if (_dailyDealBought) return;
-    final deals = [
-      (LocaleService.I.t('shop.daily_deal_pack_normal'), 350, 5),
-      (LocaleService.I.t('shop.daily_deal_pack_rare'), 700, 3),
-      (LocaleService.I.t('shop.daily_deal_pack_epic'), 1400, 2),
-      (LocaleService.I.t('shop.daily_deal_pack_legendary'), 3500, 1),
-    ];
-    final deal = deals[DateTime.now().day % deals.length];
-    final cost = deal.$2;
-    if (_data == null || _data!.gold < cost) { _snack(LocaleService.I.t('shop.gold_insufficient_short')); return; }
-    // 扣费+开包（不经过 _buyPack 的 _spendGold，避免双重扣费）
-    final all = CardDataProvider.getAllCards();
-    final owned = Set<String>.from(_data!.unlockedCards);
-    var pool = all.where((c) => !owned.contains(c.id)).toList()..shuffle();
-    if (pool.isEmpty) pool = (all..shuffle()).toList();
-    final picks = pool.take(deal.$3).toList();
-    await SaveManager.savePlayerData(_data!.copyWith(gold: _data!.gold - cost,
-        unlockedCards: [..._data!.unlockedCards, ...picks.map((c) => c.id)]));
-    bumpDataVersion();
-    await _refresh();
-    final tk = 'ddeal_${DateTime.now().month}_${DateTime.now().day}';
-    final ns = Map<String, int>.from(_data!.stats);
-    ns[tk] = 1;
-    await SaveManager.savePlayerData(_data!.copyWith(stats: ns));
-    bumpDataVersion();
-    setState(() => _dailyDealBought = true);
-    await _refresh();
-    if (!mounted) return;
-    _showPackResult(picks, '🔥 ${LocaleService.I.t('shop.daily_deal_title')} · ${deal.$1}');
   }
 
   void _buyHero(String hid, int cost) async {
@@ -481,10 +290,6 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     return p[hid] ?? 12000;
   }
 
-  String _dealLabel() {
-    final labels = [LocaleService.I.t('shop.daily_deal_pack_normal'), LocaleService.I.t('shop.daily_deal_pack_rare'), LocaleService.I.t('shop.daily_deal_pack_epic'), LocaleService.I.t('shop.daily_deal_pack_legendary')];
-    return LocaleService.I.t('shop.daily_deal_label', args: {'pack': labels[DateTime.now().day % labels.length]});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -501,24 +306,9 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           _BalanceBar(gold: _data?.gold ?? 0, gems: _data?.gems ?? 0),
           const SizedBox(height: 16),
 
-          // 每日特惠
-          _sec(LocaleService.I.t('shop.daily_deal_title')),
-          _card(Icons.card_giftcard, _dealLabel(), LocaleService.I.t('shop.daily_deal_item'),
-              _dailyDealBought ? Text(LocaleService.I.t('shop.bought'), style: const TextStyle(color: AppTheme.healGreen, fontSize: 13))
-                  : const Text('🔥', style: TextStyle(color: AppTheme.healthRed, fontSize: 18)),
-              _dailyDealBought ? null : _buyDailyDeal),
-          const SizedBox(height: 16),
-
-          // === 卡牌商店（可折叠，每2h刷新） ===
-          _foldable(LocaleService.I.t('shop.card_shop'), _cardShopExpanded, (v) => setState(() => _cardShopExpanded = v),
-              LocaleService.I.t('shop.card_shop_refresh', args: {'code': '${_cardShopCache.hashCode % 100}'})),
-          if (_cardShopExpanded) ...[
-            _card(Icons.card_giftcard, LocaleService.I.t('shop.pack_normal'), LocaleService.I.t('shop.pack_normal_short'), const Text('500💰', style: TextStyle(color: AppTheme.goldAccent, fontSize: 16, fontWeight: FontWeight.bold)), _buyPackNormal),
-            _card(Icons.card_giftcard, LocaleService.I.t('shop.pack_rare'), LocaleService.I.t('shop.pack_rare_short'), const Text('1000💰', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), _buyPackRare),
-            _card(Icons.card_giftcard, LocaleService.I.t('shop.pack_epic'), LocaleService.I.t('shop.pack_epic_short'), const Text('2000💰', style: TextStyle(color: Colors.purple, fontSize: 16, fontWeight: FontWeight.bold)), _buyPackEpic),
-            _card(Icons.card_giftcard, LocaleService.I.t('shop.pack_legendary'), LocaleService.I.t('shop.pack_legendary_short'), const Text('5000💰', style: TextStyle(color: Colors.orange, fontSize: 16, fontWeight: FontWeight.bold)), _buyPackLegendary),
-            ..._buildCardShop(),
-          ],
+          // === 卡牌直购 ===
+          _sec(LocaleService.I.t('shop.card_shop')),
+          ..._buildCardShop(),
           const SizedBox(height: 16),
 
           // === 钻石 ===
@@ -604,7 +394,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   List<Widget> _buildCardShop() {
     final all = CardDataProvider.getAllCards();
     final owned = Set<String>.from(_data?.unlockedCards ?? []);
-    final rng = Random(_cardShopCache.hashCode);
+    final rng = Random(_heroShopCache.hashCode != 0 ? _heroShopCache.hashCode : DateTime.now().millisecondsSinceEpoch);
     final pool = all.where((c) => c.rarity != cm.Rarity.common).toList()..shuffle(rng);
     if (pool.isEmpty) return [Padding(padding: const EdgeInsets.all(8), child: Text(LocaleService.I.t('shop.no_recommend'), style: const TextStyle(color: AppTheme.textMuted)))];
     return pool.take(6).map((c) {

@@ -12,6 +12,9 @@ class LocaleService {
   String _localeCode = 'zh';
   Map<String, dynamic>? _data;
 
+  /// 语言变更通知（重建整个 Widget 树）
+  final ValueNotifier<int> localeVersion = ValueNotifier(0);
+
   /// 当前使用的 locale code
   String get localeCode => _localeCode;
 
@@ -21,6 +24,7 @@ class LocaleService {
   /// 初始化：加载指定语言的 JSON
   Future<void> init({String localeCode = 'zh'}) async {
     _localeCode = localeCode;
+
     try {
       final jsonStr =
           await rootBundle.loadString('assets/l10n/$localeCode.json');
@@ -35,6 +39,8 @@ class LocaleService {
         _data = {};
       }
     }
+    // 数据加载完成后通知 UI 刷新
+    localeVersion.value++;
   }
 
   /// 通过 key 获取字符串，支持 {param} 插值
@@ -68,7 +74,21 @@ class LocaleService {
     // 插值替换
     if (args != null && result.isNotEmpty && !result.startsWith('⚠')) {
       for (final e in args.entries) {
-        result = result.replaceAll('{$e.key}', e.value);
+        final ph = '{${e.key}}';
+        final v = e.value;
+        final sb = StringBuffer();
+        int i = 0;
+        while (i < result.length) {
+          if (i + ph.length <= result.length &&
+              result.substring(i, i + ph.length) == ph) {
+            sb.write(v);
+            i += ph.length;
+          } else {
+            sb.write(result[i]);
+            i++;
+          }
+        }
+        result = sb.toString();
       }
     }
 
