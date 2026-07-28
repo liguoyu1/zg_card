@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/locale_service.dart';
 import '../screens/achievement_screen.dart';
 import '../screens/card_library_screen.dart';
 import '../screens/home_screen.dart';
@@ -16,7 +17,12 @@ class ResponsiveShell extends StatefulWidget {
 
 class _ResponsiveShellState extends State<ResponsiveShell> {
   static const _tabPaths = ['/', '/collection', '/progress/achievement', '/shop/shop'];
-  static const _tabLabels = ['主页', '卡牌', '成就', '商店'];
+  List<String> get _tabLabels => [
+    LocaleService.I.t('home.title'),
+    LocaleService.I.t('card_library.title'),
+    LocaleService.I.t('achievement.title'),
+    LocaleService.I.t('shop.title_bar'),
+  ];
   static const _tabIcons = [
     Icons.home_outlined, Icons.collections_bookmark_outlined,
     Icons.emoji_events_outlined, Icons.shopping_bag_outlined,
