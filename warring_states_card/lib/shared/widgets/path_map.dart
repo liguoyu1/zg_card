@@ -84,7 +84,11 @@ class PathMap extends StatelessWidget {
                         SizedBox(
                           width: 80,
                           child: Text(
-                            node.title,
+                            node.missionId.endsWith('_rest')
+                                ? LocaleService.I.t('roguelite.rest_title')
+                                : node.missionId.endsWith('_shop')
+                                    ? LocaleService.I.t('roguelite.shop_title')
+                                    : LocaleService.I.t('adventure.mission.${node.missionId}.name'),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: isSelected

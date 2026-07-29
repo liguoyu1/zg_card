@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
- '/'
- '/'
+
+import '../../domain/models/card.dart';
+import '../../domain/models/roguelite_run.dart';
+import '../../l10n/locale_service.dart';
 
 /// 路径图 — 竖向滚动的 Roguelite 节点选择
 class PathMap extends StatelessWidget {
@@ -82,7 +84,11 @@ class PathMap extends StatelessWidget {
                         SizedBox(
                           width: 80,
                           child: Text(
-                            node.title,
+                            node.missionId.endsWith('_rest')
+                                ? LocaleService.I.t('roguelite.rest_title')
+                                : node.missionId.endsWith('_shop')
+                                    ? LocaleService.I.t('roguelite.shop_title')
+                                    : LocaleService.I.t('adventure.mission.${node.missionId}.name'),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: isSelected
