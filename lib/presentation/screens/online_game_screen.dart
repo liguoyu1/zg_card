@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warring_states_card/data/heroes/heroes_data.dart';
+import 'package:warring_states_card/domain/services/hero_data_provider.dart' as provider;
 import 'package:warring_states_card/data/online_game_service.dart';
 import 'package:warring_states_card/domain/models/hero.dart' as h;
 
 import '../../core/theme/app_theme.dart';
+import '../../l10n/locale_service.dart';
 import '../../data/balance_service.dart';
 import '../../data/persistence/save_manager.dart';
 import '../../domain/services/services.dart' show AIDifficulty;
@@ -52,12 +53,12 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
 
     try {
       if (!_loggedIn) {
-        _playerName = '玩家${DateTime.now().millisecondsSinceEpoch % 10000}';
+        _playerName = LocaleService.I.t('matchmaking.default_name', args: {'id': '${DateTime.now().millisecondsSinceEpoch % 10000}'});
         final loginResult = await _service.guestLogin(_playerName);
         if (!loginResult) {
           setState(() {
             _status = MatchQueueStatus.error;
-            _errorMessage = '登录失败，请重试';
+            _errorMessage = LocaleService.I.t('matchmaking.login_fail');
           });
           return;
         }
@@ -74,7 +75,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
       if (!joined) {
         setState(() {
           _status = MatchQueueStatus.error;
-          _errorMessage = '加入队列失败，请重试';
+          _errorMessage = LocaleService.I.t('matchmaking.queue_fail');
         });
         return;
       }
@@ -130,7 +131,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
     if (_matchId == null || _opponentId == null || _opponentHeroId == null) return;
 
     // 查找对手英雄
-    final allHeroes = getAllHeroes();
+    final allHeroes = provider.HeroDataProvider.getAllHeroes();
     final opponentHero = allHeroes.firstWhere(
       (h) => h.id == _opponentHeroId,
       orElse: () => allHeroes.first,
@@ -158,7 +159,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
     return Scaffold(
       backgroundColor: AppTheme.bgDark,
       appBar: AppBar(
-        title: const Text('匹配对手'),
+        title: Text(LocaleService.I.t('matchmaking.title')),
         backgroundColor: AppTheme.agedWood,
         foregroundColor: AppTheme.parchment,
       ),
@@ -188,7 +189,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
   Widget _buildContent() {
     switch (_status) {
       case MatchQueueStatus.idle:
-        return const Text('准备中...', style: TextStyle(color: AppTheme.parchment));
+        return Text(LocaleService.I.t('matchmaking.connecting'), style: const TextStyle(color: AppTheme.parchment));
 
       case MatchQueueStatus.searching:
         return Column(
@@ -197,10 +198,10 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
             const SizedBox(width: 80, height: 80,
                 child: CircularProgressIndicator(strokeWidth: 4, color: AppTheme.goldAccent)),
             const SizedBox(height: 24),
-            const Text('正在为您匹配对手...',
-                style: TextStyle(color: AppTheme.parchment, fontSize: 18)),
+            Text(LocaleService.I.t('matchmaking.searching'),
+                style: const TextStyle(color: AppTheme.parchment, fontSize: 18)),
             const SizedBox(height: 8),
-            Text('当前英雄: ${widget.selectedHero.name}',
+            Text('${LocaleService.I.t('matchmaking.current_hero', args: {'name': widget.selectedHero.name})}',
                 style: const TextStyle(color: AppTheme.textSecondary)),
             const SizedBox(height: 8),
             Container(
@@ -209,13 +210,13 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
                 color: AppTheme.goldAccent.withAlpha(30),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text('已等待 $_elapsed 秒',
+              child: Text(LocaleService.I.t('matchmaking.waiting', args: {'seconds': '$_elapsed'}),
                   style: const TextStyle(color: AppTheme.goldAccent, fontSize: 13)),
             ),
             const SizedBox(height: 32),
             OutlinedButton(
               onPressed: _cancelMatching,
-              child: const Text('取消匹配'),
+              child: Text(LocaleService.I.t('matchmaking.cancel')),
             ),
           ],
         );
@@ -226,11 +227,11 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
           children: [
             const Icon(Icons.hourglass_empty, size: 80, color: Colors.grey),
             const SizedBox(height: 24),
-            const Text('暂时没有匹配到对手',
-                style: TextStyle(color: AppTheme.parchment, fontSize: 20)),
+            Text(LocaleService.I.t('matchmaking.timeout_title'),
+                style: const TextStyle(color: AppTheme.parchment, fontSize: 20)),
             const SizedBox(height: 8),
-            const Text('当前在线玩家较少，请稍后再试',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+            Text(LocaleService.I.t('matchmaking.timeout_desc'),
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () {
@@ -238,7 +239,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
                 _startMatching();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('重新匹配'),
+              label: Text(LocaleService.I.t('matchmaking.retry')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.goldAccent,
                 foregroundColor: Colors.white,
@@ -248,7 +249,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
             OutlinedButton.icon(
               onPressed: _playOffline,
               icon: const Icon(Icons.android),
-              label: const Text('与AI对战'),
+              label: Text(LocaleService.I.t('matchmaking.play_ai')),
               style: OutlinedButton.styleFrom(foregroundColor: AppTheme.parchment),
             ),
           ],
@@ -260,16 +261,16 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
           children: [
             const Icon(Icons.check_circle, size: 80, color: Colors.green),
             const SizedBox(height: 24),
-            const Text('匹配成功！',
-                style: TextStyle(color: Colors.green, fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(LocaleService.I.t('matchmaking.matched'),
+                style: const TextStyle(color: Colors.green, fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            Text('对手: ${_opponentName ?? "未知"}',
+            Text(LocaleService.I.t('matchmaking.opponent', args: {'name': _opponentName ?? LocaleService.I.t('matchmaking.opponent_unknown')}),
                 style: const TextStyle(color: AppTheme.parchment, fontSize: 16)),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: _startOnlineGame,
               icon: const Icon(Icons.play_arrow),
-              label: const Text('开始对战'),
+              label: Text(LocaleService.I.t('matchmaking.start')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.goldAccent,
                 foregroundColor: Colors.white,
@@ -285,10 +286,10 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
           children: [
             const Icon(Icons.error_outline, size: 80, color: Colors.red),
             const SizedBox(height: 24),
-            Text(_errorMessage ?? '发生错误',
+            Text(_errorMessage ?? LocaleService.I.t('matchmaking.error'),
                 style: const TextStyle(color: Colors.red, fontSize: 16)),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _startMatching, child: const Text('重试')),
+            ElevatedButton(onPressed: _startMatching, child: Text(LocaleService.I.t('matchmaking.retry_btn'))),
           ],
         );
     }

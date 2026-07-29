@@ -6,10 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warring_states_card/core/theme/app_theme.dart';
 import 'package:warring_states_card/data/card_image_service.dart';
-import 'package:warring_states_card/data/heroes/heroes_data.dart';
 import 'package:warring_states_card/data/persistence/save_manager.dart';
 import 'package:warring_states_card/domain/models/card.dart' as domain;
 import 'package:warring_states_card/domain/models/hero.dart' as h;
+import 'package:warring_states_card/domain/services/hero_data_provider.dart' as provider;
 import 'package:warring_states_card/domain/services/services.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
 
@@ -40,7 +40,7 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
     var ids = Set<String>.from(pd.unlockedHeroes);
     // 首次使用：随机分配一个初始英雄
     if (ids.isEmpty && pd.firstRun) {
-      final all = getAllHeroes();
+      final all = provider.HeroDataProvider.getAllHeroes();
       ids = {all[_rng.nextInt(all.length)].id};
       await SaveManager.savePlayerData(pd.copyWith(unlockedHeroes: ids.toList(), firstRun: false));
     }
@@ -61,7 +61,7 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
         body: Center(child: CircularProgressIndicator()));
     }
 
-    final allHeroes = getAllHeroes();
+    final allHeroes = provider.HeroDataProvider.getAllHeroes();
     final filteredHeroes = _selectedClass == 'all'
         ? allHeroes
         : allHeroes.where((hero) => hero.className == _selectedClass).toList();

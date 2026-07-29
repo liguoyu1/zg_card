@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:warring_states_card/data/heroes/heroes_data.dart';
 import 'package:warring_states_card/domain/models/hero.dart' as h;
 import 'package:warring_states_card/domain/models/roguelite_run.dart';
 import 'package:warring_states_card/domain/services/adventure_manager.dart';
+import 'package:warring_states_card/domain/services/hero_data_provider.dart' as provider;
 import 'package:warring_states_card/domain/services/roguelite_service.dart';
 import 'package:warring_states_card/domain/services/services.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
@@ -330,7 +330,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
     if (run == null || chapter == null) return;
     final mission = chapter.missions.where((m) => m.id == node.missionId).firstOrNull;
     if (mission == null) return;
-    final opponentHero = getHeroById(mission.enemyHero);
+    final opponentHero = provider.HeroDataProvider.getHeroById(mission.enemyHero);
     if (opponentHero == null) return;
     final aiDifficulty = switch (mission.difficulty) {
       Difficulty.easy => AIDifficulty.simple,
@@ -345,7 +345,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
       MaterialPageRoute(
         builder: (_) => GameScreen(
           playerId: 'player_1',
-          playerHero: _getHeroById(run.heroId),
+          playerHero: provider.HeroDataProvider.getHeroById(run.heroId)!,
           opponentHero: opponentHero,
           difficulty: aiDifficulty,
           runHp: run.currentHp,
@@ -436,7 +436,8 @@ class _AdventureScreenState extends State<AdventureScreen> {
   void _showRewardPicker(RogueliteRun run) {
     final chapter = _currentChapter;
     if (chapter == null) return;
-    final hero = _getHeroById(run.heroId);
+    final hero = provider.HeroDataProvider.getHeroById(run.heroId);
+    if (hero == null) return;
     final rewardCards = _roguelite.getRandomRewardCards(owner: hero.owner);
     if (rewardCards.isEmpty) { _saveRun(); setState(() {}); return; }
     showDialog(
@@ -498,13 +499,6 @@ class _AdventureScreenState extends State<AdventureScreen> {
           )),
         ]),
       ),
-    );
-  }
-
-  h.Hero _getHeroById(String id) {
-    return _manager.getAvailableHeroes().firstWhere(
-      (h) => h.id == id,
-      orElse: () => _manager.getAvailableHeroes().first,
     );
   }
 

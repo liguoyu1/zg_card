@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warring_states_card/data/heroes/heroes_data.dart';
+import 'package:warring_states_card/domain/services/hero_data_provider.dart' as provider;
 import 'package:warring_states_card/data/online_game_service.dart';
 import 'package:warring_states_card/domain/models/hero.dart' as h;
 
@@ -131,7 +131,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
     if (_matchId == null || _opponentId == null || _opponentHeroId == null) return;
 
     // 查找对手英雄
-    final allHeroes = getAllHeroes();
+    final allHeroes = provider.HeroDataProvider.getAllHeroes();
     final opponentHero = allHeroes.firstWhere(
       (h) => h.id == _opponentHeroId,
       orElse: () => allHeroes.first,

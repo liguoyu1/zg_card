@@ -6,10 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warring_states_card/core/theme/app_theme.dart';
 import 'package:warring_states_card/data/card_image_service.dart';
-import 'package:warring_states_card/data/heroes/heroes_data.dart';
 import 'package:warring_states_card/data/persistence/save_manager.dart';
 import 'package:warring_states_card/domain/models/card.dart' as domain;
 import 'package:warring_states_card/domain/models/hero.dart' as h;
+import 'package:warring_states_card/domain/services/hero_data_provider.dart' as provider;
 import 'package:warring_states_card/domain/services/services.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
 
@@ -40,7 +40,7 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
     var ids = Set<String>.from(pd.unlockedHeroes);
     // 首次使用：随机分配一个初始英雄
     if (ids.isEmpty && pd.firstRun) {
-      final all = getAllHeroes();
+      final all = provider.HeroDataProvider.getAllHeroes();
       ids = {all[_rng.nextInt(all.length)].id};
       await SaveManager.savePlayerData(pd.copyWith(unlockedHeroes: ids.toList(), firstRun: false));
     }
@@ -48,10 +48,10 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
   }
 
   String _schoolName(domain.CardOwner o) => switch (o) {
-    domain.CardOwner.bingjia => '兵家', domain.CardOwner.fajia => '法家',
-    domain.CardOwner.rujia => '儒家', domain.CardOwner.daojia => '道家',
-    domain.CardOwner.mojia => '墨家', domain.CardOwner.yinyangjia => '阴阳家',
-    domain.CardOwner.zonghengjia => '纵横家', domain.CardOwner.neutral => '中立',
+    domain.CardOwner.bingjia => LocaleService.I.t('owner.bingjia'), domain.CardOwner.fajia => LocaleService.I.t('owner.fajia'),
+    domain.CardOwner.rujia => LocaleService.I.t('owner.rujia'), domain.CardOwner.daojia => LocaleService.I.t('owner.daojia'),
+    domain.CardOwner.mojia => LocaleService.I.t('owner.mojia'), domain.CardOwner.yinyangjia => LocaleService.I.t('owner.yinyangjia'),
+    domain.CardOwner.zonghengjia => LocaleService.I.t('owner.zonghengjia'), domain.CardOwner.neutral => LocaleService.I.t('owner.neutral'),
   };
 
   @override
@@ -61,7 +61,7 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
         body: Center(child: CircularProgressIndicator()));
     }
 
-    final allHeroes = getAllHeroes();
+    final allHeroes = provider.HeroDataProvider.getAllHeroes();
     final filteredHeroes = _selectedClass == 'all'
         ? allHeroes
         : allHeroes.where((hero) => hero.className == _selectedClass).toList();
@@ -104,8 +104,8 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
 
   Widget _buildClassTabs() {
     final classMap = {
-      'all': '全部', 'bingjia': '兵家', 'fajia': '法家', 'rujia': '儒家',
-      'mojia': '墨家', 'daojia': '道家', 'yinyangjia': '阴阳家', 'zonghengjia': '纵横家',
+      'all': LocaleService.I.t('hero_select.all'), 'bingjia': LocaleService.I.t('owner.bingjia'), 'fajia': LocaleService.I.t('owner.fajia'), 'rujia': LocaleService.I.t('owner.rujia'),
+      'mojia': LocaleService.I.t('owner.mojia'), 'daojia': LocaleService.I.t('owner.daojia'), 'yinyangjia': LocaleService.I.t('owner.yinyangjia'), 'zonghengjia': LocaleService.I.t('owner.zonghengjia'),
     };
     return Container(
       height: 50, padding: const EdgeInsets.symmetric(vertical: 8),
@@ -139,13 +139,13 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
         backgroundColor: AppTheme.agedWood,
         title: Text(hero.name, style: const TextStyle(color: AppTheme.parchment)),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          _DifficultyButton(label: '简单', color: Colors.green, onTap: () => _startGame(ctx, hero, AIDifficulty.simple)),
+          _DifficultyButton(label: LocaleService.I.t('difficulty.easy'), color: Colors.green, onTap: () => _startGame(ctx, hero, AIDifficulty.simple)),
           const SizedBox(height: 6),
-          _DifficultyButton(label: '普通', color: Colors.blue, onTap: () => _startGame(ctx, hero, AIDifficulty.normal)),
+          _DifficultyButton(label: LocaleService.I.t('difficulty.normal'), color: Colors.blue, onTap: () => _startGame(ctx, hero, AIDifficulty.normal)),
           const SizedBox(height: 6),
-          _DifficultyButton(label: '困难', color: Colors.orange, onTap: () => _startGame(ctx, hero, AIDifficulty.hard)),
+          _DifficultyButton(label: LocaleService.I.t('difficulty.hard'), color: Colors.orange, onTap: () => _startGame(ctx, hero, AIDifficulty.hard)),
           const SizedBox(height: 6),
-          _DifficultyButton(label: '极难', color: Colors.red, onTap: () => _startGame(ctx, hero, AIDifficulty.abyss)),
+          _DifficultyButton(label: LocaleService.I.t('difficulty.extreme'), color: Colors.red, onTap: () => _startGame(ctx, hero, AIDifficulty.abyss)),
         ]),
       ),
     );
@@ -173,8 +173,8 @@ class _HeroCard extends StatelessWidget {
   }
 
   String _className(String c) {
-    const m = {'bingjia': '兵家', 'fajia': '法家', 'rujia': '儒家', 'daojia': '道家',
-      'mojia': '墨家', 'yinyangjia': '阴阳家', 'zonghengjia': '纵横家'};
+    final m = {'bingjia': LocaleService.I.t('owner.bingjia'), 'fajia': LocaleService.I.t('owner.fajia'), 'rujia': LocaleService.I.t('owner.rujia'), 'daojia': LocaleService.I.t('owner.daojia'),
+      'mojia': LocaleService.I.t('owner.mojia'), 'yinyangjia': LocaleService.I.t('owner.yinyangjia'), 'zonghengjia': LocaleService.I.t('owner.zonghengjia')};
     return m[c] ?? c;
   }
 
@@ -218,7 +218,7 @@ class _HeroCard extends StatelessWidget {
                     ],
                   ]),
                   const SizedBox(height: 4),
-                  Text('${_className(hero.className)} · ${hero.kingdom}国',
+                  Text(LocaleService.I.t('hero_select.class_and_kingdom', args: {'className': _className(hero.className), 'kingdom': hero.kingdom}),
                       style: const TextStyle(color: AppTheme.textMuted, fontSize: 12)),
                   const SizedBox(height: 4),
                   Row(children: [

@@ -33,6 +33,11 @@ class HeroDataProvider {
     );
   }
 
+  static Hero? getHeroById(String id) {
+    final all = getAllHeroes();
+    try { return all.firstWhere((h) => h.id == id); } catch (_) { return null; }
+  }
+
   static String _g(String key, String fb) {
     final v = LocaleService.I.t(key);
     return v.startsWith('⚠') ? fb : v;
