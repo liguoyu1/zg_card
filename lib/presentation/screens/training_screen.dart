@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:warring_states_card/domain/services/adventure_manager.dart';
 import 'package:warring_states_card/domain/services/training_manager.dart';
+import 'package:warring_states_card/l10n/locale_service.dart';
 
 import 'basic_card_screen.dart';
 
@@ -17,16 +18,15 @@ class TrainingScreenState extends State<TrainingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('训练模式'),
+        title: Text(LocaleService.I.t('training.title')),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // 基础出牌 — 认识所有卡牌
           _TrainingCard(
             icon: Icons.collections_bookmark,
-            title: '基础出牌',
-            subtitle: '浏览所有卡牌，了解卡牌属性与效果',
+            title: LocaleService.I.t('training.basic_card_title'),
+            subtitle: LocaleService.I.t('training.basic_card_desc'),
             color: Colors.blue,
             onTap: () => Navigator.push(
               context,
@@ -34,7 +34,6 @@ class TrainingScreenState extends State<TrainingScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          // 原有训练内容
           ..._buildClassicTrainings(),
         ],
       ),
@@ -51,7 +50,7 @@ class TrainingScreenState extends State<TrainingScreen> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           child: ListTile(
             leading: _getMedalIcon(progress.medal?.level),
-            title: Text(t.name),
+            title: Text(LocaleService.I.t('adventure.mission.${t.id}.name')),
             subtitle: Text(t.description),
             trailing: _buildStatusBadge(progress.status),
             onTap: () => _startTraining(context, t),
@@ -80,13 +79,13 @@ class TrainingScreenState extends State<TrainingScreen> {
     String text;
     switch (status) {
       case TrainingStatus.locked:
-        color = Colors.grey; text = '锁定'; break;
+        color = Colors.grey; text = LocaleService.I.t('training.locked'); break;
       case TrainingStatus.unlocked:
-        color = Colors.green; text = '可玩'; break;
+        color = Colors.green; text = LocaleService.I.t('training.playable'); break;
       case TrainingStatus.inProgress:
-        color = Colors.orange; text = '进行中'; break;
+        color = Colors.orange; text = LocaleService.I.t('training.in_progress'); break;
       case TrainingStatus.completed:
-        color = Colors.blue; text = '已完成'; break;
+        color = Colors.blue; text = LocaleService.I.t('training.completed'); break;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -167,7 +166,7 @@ class TrainingDetailScreen extends StatelessWidget {
           children: [
             Text(training.description, style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 16),
-            const Text('奖励:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(LocaleService.I.t('training.rewards_label'), style: const TextStyle(fontWeight: FontWeight.bold)),
             ...training.rewards.map((r) => Text('• $r')),
             const Spacer(),
             SizedBox(
@@ -177,7 +176,7 @@ class TrainingDetailScreen extends StatelessWidget {
                   // TODO: 启动训练
                   Navigator.pop(context);
                 },
-                child: const Text('开始训练'),
+                child: Text(LocaleService.I.t('training.start')),
               ),
             ),
           ],
@@ -197,7 +196,7 @@ class TrainingAdventureScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('冒险模式'),
+        title: Text(LocaleService.I.t('training.adventure_title')),
         backgroundColor: Colors.deepOrange[700],
       ),
       body: ListView.builder(
@@ -215,7 +214,7 @@ class TrainingAdventureScreen extends StatelessWidget {
       margin: const EdgeInsets.all(16),
       child: ExpansionTile(
         title: Text(chapter.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        subtitle: Text('进度: ${chapter.clearedCount}/${chapter.totalMissions}'),
+        subtitle: Text(LocaleService.I.t('training.adventure_progress', args: {'cleared': '${chapter.clearedCount}', 'total': '${chapter.totalMissions}'})),
         children: chapter.missions.map((m) => _buildMissionTile(context, m)).toList(),
       ),
     );
@@ -235,8 +234,8 @@ class TrainingAdventureScreen extends StatelessWidget {
         mission.isBoss ? Icons.whatshot : Icons.flag,
         color: mission.isBoss ? Colors.red : Colors.grey,
       ),
-      title: Text(mission.name),
-      subtitle: Text('奖励: ${mission.rewardGold}金币 + ${mission.rewardCards.length}张卡'),
+      title: Text(LocaleService.I.t('adventure.mission.${mission.id}.name')),
+      subtitle: Text(LocaleService.I.t('training.mission_reward', args: {'gold': '${mission.rewardGold}', 'cards': '${mission.rewardCards.length}'})),
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(

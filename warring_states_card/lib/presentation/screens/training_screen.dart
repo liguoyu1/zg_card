@@ -50,7 +50,7 @@ class TrainingScreenState extends State<TrainingScreen> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           child: ListTile(
             leading: _getMedalIcon(progress.medal?.level),
-            title: Text(t.name),
+            title: Text(LocaleService.I.t('adventure.mission.${t.id}.name')),
             subtitle: Text(t.description),
             trailing: _buildStatusBadge(progress.status),
             onTap: () => _startTraining(context, t),
@@ -234,7 +234,7 @@ class TrainingAdventureScreen extends StatelessWidget {
         mission.isBoss ? Icons.whatshot : Icons.flag,
         color: mission.isBoss ? Colors.red : Colors.grey,
       ),
-      title: Text(mission.name),
+      title: Text(LocaleService.I.t('adventure.mission.${mission.id}.name')),
       subtitle: Text(LocaleService.I.t('training.mission_reward', args: {'gold': '${mission.rewardGold}', 'cards': '${mission.rewardCards.length}'})),
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

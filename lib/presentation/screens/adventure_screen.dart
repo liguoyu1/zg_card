@@ -131,7 +131,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
                   ),
                 ),
                 child: Center(
-                  child: Text(entry.value.name,
+                  child: Text(LocaleService.I.t('adventure.${entry.value.id}.name'),
                     style: TextStyle(
                       color: isSelected ? AppTheme.goldAccent : AppTheme.parchment,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -198,7 +198,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
     if (chapter == null) return const SizedBox();
     return Column(children: [
       const SizedBox(height: 32),
-      Text(chapter.description, textAlign: TextAlign.center,
+      Text(LocaleService.I.t('adventure.${chapter.id}.desc'), textAlign: TextAlign.center,
           style: TextStyle(color: AppTheme.parchment.withAlpha(180), fontSize: 14)),
       const SizedBox(height: 48),
       _buildChapterStat('roguelite.missions_total', '${chapter.missions.length}', args: {'cleared': '${chapter.clearedCount}', 'total': '${chapter.missions.length}'}),
