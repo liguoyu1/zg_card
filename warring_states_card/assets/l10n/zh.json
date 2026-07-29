@@ -1299,5 +1299,8 @@
   "adventure.mission.3-9.name": "始皇统一",
   "adventure.mission.3-9.desc": "直面秦始皇的百万雄师",
   "adventure.mission.3-final.name": "终极决战",
-  "adventure.mission.3-final.desc": "击败最强状态下的秦始皇"
+  "adventure.mission.3-final.desc": "击败最强状态下的秦始皇",
+  "roguelite.rest_title": "休整",
+  "roguelite.rest_desc": "恢复 10 点生命值",
+  "roguelite.shop_desc": "花费金币购买卡牌"
 }

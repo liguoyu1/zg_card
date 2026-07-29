@@ -1299,5 +1299,8 @@
   "adventure.mission.3-9.name": "First Emperor",
   "adventure.mission.3-9.desc": "Face Qin Shi Huang's million-strong army",
   "adventure.mission.3-final.name": "Final Battle",
-  "adventure.mission.3-final.desc": "Defeat the First Emperor at full power"
+  "adventure.mission.3-final.desc": "Defeat the First Emperor at full power",
+  "roguelite.rest_title": "Rest",
+  "roguelite.rest_desc": "Restore 10 HP",
+  "roguelite.shop_desc": "Buy cards with gold"
 }

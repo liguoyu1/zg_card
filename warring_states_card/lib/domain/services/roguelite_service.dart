@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:warring_states_card/l10n/locale_service.dart';
 import '../models/card.dart' as domain;
 import '../models/models.dart';
 import '../models/roguelite_run.dart';
@@ -34,8 +35,8 @@ class RogueliteService {
             id: 'n${nodeId++}',
             type: isLast ? RogueliteNodeType.boss : RogueliteNodeType.battle,
             missionId: mission.id,
-            title: mission.name,
-            description: mission.description,
+            title: LocaleService.I.t('adventure.mission.${mission.id}.name'),
+            description: LocaleService.I.t('adventure.mission.${mission.id}.desc'),
             layer: layers.length,
           ),
         ]);
@@ -46,8 +47,8 @@ class RogueliteService {
             id: 'n${nodeId++}',
             type: RogueliteNodeType.battle,
             missionId: mission.id,
-            title: mission.name,
-            description: mission.description,
+            title: LocaleService.I.t('adventure.mission.${mission.id}.name'),
+            description: LocaleService.I.t('adventure.mission.${mission.id}.desc'),
             layer: layers.length,
           ),
         ];
@@ -57,8 +58,8 @@ class RogueliteService {
             id: 'n${nodeId++}',
             type: RogueliteNodeType.rest,
             missionId: '${mission.id}_rest',
-            title: '休整',
-            description: '恢复 10 点生命值',
+            title: LocaleService.I.t('roguelite.rest_title'),
+            description: LocaleService.I.t('roguelite.rest_desc'),
             layer: layers.length,
           ));
         } else {
@@ -66,8 +67,8 @@ class RogueliteService {
             id: 'n${nodeId++}',
             type: RogueliteNodeType.shop,
             missionId: '${mission.id}_shop',
-            title: '集市',
-            description: '花费金币购买卡牌',
+            title: LocaleService.I.t('roguelite.shop_title'),
+            description: LocaleService.I.t('roguelite.shop_desc'),
             layer: layers.length,
           ));
         }
