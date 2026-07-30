@@ -90,6 +90,7 @@ class PathMap extends StatelessWidget {
                                     ? LocaleService.I.t('roguelite.shop_title')
                                     : LocaleService.I.t('adventure.mission.${node.missionId}.name'),
                             textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis, maxLines: 1,
                             style: TextStyle(
                               color: isSelected
                                   ? _goldAccent

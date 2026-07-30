@@ -50,8 +50,8 @@ class TrainingScreenState extends State<TrainingScreen> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           child: ListTile(
             leading: _getMedalIcon(progress.medal?.level),
-            title: Text(LocaleService.I.t('adventure.mission.${t.id}.name')),
-            subtitle: Text(t.description),
+            title: Text(LocaleService.I.t('adventure.mission.${t.id}.name'), overflow: TextOverflow.ellipsis, maxLines: 1),
+            subtitle: Text(t.description, overflow: TextOverflow.ellipsis, maxLines: 1),
             trailing: _buildStatusBadge(progress.status),
             onTap: () => _startTraining(context, t),
           ),
