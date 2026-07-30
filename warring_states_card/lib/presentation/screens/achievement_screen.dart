@@ -253,10 +253,10 @@ class _AchCard extends StatelessWidget {
                 color: unlocked ? AppTheme.goldAccent : Colors.grey, size: 28),
             const SizedBox(width: 10),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(ach.title, style: TextStyle(
+              Text(LocaleService.I.t('achievement.${ach.id}.name'), style: TextStyle(
                   color: unlocked ? AppTheme.goldAccent : AppTheme.parchment,
                   fontWeight: FontWeight.bold, fontSize: 14)),
-              Text(ach.description, style: TextStyle(
+              Text(LocaleService.I.t('achievement.${ach.id}.desc'), style: TextStyle(
                   color: AppTheme.parchment.withAlpha(150), fontSize: 12)),
             ])),
             if (ach.titleReward != null)
@@ -266,7 +266,7 @@ class _AchCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: AppTheme.goldAccent.withAlpha(80)),
                   ),
-                  child: Text('🏆 ${ach.titleReward}',
+                  child: Text(LocaleService.I.t('achievement.${ach.id}.reward', args: {}),
                       style: const TextStyle(color: AppTheme.goldAccent, fontSize: 10))),
           ]),
           const SizedBox(height: 6),

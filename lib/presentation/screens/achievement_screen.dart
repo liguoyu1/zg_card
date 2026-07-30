@@ -66,7 +66,8 @@ class _AchievementScreenState extends State<AchievementScreen>
   }
 
   Widget _buildAchievementList() {
-    final data = _data!;
+    final data = _data;
+    if (data == null) return _buildEmptyState();
     final achieved = data.achievedMedals;
     final col = _collection ?? Collection();
     final stats = AchievementService.buildStats(data, col, _history);
@@ -96,10 +97,10 @@ class _AchievementScreenState extends State<AchievementScreen>
       Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           color: AppTheme.bgMedium.withAlpha(120),
           child: Row(children: [
-            Text('已解锁 ${achieved.length}/${achList.length}',
+            Text(LocaleService.I.t('achievement.unlocked_count', args: {'unlocked': '${achieved.length}', 'total': '${achList.length}'}),
                 style: const TextStyle(color: AppTheme.goldAccent, fontSize: 13)),
             const Spacer(),
-            Text('等级 ${data.level}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+            Text(LocaleService.I.t('achievement.level_label', args: {'level': '${data.level}'}), style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
           ])),
       // 称号行
       if (_titleText(data, achList) != '')
@@ -131,6 +132,15 @@ class _AchievementScreenState extends State<AchievementScreen>
         },
       )),
     ]);
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Text(
+        LocaleService.I.t('achievement.no_data'),
+        style: TextStyle(color: AppTheme.textSecondary),
+      ),
+    );
   }
 
   String _titleText(PlayerData data, List<Achievement> achList) {
@@ -168,30 +178,39 @@ class _AchievementScreenState extends State<AchievementScreen>
 
   // ───── 统计页 ─────
   Widget _buildStatsTab() {
-    final data = _data!;
+    final data = _data;
+    if (data == null) return _buildEmptyState();
     final history = _history;
     return SingleChildScrollView(padding: const EdgeInsets.all(16), child: Column(
       crossAxisAlignment: CrossAxisAlignment.start, children: [
-        _st(Icons.sports_kabaddi, '对战', '${data.totalMatches} 场  ${data.winCount} 胜  '
-            '${data.totalMatches > 0 ? (data.winCount * 100 ~/ data.totalMatches) : 0}%胜率'),
-        _st(Icons.local_fire_department, '伤害', '累计 ${data.stats['totalDamage'] ?? 0}'),
-        _st(Icons.monetization_on, '金币', '累计获得 ${data.stats['totalGoldEarned'] ?? 0}'),
-        _st(Icons.auto_awesome, '连胜', '最高 ${data.stats['maxWinStreak'] ?? 0} 连胜'),
-        _st(Icons.collections_bookmark, '收藏', '${data.unlockedCards.length} 张'),
+        _st(Icons.sports_kabaddi, LocaleService.I.t('achievement.stats_battle'),
+            LocaleService.I.t('achievement.stats_battle_format', args: {
+              'matches': '${data.totalMatches}', 'wins': '${data.winCount}',
+              'winrate': '${data.totalMatches > 0 ? (data.winCount * 100 ~/ data.totalMatches) : 0}',
+            })),
+        _st(Icons.local_fire_department, LocaleService.I.t('achievement.stats_damage'),
+            LocaleService.I.t('achievement.stats_total_damage', args: {'value': '${data.stats['totalDamage'] ?? 0}'})),
+        _st(Icons.monetization_on, LocaleService.I.t('achievement.stats_gold'),
+            LocaleService.I.t('achievement.stats_total_gold', args: {'value': '${data.stats['totalGoldEarned'] ?? 0}'})),
+        _st(Icons.auto_awesome, LocaleService.I.t('achievement.stats_win_streak'),
+            LocaleService.I.t('achievement.stats_max_streak', args: {'value': '${data.stats['maxWinStreak'] ?? 0}'})),
+        _st(Icons.collections_bookmark, LocaleService.I.t('achievement.stats_collection'),
+            LocaleService.I.t('achievement.stats_collection_count', args: {'value': '${data.unlockedCards.length}'})),
         if (data.stats['heroAnyWins'] != null && data.stats['heroAnyWins']! > 0)
-          _st(Icons.person, '英雄', '总胜场 ${data.stats['heroAnyWins']}'),
+          _st(Icons.person, LocaleService.I.t('achievement.stats_hero'),
+              LocaleService.I.t('achievement.stats_hero_wins', args: {'value': '${data.stats['heroAnyWins']}'})),
         const SizedBox(height: 16),
         if (history.isNotEmpty) ...[
-          const Text('最近对战', style: TextStyle(color: AppTheme.goldAccent, fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(LocaleService.I.t('achievement.recent_matches'), style: const TextStyle(color: AppTheme.goldAccent, fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           ...history.reversed.take(10).map((r) => Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             margin: const EdgeInsets.only(bottom: 4),
             decoration: AppTheme.panelDecoration(),
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text(r.isWin ? '✅ 胜利' : '❌ 失败',
+              Text(r.isWin ? LocaleService.I.t('achievement.match_win') : LocaleService.I.t('achievement.match_lose'),
                   style: TextStyle(color: r.isWin ? AppTheme.healGreen : AppTheme.healthRed)),
-              Text('${r.duration}s', style: const TextStyle(color: AppTheme.textMuted)),
+              Text(LocaleService.I.t('achievement.match_duration', args: {'duration': '${r.duration}'}), style: const TextStyle(color: AppTheme.textMuted)),
             ]),
           )),
         ],
@@ -234,10 +253,10 @@ class _AchCard extends StatelessWidget {
                 color: unlocked ? AppTheme.goldAccent : Colors.grey, size: 28),
             const SizedBox(width: 10),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(ach.title, style: TextStyle(
+              Text(LocaleService.I.t('achievement.${ach.id}.name'), style: TextStyle(
                   color: unlocked ? AppTheme.goldAccent : AppTheme.parchment,
                   fontWeight: FontWeight.bold, fontSize: 14)),
-              Text(ach.description, style: TextStyle(
+              Text(LocaleService.I.t('achievement.${ach.id}.desc'), style: TextStyle(
                   color: AppTheme.parchment.withAlpha(150), fontSize: 12)),
             ])),
             if (ach.titleReward != null)
@@ -247,7 +266,7 @@ class _AchCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: AppTheme.goldAccent.withAlpha(80)),
                   ),
-                  child: Text('🏆 ${ach.titleReward}',
+                  child: Text(LocaleService.I.t('achievement.${ach.id}.reward', args: {}),
                       style: const TextStyle(color: AppTheme.goldAccent, fontSize: 10))),
           ]),
           const SizedBox(height: 6),
@@ -261,7 +280,7 @@ class _AchCard extends StatelessWidget {
               )),
           const SizedBox(height: 4),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(unlocked ? '✅ 已完成' : label,
+            Text(unlocked ? LocaleService.I.t('achievement.completed') : label,
                 style: TextStyle(color: unlocked ? AppTheme.healGreen : AppTheme.textMuted, fontSize: 11)),
             if (!unlocked && ach.goldReward > 0)
               Text('+${ach.goldReward}💰', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 11)),
