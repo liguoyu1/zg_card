@@ -1,5 +1,5 @@
-import 'package:warring_states_card/data/heroes/heroes_data.dart';
 import 'package:warring_states_card/domain/models/models.dart';
+import 'package:warring_states_card/domain/services/hero_data_provider.dart' as provider;
 
 /// 冒险模式管理器
 class AdventureManager {
@@ -27,7 +27,7 @@ class AdventureManager {
   }
 
   List<Hero> getAvailableHeroes() {
-    return getAllHeroes();
+    return provider.HeroDataProvider.getAllHeroes();
   }
 
   bool isMissionUnlocked(String missionId) {

@@ -32,7 +32,16 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
   void initState() {
     super.initState();
     _load();
+    LocaleService.I.localeVersion.addListener(_onLocaleChanged);
   }
+
+  @override
+  void dispose() {
+    LocaleService.I.localeVersion.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
+
+  void _onLocaleChanged() => setState(() {});
 
   Future<void> _load() async {
     final pd = await SaveManager.loadPlayerData();
