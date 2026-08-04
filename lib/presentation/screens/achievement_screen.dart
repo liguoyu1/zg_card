@@ -146,7 +146,8 @@ class _AchievementScreenState extends State<AchievementScreen>
   String _titleText(PlayerData data, List<Achievement> achList) {
     final titles = achList
         .where((a) => a.titleReward != null && data.achievedMedals.contains(a.id))
-        .map((a) => a.titleReward!).toList();
+        .map((a) => LocaleService.I.t('achievement.${a.id}.reward'))
+        .toList();
     if (titles.isEmpty) return '';
     return '${LocaleService.I.t('achievement.reward_title', args: {'title': titles.last})}'
         '${titles.length > 1 ? ' (+${titles.length - 1})' : ''}';
