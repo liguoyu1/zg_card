@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Card;
 import '../../../data/card_image_service.dart';
 import '../../../domain/models/card.dart';
 import '../../../l10n/locale_service.dart';
+import '../../../shared/widgets/queued_asset_image.dart';
 
 /// 手牌选择状态
 enum HandCardState {
@@ -340,11 +341,11 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
         : CardImageService.getImageAsset(widget.card.id);
 
     if (imagePath.isNotEmpty) {
-      return Image.asset(
-        imagePath,
+      return QueuedAssetImage(
+        path: imagePath,
         fit: BoxFit.cover,
         alignment: Alignment.topCenter,
-        errorBuilder: (_, __, ___) => Container(color: _getRarityColor()),
+        placeholderColor: _getRarityColor(),
       );
     }
     return Container(color: _getRarityColor());

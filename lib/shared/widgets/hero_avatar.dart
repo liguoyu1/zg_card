@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:warring_states_card/data/card_image_service.dart';
 import 'package:warring_states_card/domain/models/hero.dart' as domain;
+import 'package:warring_states_card/shared/widgets/queued_asset_image.dart';
 
 /// 英雄头像动画状态
 enum HeroAnimationState {
@@ -232,10 +233,11 @@ class _HeroAvatarState extends State<HeroAvatar> with TickerProviderStateMixin {
           children: [
             // 英雄素材图片（优先）
             if (hasArt)
-              Image.asset(
-                artPath,
+              QueuedAssetImage(
+                path: artPath,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Center(
+                placeholderColor: heroColor,
+                placeholderBuilder: (_) => Center(
                   child: Text(
                     firstChar,
                     style: const TextStyle(

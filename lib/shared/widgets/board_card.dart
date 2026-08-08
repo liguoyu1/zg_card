@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Card;
 import 'package:warring_states_card/data/card_image_service.dart';
 import 'package:warring_states_card/domain/models/card.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
+import 'package:warring_states_card/shared/widgets/queued_asset_image.dart';
 
 /// 卡牌动画状态枚举
 enum CardAnimationState {
@@ -501,11 +502,10 @@ class _BoardCardState extends State<BoardCard> with TickerProviderStateMixin {
         : CardImageService.getImageAsset(widget.card.id);
 
     if (imagePath.isNotEmpty) {
-      return Image.asset(
-        imagePath,
+      return QueuedAssetImage(
+        path: imagePath,
         fit: BoxFit.cover,
-        alignment: Alignment.topCenter,
-        errorBuilder: (_, __, ___) => Container(color: _getRarityColor()),
+        placeholderColor: _getRarityColor(),
       );
     }
     return Container(color: _getRarityColor());

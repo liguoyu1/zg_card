@@ -8,6 +8,7 @@ import '../../domain/models/card.dart' as domain;
 import '../../domain/models/player.dart';
 import '../../domain/models/game_state.dart';
 import '../../domain/services/services.dart';
+import '../../shared/widgets/queued_asset_image.dart';
 import '../../domain/services/achievement_service.dart';
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/models/quest.dart';
@@ -18,6 +19,8 @@ import '../../domain/models/mission_context.dart';
 import '../../domain/models/roguelite_run.dart';
 import '../../l10n/locale_service.dart';
 import '../../data/persistence/save_manager.dart';
+import '../../data/card_image_service.dart';
+import '../../data/card_image_service.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../widgets/theme_widgets.dart';
@@ -188,6 +191,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _initializeGame() {
+    _preloadBattleAssets();
     if (widget.runHp != null && widget.opponentHero != null) {
       ref.read(aiGameProvider.notifier).startMissionGame(
         playerId: widget.playerId,
@@ -209,6 +213,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       AudioManager.I.manaCrystal();
       _isPlayerTurn = true;
       _startTurnTimer();
+    }
+  }
+
+  /// 对战前预加载双方英雄与全卡池素材（队列 3 并发，从前到后）
+  void _preloadBattleAssets() {
+    final q = AssetPreloadQueue.I;
+    for (final hd in [widget.playerHero, widget.opponentHero]) {
+      if (hd == null) continue;
+      final p = CardImageService.getHeroImageAsset(hd.id);
+      if (p.isNotEmpty) q.ensure(p);
+    }
+    for (final c in CardDataProvider.getAllCards()) {
+      final p = CardImageService.getImageAsset(c.id);
+      if (p.isNotEmpty) q.ensure(p);
     }
   }
 
