@@ -49,7 +49,10 @@ class AuthNotifier extends StateNotifier<AuthState?> {
 
   void _bindBalanceSync() {
     final s = state;
-    if (s != null) BalanceSyncService.setSession(s.playerId, s.token);
+    if (s != null) {
+      BalanceSyncService.setSession(s.playerId, s.token, playerName: s.playerName);
+      BalanceSyncService.afterLogin();
+    }
   }
 
   /// 获取当前玩家ID

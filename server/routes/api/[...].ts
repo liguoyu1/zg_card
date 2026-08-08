@@ -1,4 +1,4 @@
-import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance } from '../../utils/database';
+import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive } from '../../utils/database';
 import { joinMatchQueue, leaveMatchQueue, checkMatchStatus, submitGameAction, pollGameActions } from '../../utils/database';
 import { createPaymentToken, verifyWebhookSignature, GEM_SKU_MAP } from '../../utils/xsolla';
 
@@ -109,6 +109,25 @@ export default defineEventHandler(async (event) => {
       const { odID, gems, gold } = await readBody(event);
       if (odID !== token.playerId) return { error: 'Forbidden' };
       return await syncBalance(odID, Number(gems) || 0, Number(gold) || 0);
+    }
+
+    // === 存档云同步（完整资产回滚，跨设备） ===
+    if (method === 'PUT' && path.endsWith('/save')) {
+      const auth = getRequestHeader(event, 'authorization');
+      if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };
+      const token = verifyToken(auth.slice(7));
+      if (!token) return { error: 'Invalid token' };
+      const { odID, save } = await readBody(event);
+      if (odID !== token.playerId) return { error: 'Forbidden' };
+      return await savePlayerArchive(odID, save);
+    }
+
+    if (method === 'GET' && path.endsWith('/save')) {
+      const auth = getRequestHeader(event, 'authorization');
+      if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };
+      const token = verifyToken(auth.slice(7));
+      if (!token) return { error: 'Invalid token' };
+      return await getPlayerArchive(token.playerId);
     }
 
     if (method === 'POST' && path.endsWith('/balance/add-gems')) {

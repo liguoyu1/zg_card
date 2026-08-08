@@ -523,6 +523,32 @@ export async function syncBalance(odID: string, gems: number, gold: number) {
   }
 }
 
+/** 保存玩家完整存档（PlayerData + Collection + 战斗历史） */
+export async function savePlayerArchive(odID: string, data: any) {
+  try {
+    if (!data || typeof data !== 'object') return { error: 'Invalid save data' };
+    await prisma.playerSave.upsert({
+      where: { playerId: odID },
+      update: { data },
+      create: { playerId: odID, data },
+    });
+    return { success: true };
+  } catch (e: any) {
+    return { error: e.message || 'save archive failed' };
+  }
+}
+
+/** 读取玩家完整存档 */
+export async function getPlayerArchive(odID: string) {
+  try {
+    const row = await prisma.playerSave.findUnique({ where: { playerId: odID } });
+    if (!row) return { success: true, save: null };
+    return { success: true, save: row.data, updatedAt: row.updatedAt.toISOString() };
+  } catch (e: any) {
+    return { error: e.message || 'load archive failed' };
+  }
+}
+
 export async function spendGems(odID: string, amount: number, detail: string = '') {
   try {
     const player = await prisma.player.findUnique({ where: { id: odID } });

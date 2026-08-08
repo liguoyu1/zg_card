@@ -131,6 +131,41 @@ class BalanceService {
     }
   }
 
+  /// 上传完整存档（PlayerData + Collection + 战斗历史）
+  static Future<bool> uploadSave(String playerId, String token, String saveJson) async {
+    try {
+      final resp = await http.put(
+        Uri.parse('$_baseUrl/api/save'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'odID': playerId, 'save': jsonDecode(saveJson)}),
+      );
+      return resp.statusCode == 200;
+    } catch (e) {
+      debugPrint('BalanceService.uploadSave error: $e');
+      return false;
+    }
+  }
+
+  /// 拉取远端完整存档（null = 无存档）
+  static Future<String?> downloadSave(String playerId, String token) async {
+    try {
+      final resp = await http.get(
+        Uri.parse('$_baseUrl/api/save'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (resp.statusCode != 200) return null;
+      final body = jsonDecode(resp.body);
+      if (body['success'] != true || body['save'] == null) return null;
+      return jsonEncode(body['save']);
+    } catch (e) {
+      debugPrint('BalanceService.downloadSave error: $e');
+      return null;
+    }
+  }
+
   static Future<bool> addGems(String id, int amount,
       {String detail = '', String? receiptId}) async {
     try {

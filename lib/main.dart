@@ -21,6 +21,7 @@ void main() async {
 
   await SaveManager.init();
   SaveManager.onPlayerDataSaved = (_) => BalanceSyncService.schedule();
+  SaveManager.onCollectionSaved = (_) => BalanceSyncService.schedule();
   final prefs = await SharedPreferences.getInstance();
   final savedLocale = prefs.getString('locale_code') ?? 'zh';
   await LocaleService.I.init(localeCode: savedLocale);

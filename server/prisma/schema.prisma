@@ -33,8 +33,20 @@ model Player {
   quests        Quest[]
   dailyRewards  DailyReward[]
   transactions  Transaction[]
+  save         PlayerSave?
 
   @@map("players")
+}
+
+// 客户端整包存档（PlayerData + Collection + 战斗历史），用于跨设备回滚
+model PlayerSave {
+  playerId  String   @id @map("player_id")
+  data      Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("player_saves")
 }
 
 // 资产流水
