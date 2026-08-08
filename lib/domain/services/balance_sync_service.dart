@@ -16,6 +16,8 @@ class BalanceSyncService {
   static String? _playerName;
   static Timer? _debounce;
   static bool _syncing = false;
+  static int _lastSyncAt = 0;
+  static const int _minSyncIntervalMs = 15000;
 
   static void setSession(String playerId, String token, {String? playerName}) {
     _playerId = playerId;
@@ -162,6 +164,8 @@ class BalanceSyncService {
 
   static Future<void> _syncAll() async {
     if (_syncing || _playerId == null || _token == null) return;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (now - _lastSyncAt < _minSyncIntervalMs) return; // 节流：至少间隔 15s
     _syncing = true;
     try {
       final data = await SaveManager.loadPlayerData();
@@ -170,6 +174,7 @@ class BalanceSyncService {
         await BalanceService.syncBalance(_playerId!, _token!,
             gems: data.gems, gold: data.gold);
         await _uploadArchive();
+        _lastSyncAt = now;
       }
     } catch (_) {
       // 离线/失败静默，下次变动或登录时重试
