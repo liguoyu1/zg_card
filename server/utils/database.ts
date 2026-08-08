@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
+import { verifyAppleReceipt, IAP_GEM_MAP } from './apple_iap';
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 
 // 环境变量
@@ -410,6 +411,40 @@ export async function addGemsFromXsolla(odID: string, amount: number, externalId
     return { success: true, gems: newBalance };
   } catch (e: any) {
     return { error: e.message || 'add gems from xsolla failed' };
+  }
+}
+
+/** Apple IAP 专用：服务端验证 receipt + 幂等发放钻石 */
+export async function verifyIAPReceipt(odID: string, receipt: string, productId: string, transactionId?: string) {
+  try {
+    const info = await verifyAppleReceipt(receipt, productId);
+    if ('error' in info) return { error: info.error };
+
+    // 校验 productId 与 receipt 一致
+    if (info.productId !== productId) return { error: 'Product mismatch' };
+    const amount = IAP_GEM_MAP[productId];
+    if (!amount) return { error: 'Invalid product' };
+
+    // 幂等：同一笔交易不重复发放
+    const txId = transactionId || info.transactionId;
+    const existing = await prisma.transaction.findFirst({ where: { externalId: txId } });
+    if (existing) return { success: true, alreadyProcessed: true, gems: existing.balanceAfter };
+
+    const player = await prisma.player.findUnique({ where: { id: odID } });
+    if (!player) return { error: 'player not found' };
+    const newBalance = player.gems + amount;
+    await prisma.$transaction([
+      prisma.player.update({
+        where: { id: odID, balanceVersion: player.balanceVersion },
+        data: { gems: newBalance, balanceVersion: { increment: 1 } },
+      }),
+      prisma.transaction.create({
+        data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount, balanceAfter: newBalance, detail: 'Apple IAP', externalId: txId },
+      }),
+    ]);
+    return { success: true, gems: newBalance };
+  } catch (e: any) {
+    return { error: e.message || 'verify iap failed' };
   }
 }
 

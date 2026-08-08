@@ -34,7 +34,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   String _heroShopCache = '';
 
   @override
-  void initState() { super.initState(); _load(); dataVersionNotifier.addListener(_load); }
+  void initState() {
+    super.initState();
+    _load();
+    dataVersionNotifier.addListener(_load);
+    PurchaseService.I.ensureReady().then((_) { if (mounted) setState(() {}); });
+  }
 
   Future<void> _load() async {
     final d = await SaveManager.loadPlayerData();
@@ -163,7 +168,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         await _refresh();
         _snack(LocaleService.I.t('shop.restore_success', args: {'gems': '${resp.gems}'}));
       } else {
-        _snack(LocaleService.I.t('shop.restore_verify_failed'));
+        _snack('${LocaleService.I.t('shop.restore_verify_failed')}（${resp?.error ?? '?'}）');
       }
     });
   }
@@ -220,7 +225,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       await _refresh();
       _snack(LocaleService.I.t('shop.buy_success_gems', args: {'gems': '${resp.gems}'}));
     } else {
-      _snack(LocaleService.I.t('shop.buy_failed_verify'));
+      _snack('${LocaleService.I.t('shop.buy_failed_verify')}（${resp?.error ?? '?'}）');
     }
   }
 
@@ -248,15 +253,20 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   Widget _gemCard(int diamonds, double usd, String? bonus) {
     final bonusActual = _gemBonus(diamonds);
     final total = diamonds + bonusActual;
-    final eff = usd > 0 ? (total / usd).round() : 0;
+    // 方案A：优先 StoreKit 本地化价格（用户地区真实货币/售价，如中国区 ¥8.00），加载失败回退美元定价
+    final local = PurchaseService.I.products.where((p) => p.id == _gemProductId(diamonds)).firstOrNull;
+    final price = (local != null && local.price.isNotEmpty) ? local.price : '\$${usd.toStringAsFixed(2)}';
+    final raw = local?.rawPrice ?? usd;
+    final eff = raw > 0 ? (total / raw).round() : 0;
+    final cur = price.replaceAll(RegExp(r'[\d.,]+'), '').trim();
     final subtitle = bonusActual > 0
-        ? LocaleService.I.t('shop.gem_subtitle_bonus', args: {'price': usd.toStringAsFixed(2), 'eff': '$eff', 'bonus': '$bonusActual'})
-        : LocaleService.I.t('shop.gem_subtitle', args: {'price': usd.toStringAsFixed(2), 'eff': '$eff'});
+        ? LocaleService.I.t('shop.gem_subtitle_bonus', args: {'price': price, 'eff': '$eff', 'bonus': '$bonusActual', 'cur': cur})
+        : LocaleService.I.t('shop.gem_subtitle', args: {'price': price, 'eff': '$eff', 'cur': cur});
     final title = bonusActual > 0
         ? LocaleService.I.t('shop.gem_title_bonus', args: {'base': '$diamonds', 'bonus': '$bonusActual'})
         : LocaleService.I.t('shop.gem_title', args: {'base': '$diamonds'});
     return _card(Icons.diamond, title, subtitle,
-        Text('\$${usd.toStringAsFixed(2)}', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(price, style: const TextStyle(color: AppTheme.goldAccent, fontSize: 16, fontWeight: FontWeight.bold)),
         () => _buyGem(diamonds));
   }
 

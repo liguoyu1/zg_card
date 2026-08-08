@@ -74,6 +74,45 @@ class BalanceService {
     }
   }
 
+  /// Upload Apple IAP receipt for server-side verification & gem crediting.
+  /// Backend verifies receipt with Apple, grants gems based on productId,
+  /// and returns the new balance. Idempotent per transactionId.
+  /// POST /api/balance/verify-iap
+  /// Expected server response: { success: true, gems: number }
+  static Future<({bool success, int gems, String? error})?> verifyIAPReceipt({
+    required String playerId,
+    required String token,
+    required String receipt,
+    required String productId,
+    String? transactionId,
+  }) async {
+    try {
+      final resp = await http.post(
+        Uri.parse('$_baseUrl/api/balance/verify-iap'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'odID': playerId,
+          'receipt': receipt,
+          'productId': productId,
+          if (transactionId != null) 'transactionId': transactionId,
+        }),
+      );
+      final body = jsonDecode(resp.body);
+      if (resp.statusCode != 200 || body['success'] != true) {
+        final err = (body is Map && body['error'] is String) ? body['error'] as String : 'HTTP ${resp.statusCode}';
+        debugPrint('BalanceService.verifyIAPReceipt failed: $err');
+        return (success: false, gems: 0, error: err);
+      }
+      return (success: true, gems: body['gems'] as int, error: null);
+    } catch (e) {
+      debugPrint('BalanceService.verifyIAPReceipt error: $e');
+      return (success: false, gems: 0, error: e.toString());
+    }
+  }
+
   static Future<bool> addGems(String id, int amount,
       {String detail = '', String? receiptId}) async {
     try {
