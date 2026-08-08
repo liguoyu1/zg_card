@@ -1,4 +1,4 @@
-FROM ghcr.io/cirruslabs/flutter:3.44.9 AS build
+FROM ghcr.io/cirruslabs/flutter:3.44.0 AS build
 WORKDIR /app
 COPY . .
 RUN flutter pub get
