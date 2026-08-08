@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Card;
 import '../../../data/card_image_service.dart';
 import '../../../domain/models/card.dart';
+import '../../../l10n/locale_service.dart';
 
 /// 手牌选择状态
 enum HandCardState {
@@ -374,7 +375,7 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    '${widget.card.cost}费',
+                    LocaleService.I.t('hand_card.cost_fee', args: {'cost': '${widget.card.cost}'}),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -479,35 +480,35 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.orange.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u51B2\u950B', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_charge'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.taunt)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.brown.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u8BBD\u8BAE', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_taunt'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.divineShield)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.cyan.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u5723\u76FE', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_divine_shield'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.windfury)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.lime.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u98CE\u6012', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_windfury'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.lifesteal)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(color: Colors.pink.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: const Text('\u5438\u8840', style: TextStyle(color: Colors.white, fontSize: 7)),
+        child: Text(LocaleService.I.t('basic_card.keyword_lifesteal'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
 
@@ -542,31 +543,31 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
   ({String name, Color color}) _getKeywordInfo(Keyword keyword) {
     switch (keyword) {
       case Keyword.charge:
-        return (name: '冲锋', color: Colors.yellow);
+        return (name: LocaleService.I.t('basic_card.keyword_charge'), color: Colors.yellow);
       case Keyword.taunt:
-        return (name: '嘲讽', color: Colors.grey);
+        return (name: LocaleService.I.t('basic_card.keyword_taunt'), color: Colors.grey);
       case Keyword.divineShield:
-        return (name: '圣盾', color: Colors.white);
+        return (name: LocaleService.I.t('basic_card.keyword_divine_shield'), color: Colors.white);
       case Keyword.windfury:
-        return (name: '风怒', color: Colors.cyan);
+        return (name: LocaleService.I.t('basic_card.keyword_windfury'), color: Colors.cyan);
       case Keyword.lifesteal:
-        return (name: '吸血', color: Colors.red);
+        return (name: LocaleService.I.t('basic_card.keyword_lifesteal'), color: Colors.red);
       case Keyword.poisonous:
-        return (name: '剧毒', color: Colors.green);
+        return (name: LocaleService.I.t('basic_card.keyword_poisonous'), color: Colors.green);
       case Keyword.battlecry:
-        return (name: '战吼', color: Colors.blue);
+        return (name: LocaleService.I.t('basic_card.keyword_battlecry'), color: Colors.blue);
       case Keyword.deathrattle:
-        return (name: '亡语', color: Colors.brown);
+        return (name: LocaleService.I.t('basic_card.keyword_deathrattle'), color: Colors.brown);
       case Keyword.stealth:
-        return (name: '潜行', color: Colors.purple);
+        return (name: LocaleService.I.t('basic_card.keyword_stealth'), color: Colors.purple);
       case Keyword.silence:
-        return (name: '沉默', color: Colors.grey);
+        return (name: LocaleService.I.t('basic_card.keyword_silence'), color: Colors.grey);
       case Keyword.inspire:
-        return (name: '激励', color: Colors.orange);
+        return (name: LocaleService.I.t('basic_card.keyword_inspire'), color: Colors.orange);
       case Keyword.combo:
-        return (name: '连击', color: Colors.red);
+        return (name: LocaleService.I.t('basic_card.keyword_combo'), color: Colors.red);
       case Keyword.draw:
-        return (name: '抽牌', color: Colors.blue);
+        return (name: LocaleService.I.t('basic_card.keyword_draw'), color: Colors.blue);
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
- '/'
+
+import '../../core/theme/app_theme.dart';
 
 /// 全屏战国纹理背景
 class WThemeBackground extends StatelessWidget {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/asset_style.dart';
 import '../../core/audio/audio_manager.dart';
@@ -88,7 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     children: [
                       _buildMenuButton(icon: Icons.shield_outlined, label: LocaleService.I.t('home.btn_battle'), color: AppTheme.healthRed,
                           onTap: () => context.push('/battle/hero-select')),
-                      _buildMenuButton(icon: Icons.sports_kabaddi, label: '⚔ PK', color: AppTheme.goldAccent,
+                      _buildMenuButton(icon: Icons.sports_kabaddi, label: LocaleService.I.t('home.pk'), color: AppTheme.goldAccent,
                           onTap: () => context.push('/battle/hero-select?mode=pk')),
                       _buildMenuButton(icon: Icons.explore_outlined, label: LocaleService.I.t('home.btn_adventure'), color: AppTheme.damageOrange,
                           onTap: () => context.push('/shop/adventure')),
@@ -114,9 +115,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Row(children: [
         _buildSchoolEmblem(),
         const SizedBox(width: 12),
-        const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('战国卡牌', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary, letterSpacing: 4)),
-          Text('Warring States', style: TextStyle(fontSize: 10, color: AppTheme.textMuted, letterSpacing: 3)),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(LocaleService.I.t('home.title'), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary, letterSpacing: 4)),
+          Text(LocaleService.I.t('home.subtitle'), style: TextStyle(fontSize: 10, color: AppTheme.textMuted, letterSpacing: 3)),
         ])),
         _buildUserMenu(loggedIn, auth),
       ]),
@@ -143,15 +144,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             setState(() {});
             break;
           case 'lang_zh':
-            LocaleService.I.init(localeCode: 'zh');
+            await LocaleService.I.init(localeCode: 'zh');
+            await SharedPreferences.getInstance().then((p) => p.setString('locale_code', 'zh'));
             setState(() {});
             break;
           case 'lang_en':
-            LocaleService.I.init(localeCode: 'en');
+            await LocaleService.I.init(localeCode: 'en');
+            await SharedPreferences.getInstance().then((p) => p.setString('locale_code', 'en'));
             setState(() {});
             break;
           case 'lang_zh_TW':
-            LocaleService.I.init(localeCode: 'zh_TW');
+            await LocaleService.I.init(localeCode: 'zh_TW');
+            await SharedPreferences.getInstance().then((p) => p.setString('locale_code', 'zh_TW'));
             setState(() {});
             break;
           case 'logout':
@@ -180,7 +184,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       itemBuilder: (_) {
         if (!loggedIn) {
           return [
-            const PopupMenuItem(value: 'login', child: ListTile(leading: Icon(Icons.login, color: AppTheme.parchment), title: Text('登录', style: TextStyle(color: AppTheme.parchment)), contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact)),
+            PopupMenuItem(value: 'login', child: ListTile(leading: const Icon(Icons.login, color: AppTheme.parchment), title: Text(LocaleService.I.t('home.login'), style: const TextStyle(color: AppTheme.parchment)), contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact)),
           ];
         }
         return [
@@ -191,33 +195,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const PopupMenuDivider(),
           PopupMenuItem(value: 'style', child: ListTile(
             leading: Icon(isChibi ? Icons.auto_awesome : Icons.auto_fix_high, color: AppTheme.parchment, size: 20),
-            title: Text(isChibi ? '切换 写实' : '切换 Q版', style: TextStyle(color: AppTheme.parchment)),
+            title: Text(LocaleService.I.t(isChibi ? 'home.style_toggle_real' : 'home.style_toggle_q'), style: TextStyle(color: AppTheme.parchment)),
             contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
           )),
           PopupMenuItem(value: 'sound', child: ListTile(
             leading: Icon(AudioManager.I.isMuted ? Icons.volume_off : Icons.volume_up, color: AppTheme.parchment, size: 20),
-            title: Text(AudioManager.I.isMuted ? '音效 开' : '音效 关', style: TextStyle(color: AppTheme.parchment)),
+            title: Text(LocaleService.I.t(AudioManager.I.isMuted ? 'home.sound_off' : 'home.sound_on'), style: TextStyle(color: AppTheme.parchment)),
             contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
           )),
-          const PopupMenuItem(value: 'lang_zh', child: ListTile(
-            leading: Icon(Icons.language, color: AppTheme.parchment, size: 20),
-            title: Text('中文', style: TextStyle(color: AppTheme.parchment)),
+          PopupMenuItem(value: 'lang_zh', child: ListTile(
+            leading: const Icon(Icons.language, color: AppTheme.parchment, size: 20),
+            title: Text(LocaleService.I.t('home.lang_zh'), style: const TextStyle(color: AppTheme.parchment)),
             contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
           )),
-          const PopupMenuItem(value: 'lang_en', child: ListTile(
-            leading: Icon(Icons.language, color: AppTheme.parchment, size: 20),
-            title: Text('English', style: TextStyle(color: AppTheme.parchment)),
+          PopupMenuItem(value: 'lang_en', child: ListTile(
+            leading: const Icon(Icons.language, color: AppTheme.parchment, size: 20),
+            title: Text(LocaleService.I.t('home.lang_en'), style: const TextStyle(color: AppTheme.parchment)),
             contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
           )),
-          const PopupMenuItem(value: 'lang_zh_TW', child: ListTile(
-            leading: Icon(Icons.language, color: AppTheme.parchment, size: 20),
-            title: Text('繁体', style: TextStyle(color: AppTheme.parchment)),
+          PopupMenuItem(value: 'lang_zh_TW', child: ListTile(
+            leading: const Icon(Icons.language, color: AppTheme.parchment, size: 20),
+            title: Text(LocaleService.I.t('home.lang_zh_TW'), style: const TextStyle(color: AppTheme.parchment)),
             contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
           )),
           const PopupMenuDivider(),
           PopupMenuItem(value: 'logout', child: ListTile(
             leading: const Icon(Icons.logout, color: Colors.redAccent, size: 20),
-            title: const Text('登出', style: TextStyle(color: Colors.redAccent)),
+            title: Text(LocaleService.I.t('home.logout'), style: const TextStyle(color: Colors.redAccent)),
             contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
           )),
         ];
@@ -243,7 +247,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(isChibi ? Icons.auto_awesome : Icons.auto_fix_high, size: 16, color: AppTheme.goldAccent),
           const SizedBox(width: 4),
-          Text(isChibi ? 'Q版' : '写实', style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
+          Text(isChibi ? LocaleService.I.t('home.style_toggle_q') : LocaleService.I.t('home.style_toggle_real'), style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
         ]),
       ),
     );
@@ -276,7 +280,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(width: 8),
           ElevatedButton(
             onPressed: () async { final ok = await PurchaseService.I.purchase('starter_bundle'); if (!context.mounted) return;
-              if (ok) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('购买成功！'), backgroundColor: AppTheme.healGreen));
+              if (ok.success) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleService.I.t('home.purchase_success')), backgroundColor: AppTheme.healGreen));
               setState(() {}); },
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
             child: const Text('\$0.99'),
@@ -296,7 +300,7 @@ class _WeeklyTrialDialog extends StatelessWidget {
   final List<domain.Card> cards;
 
   static const _rc = {domain.Rarity.common: Color(0xFF9E9E9E), domain.Rarity.rare: Color(0xFF2196F3), domain.Rarity.epic: Color(0xFF9C27B0), domain.Rarity.legendary: Color(0xFFFF9800)};
-  static const _rl = {domain.Rarity.common: '普通', domain.Rarity.rare: '稀有', domain.Rarity.epic: '史诗', domain.Rarity.legendary: '传说'};
+  static final _rl = {domain.Rarity.common: LocaleService.I.t('card_library.rarity_common'), domain.Rarity.rare: LocaleService.I.t('card_library.rarity_rare'), domain.Rarity.epic: LocaleService.I.t('card_library.rarity_epic'), domain.Rarity.legendary: LocaleService.I.t('card_library.rarity_legendary')};
 
   @override
   Widget build(BuildContext context) {
@@ -304,9 +308,9 @@ class _WeeklyTrialDialog extends StatelessWidget {
       backgroundColor: const Color(0xFF1A1A2E),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(padding: const EdgeInsets.all(16), child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const Text('🎴 本周试用卡牌', style: TextStyle(color: Color(0xFFFFD700), fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(LocaleService.I.t('home.trial_weekly_title'), style: const TextStyle(color: Color(0xFFFFD700), fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        Text('每周8张随机试用，下周刷新', style: TextStyle(color: Colors.white.withAlpha(180), fontSize: 12)),
+        Text(LocaleService.I.t('home.trial_weekly_desc'), style: TextStyle(color: Colors.white.withAlpha(180), fontSize: 12)),
         const SizedBox(height: 16),
         Wrap(spacing: 8, runSpacing: 8, children: cards.map((c) {
           final rc = _rc[c.rarity]!;
@@ -315,7 +319,7 @@ class _WeeklyTrialDialog extends StatelessWidget {
             child: Column(children: [
               Text(c.name, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
               const SizedBox(height: 4),
-              Text('${_rl[c.rarity]} · ${c.cost}费', style: TextStyle(color: rc, fontSize: 9)),
+              Text(LocaleService.I.t('home.trial_cost', args: {'rarity': _rl[c.rarity] ?? '', 'cost': '${c.cost}'}), style: TextStyle(color: rc, fontSize: 9)),
               const SizedBox(height: 2),
               Text(_typeName(c.type), style: TextStyle(color: Colors.white.withAlpha(150), fontSize: 8)),
             ]),
@@ -325,13 +329,13 @@ class _WeeklyTrialDialog extends StatelessWidget {
         SizedBox(width: double.infinity, child: ElevatedButton(
           onPressed: () => Navigator.of(context).pop(),
           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFFD700), padding: const EdgeInsets.symmetric(vertical: 12)),
-          child: const Text('收下', style: TextStyle(fontSize: 16, color: Colors.black)),
+          child: Text(LocaleService.I.t('home.trial_accept'), style: const TextStyle(fontSize: 16, color: Colors.black)),
         )),
       ])),
     );
   }
 
   String _typeName(domain.CardType t) => switch (t) {
-    domain.CardType.minion => '随从', domain.CardType.spell => '法术', domain.CardType.weapon => '武器',
+    domain.CardType.minion => LocaleService.I.t('card_library.type_minion'), domain.CardType.spell => LocaleService.I.t('card_library.type_spell'), domain.CardType.weapon => LocaleService.I.t('card_library.type_weapon'),
   };
 }

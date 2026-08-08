@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
- '/'
-import 'home_screen.dart';
- '/'
+import '../../core/audio/audio_manager.dart';
+import '../../core/theme/app_theme.dart';
+import '../../l10n/locale_service.dart';
+import '../../presentation/screens/home_screen.dart';
+
 
 /// 战国卡牌启动画面
 /// Warring States themed splash screen with branded design
@@ -181,7 +183,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     return Column(
       children: [
         Text(
-          '战国卡牌',
+          LocaleService.I.t('home.title'),
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
@@ -198,7 +200,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         ),
         const SizedBox(height: 8),
         Text(
-          'Warring States',
+          LocaleService.I.t('home.subtitle'),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w400,
@@ -233,7 +235,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           ),
           const SizedBox(height: 12),
           Text(
-            'Loading...',
+            LocaleService.I.t('common.loading'),
             style: TextStyle(
               fontSize: 12,
               color: AppTheme.parchment.withAlpha(153),

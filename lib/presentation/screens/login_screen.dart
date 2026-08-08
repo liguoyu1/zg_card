@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../l10n/locale_service.dart';
 import '../providers/auth_provider.dart';
 
 /// 登录注册页 — 邮箱+密码注册/登录 + 游客快捷登录
@@ -34,15 +35,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final password = _passwordCtrl.text;
     final name = _nameCtrl.text.trim();
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _error = '请填写邮箱和密码');
+      setState(() => _error = LocaleService.I.t('auth.err_empty'));
       return;
     }
     if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
-      setState(() => _error = '请输入有效邮箱');
+      setState(() => _error = LocaleService.I.t('auth.err_email'));
       return;
     }
     if (_isRegister && name.isEmpty) {
-      setState(() => _error = '请填写昵称');
+      setState(() => _error = LocaleService.I.t('auth.err_nickname'));
       return;
     }
     setState(() { _loading = true; _error = null; });
@@ -62,7 +63,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _guestLogin() async {
     final name = _guestNameCtrl.text.trim();
     if (name.isEmpty) {
-      setState(() => _error = '请输入昵称');
+      setState(() => _error = LocaleService.I.t('auth.err_guest_name'));
       return;
     }
     setState(() { _loading = true; _error = null; });
@@ -81,7 +82,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       backgroundColor: AppTheme.bgDark,
       appBar: AppBar(
-        title: const Text('登录', style: TextStyle(color: AppTheme.parchment)),
+        title: Text(LocaleService.I.t(_isRegister ? 'auth.title_register' : 'auth.title_login'), style: const TextStyle(color: AppTheme.parchment)),
         backgroundColor: AppTheme.agedWood,
         foregroundColor: AppTheme.parchment,
       ),
@@ -91,28 +92,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           const SizedBox(height: 16),
           const Icon(Icons.person_outline, size: 64, color: AppTheme.goldAccent),
           const SizedBox(height: 8),
-          const Text('战国卡牌', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.parchment)),
+          Text(LocaleService.I.t('auth.app_name'), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.parchment)),
           const SizedBox(height: 24),
 
           // Tab: 注册 / 登录
           Row(children: [
-            Expanded(child: _tabBtn('注册', _isRegister)),
+            Expanded(child: _tabBtn(LocaleService.I.t('auth.register'), _isRegister)),
             const SizedBox(width: 8),
-            Expanded(child: _tabBtn('登录', !_isRegister)),
+            Expanded(child: _tabBtn(LocaleService.I.t('auth.login'), !_isRegister)),
           ]),
           const SizedBox(height: 16),
 
           // 表单
           if (_isRegister) ...[
-            _field(_emailCtrl, '邮箱', Icons.email, false),
+            _field(_emailCtrl, LocaleService.I.t('auth.email'), Icons.email, false),
             const SizedBox(height: 12),
-            _field(_passwordCtrl, '密码 (至少6位)', Icons.lock, true),
+            _field(_passwordCtrl, LocaleService.I.t('auth.password_min'), Icons.lock, true),
             const SizedBox(height: 12),
-            _field(_nameCtrl, '昵称', Icons.edit, false),
+            _field(_nameCtrl, LocaleService.I.t('auth.nickname'), Icons.edit, false),
           ] else ...[
-            _field(_emailCtrl, '邮箱', Icons.email, false),
+            _field(_emailCtrl, LocaleService.I.t('auth.email'), Icons.email, false),
             const SizedBox(height: 12),
-            _field(_passwordCtrl, '密码', Icons.lock, true),
+            _field(_passwordCtrl, LocaleService.I.t('auth.password'), Icons.lock, true),
           ],
           const SizedBox(height: 8),
           if (_error != null)
@@ -126,23 +127,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               style: ElevatedButton.styleFrom(backgroundColor: AppTheme.goldAccent),
               child: _loading
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text(_isRegister ? '注册' : '登录', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                  : Text(LocaleService.I.t(_isRegister ? 'auth.register' : 'auth.login'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
           ),
 
           const SizedBox(height: 24),
-          const Row(children: [Expanded(child: Divider(color: AppTheme.borderLight)), Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('或', style: TextStyle(color: AppTheme.textMuted))), Expanded(child: Divider(color: AppTheme.borderLight))]),
+          Row(children: [const Expanded(child: Divider(color: AppTheme.borderLight)), Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text(LocaleService.I.t('auth.or'), style: const TextStyle(color: AppTheme.textMuted))), const Expanded(child: Divider(color: AppTheme.borderLight))]),
           const SizedBox(height: 16),
 
           // 游客登录
-          _field(_guestNameCtrl, '输入昵称快速体验', Icons.person, false),
+          _field(_guestNameCtrl, LocaleService.I.t('auth.guest_name_hint'), Icons.person, false),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity, height: 44,
             child: OutlinedButton(
               onPressed: _loading ? null : _guestLogin,
               style: OutlinedButton.styleFrom(side: BorderSide(color: AppTheme.borderGold.withAlpha(120))),
-              child: const Text('游客登录', style: TextStyle(color: AppTheme.textSecondary)),
+              child: Text(LocaleService.I.t('auth.guest_login'), style: const TextStyle(color: AppTheme.textSecondary)),
             ),
           ),
         ]),
@@ -152,7 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _tabBtn(String label, bool active) {
     return GestureDetector(
-      onTap: () => setState(() { _isRegister = label == '注册'; _error = null; }),
+      onTap: () => setState(() { _isRegister = label == LocaleService.I.t('auth.register'); _error = null; }),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(

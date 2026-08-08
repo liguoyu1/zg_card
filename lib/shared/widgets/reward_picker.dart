@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
- '/'
- '/'
+
+import '../../domain/models/card.dart' as domain;
+import '../../l10n/locale_service.dart';
 
 const _parchment = Color(0xFFE8D5B7);
 const _goldAccent = Color(0xFFB8860B);

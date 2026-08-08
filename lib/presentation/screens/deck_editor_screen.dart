@@ -3,6 +3,7 @@ import 'package:warring_states_card/domain/models/card.dart' as domain;
 import 'package:warring_states_card/domain/models/deck.dart';
 import 'package:warring_states_card/domain/services/card_data_provider.dart';
 import 'package:warring_states_card/domain/services/card_pool.dart';
+import 'package:warring_states_card/l10n/locale_service.dart';
 
 const _bg = Color(0xFF2C1810);
 const _parchment = Color(0xFFE8D5B7);
@@ -208,7 +209,7 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 16)),
               if (!inDeck)
-                Text('${_selectedCards.length}/30',
+                Text(LocaleService.I.t('deck_editor.card_count', args: {'count': '${_selectedCards.length}'}),
                     style: TextStyle(
                         color: _selectedCards.length == 30
                             ? Colors.redAccent
@@ -219,8 +220,8 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
         ),
         Expanded(
           child: cards.isEmpty
-              ? const Center(
-                  child: Text('空',
+              ? Center(
+                  child: Text(LocaleService.I.t('deck_editor.empty'),
                       style: TextStyle(color: _parchment, fontSize: 16)))
               : ListView.builder(
                   itemCount: cards.length,
@@ -235,11 +236,11 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
   Future<void> _saveDeck() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      _showMsg('请输入卡组名称');
+      _showMsg(LocaleService.I.t('deck_editor.name_empty'));
       return;
     }
     if (_selectedCards.length < 30) {
-      _showMsg('需要 30 张卡牌，当前 ${_selectedCards.length} 张');
+      _showMsg(LocaleService.I.t('deck_editor.card_missing', args: {'count': '${_selectedCards.length}'}));
       return;
     }
     final deck = Deck(
@@ -271,14 +272,14 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        title: const Text('编组卡组', style: TextStyle(color: _gold)),
+        title: Text(LocaleService.I.t('deck_editor.title'), style: const TextStyle(color: _gold)),
         backgroundColor: _wood,
         iconTheme: const IconThemeData(color: _gold),
         actions: [
           TextButton.icon(
             onPressed: _saveDeck,
             icon: const Icon(Icons.save, color: _gold),
-            label: const Text('保存', style: TextStyle(color: _gold)),
+            label: Text(LocaleService.I.t('deck_editor.save'), style: const TextStyle(color: _gold)),
           ),
         ],
       ),
@@ -292,8 +293,8 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
               children: [
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    hintText: '卡组名称',
+                  decoration: InputDecoration(
+                    hintText: LocaleService.I.t('deck_editor.name_hint'),
                     hintStyle: TextStyle(color: _parchment),
                     enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: _gold)),
@@ -314,7 +315,7 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
               children: [
                 Expanded(
                   child: _buildPanel(
-                    title: '卡牌库 (点击添加)',
+                    title: LocaleService.I.t('deck_editor.pool_title'),
                     cards: _poolCards,
                     inDeck: false,
                   ),
@@ -322,7 +323,7 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
                 Container(width: 1, color: _gold.withValues(alpha: 0.5)),
                 Expanded(
                   child: _buildPanel(
-                    title: '我的卡组 (点击移除)',
+                    title: LocaleService.I.t('deck_editor.deck_title'),
                     cards: _selectedCards,
                     inDeck: true,
                   ),

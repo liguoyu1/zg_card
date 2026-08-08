@@ -4,6 +4,7 @@ import 'package:warring_states_card/data/cards/cards.dart';
 import 'package:warring_states_card/data/heroes/heroes_data.dart';
 import 'package:warring_states_card/domain/models/card.dart';
 
+import '../../l10n/locale_service.dart';
 import '../../core/theme/app_theme.dart';
 
 class BasicCardScreen extends StatefulWidget {
@@ -72,7 +73,7 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
     return Scaffold(
       backgroundColor: AppTheme.bgDark,
       appBar: AppBar(
-        title: const Text('基础出牌', style: TextStyle(color: AppTheme.parchment)),
+        title: Text(LocaleService.I.t('basic_card.title'), style: const TextStyle(color: AppTheme.parchment)),
         backgroundColor: AppTheme.cardBack,
         iconTheme: const IconThemeData(color: AppTheme.parchment),
         actions: [
@@ -80,15 +81,15 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
             icon: const Icon(Icons.filter_list, color: AppTheme.parchment),
             onSelected: (v) => setState(() { _filterFaction = v; _selectedCard = null; _showDetail = false; _slideController.reverse(); }),
             itemBuilder: (_) => [
-              const PopupMenuItem(value: 'all', child: Text('全部')),
-              const PopupMenuItem(value: 'bingjia', child: Text('兵家')),
-              const PopupMenuItem(value: 'fajia', child: Text('法家')),
-              const PopupMenuItem(value: 'rujia', child: Text('儒家')),
-              const PopupMenuItem(value: 'daojia', child: Text('道家')),
-              const PopupMenuItem(value: 'mojia', child: Text('墨家')),
-              const PopupMenuItem(value: 'yinyangjia', child: Text('阴阳家')),
-              const PopupMenuItem(value: 'zonghengjia', child: Text('纵横家')),
-              const PopupMenuItem(value: 'neutral', child: Text('中立')),
+              PopupMenuItem(value: 'all', child: Text(LocaleService.I.t('card_library.all'))),
+              PopupMenuItem(value: 'bingjia', child: Text(LocaleService.I.t('owner.bingjia'))),
+              PopupMenuItem(value: 'fajia', child: Text(LocaleService.I.t('owner.fajia'))),
+              PopupMenuItem(value: 'rujia', child: Text(LocaleService.I.t('owner.rujia'))),
+              PopupMenuItem(value: 'daojia', child: Text(LocaleService.I.t('owner.daojia'))),
+              PopupMenuItem(value: 'mojia', child: Text(LocaleService.I.t('owner.mojia'))),
+              PopupMenuItem(value: 'yinyangjia', child: Text(LocaleService.I.t('owner.yinyangjia'))),
+              PopupMenuItem(value: 'zonghengjia', child: Text(LocaleService.I.t('owner.zonghengjia'))),
+              PopupMenuItem(value: 'neutral', child: Text(LocaleService.I.t('owner.neutral'))),
             ],
           ),
         ],
@@ -104,7 +105,7 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
           // 卡牌网格
           Expanded(
             child: cards.isEmpty
-                ? Center(child: Text('暂无卡牌', style: TextStyle(color: AppTheme.parchment.withAlpha(128))))
+                ? Center(child: Text(LocaleService.I.t('card_library.no_cards'), style: TextStyle(color: AppTheme.parchment.withAlpha(128))))
                 : Padding(
                     padding: const EdgeInsets.all(8),
                     child: GridView.builder(
@@ -249,10 +250,10 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
               children: [
                 Text(card.name, style: const TextStyle(color: AppTheme.parchment, fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text('费用: ${card.cost}  |  类型: ${_typeName(card.type)}', style: TextStyle(color: AppTheme.parchment.withAlpha(179), fontSize: 13)),
+                Text(LocaleService.I.t('basic_card.cost_type', args: {'cost': '${card.cost}', 'type': _typeName(card.type)}), style: TextStyle(color: AppTheme.parchment.withAlpha(179), fontSize: 13)),
                 if (card.isMinion) ...[
                   const SizedBox(height: 4),
-                  Text('攻击: ${card.attack}  |  生命: ${card.health}', style: TextStyle(color: AppTheme.parchment.withAlpha(179), fontSize: 13)),
+                  Text(LocaleService.I.t('basic_card.attack_health', args: {'attack': '${card.attack}', 'health': '${card.health}'}), style: TextStyle(color: AppTheme.parchment.withAlpha(179), fontSize: 13)),
                 ],
                 if (card.keywords.isNotEmpty) ...[
                   const SizedBox(height: 4),
@@ -282,25 +283,25 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
   }
 
   ({String name, Color color}) _keywordInfo(Keyword kw) => switch (kw) {
-    Keyword.charge => (name: '冲锋', color: Colors.yellow),
-    Keyword.taunt => (name: '嘲讽', color: Colors.grey),
-    Keyword.divineShield => (name: '圣盾', color: Colors.white),
-    Keyword.windfury => (name: '风怒', color: Colors.cyan),
-    Keyword.lifesteal => (name: '吸血', color: Colors.red),
-    Keyword.poisonous => (name: '剧毒', color: Colors.green),
-    Keyword.battlecry => (name: '战吼', color: Colors.blue),
-    Keyword.deathrattle => (name: '亡语', color: Colors.brown),
-    Keyword.stealth => (name: '潜行', color: Colors.purple),
-    Keyword.silence => (name: '沉默', color: Colors.grey),
-    Keyword.inspire => (name: '激励', color: Colors.orange),
-    Keyword.combo => (name: '连击', color: Colors.red),
-    Keyword.draw => (name: '抽牌', color: Colors.blue),
+    Keyword.charge => (name: LocaleService.I.t('basic_card.keyword_charge'), color: Colors.yellow),
+    Keyword.taunt => (name: LocaleService.I.t('basic_card.keyword_taunt'), color: Colors.grey),
+    Keyword.divineShield => (name: LocaleService.I.t('basic_card.keyword_divine_shield'), color: Colors.white),
+    Keyword.windfury => (name: LocaleService.I.t('basic_card.keyword_windfury'), color: Colors.cyan),
+    Keyword.lifesteal => (name: LocaleService.I.t('basic_card.keyword_lifesteal'), color: Colors.red),
+    Keyword.poisonous => (name: LocaleService.I.t('basic_card.keyword_poisonous'), color: Colors.green),
+    Keyword.battlecry => (name: LocaleService.I.t('basic_card.keyword_battlecry'), color: Colors.blue),
+    Keyword.deathrattle => (name: LocaleService.I.t('basic_card.keyword_deathrattle'), color: Colors.brown),
+    Keyword.stealth => (name: LocaleService.I.t('basic_card.keyword_stealth'), color: Colors.purple),
+    Keyword.silence => (name: LocaleService.I.t('basic_card.keyword_silence'), color: Colors.grey),
+    Keyword.inspire => (name: LocaleService.I.t('basic_card.keyword_inspire'), color: Colors.orange),
+    Keyword.combo => (name: LocaleService.I.t('basic_card.keyword_combo'), color: Colors.red),
+    Keyword.draw => (name: LocaleService.I.t('basic_card.keyword_draw'), color: Colors.blue),
   };
 
   String _typeName(CardType t) => switch (t) {
-    CardType.minion => '随从',
-    CardType.spell => '法术',
-    CardType.weapon => '武器',
+    CardType.minion => LocaleService.I.t('card_library.type_minion'),
+    CardType.spell => LocaleService.I.t('card_library.type_spell'),
+    CardType.weapon => LocaleService.I.t('card_library.type_weapon'),
   };
 
   Color _getCostColor(int cost) {

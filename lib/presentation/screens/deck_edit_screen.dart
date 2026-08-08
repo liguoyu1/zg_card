@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warring_states_card/data/cards/cards.dart';
+import '../../l10n/locale_service.dart';
 import 'package:warring_states_card/domain/models/models.dart';
 
 /// 卡组管理服务
@@ -91,12 +92,12 @@ class _DeckEditScreenState extends ConsumerState<DeckEditScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text('编辑卡组 (${deckCards.length}/30)'),
+        title: Text(LocaleService.I.t('deck_edit.title', args: {'count': '${deckCards.length}'})),
         actions: [
           if (_deck.length == 30)
             TextButton(
               onPressed: () => _saveDeck(),
-              child: const Text('保存', style: TextStyle(color: Colors.white)),
+              child: Text(LocaleService.I.t('deck_edit.save'), style: const TextStyle(color: Colors.white)),
             ),
         ],
       ),
@@ -144,7 +145,7 @@ class _DeckEditScreenState extends ConsumerState<DeckEditScreen> {
                       const Icon(Icons.style, color: Colors.white, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        '卡组 ${deckCards.length}/30',
+                        LocaleService.I.t('deck_edit.deck_label', args: {'count': '${deckCards.length}'}),
                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -173,7 +174,7 @@ class _DeckEditScreenState extends ConsumerState<DeckEditScreen> {
       padding: const EdgeInsets.all(8),
       child: TextField(
         decoration: InputDecoration(
-          hintText: '搜索卡牌...',
+          hintText: LocaleService.I.t('deck_edit.search_hint'),
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
@@ -189,9 +190,9 @@ class _DeckEditScreenState extends ConsumerState<DeckEditScreen> {
   
   Widget _buildOwnerFilter() {
     final owners = [
-      ('all', '全部'),
+      ('all', LocaleService.I.t('deck_edit.all')),
       (widget.owner.name, _getOwnerName(widget.owner)),
-      ('neutral', '中立'),
+      ('neutral', LocaleService.I.t('deck_edit.neutral')),
     ];
     
     return Container(
@@ -361,7 +362,7 @@ class _DeckEditScreenState extends ConsumerState<DeckEditScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('费用曲线', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text(LocaleService.I.t('deck_edit.mana_curve'), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           Wrap(
             spacing: 4,
@@ -401,16 +402,16 @@ class _DeckEditScreenState extends ConsumerState<DeckEditScreen> {
   
   String _getOwnerName(CardOwner owner) {
     final names = {
-      CardOwner.bingjia: '兵家',
-      CardOwner.fajia: '法家',
-      CardOwner.rujia: '儒家',
-      CardOwner.daojia: '道家',
-      CardOwner.mojia: '墨家',
-      CardOwner.yinyangjia: '阴阳家',
-      CardOwner.zonghengjia: '纵横家',
-      CardOwner.neutral: '中立',
+      CardOwner.bingjia: LocaleService.I.t('owner.bingjia'),
+      CardOwner.fajia: LocaleService.I.t('owner.fajia'),
+      CardOwner.rujia: LocaleService.I.t('owner.rujia'),
+      CardOwner.daojia: LocaleService.I.t('owner.daojia'),
+      CardOwner.mojia: LocaleService.I.t('owner.mojia'),
+      CardOwner.yinyangjia: LocaleService.I.t('owner.yinyangjia'),
+      CardOwner.zonghengjia: LocaleService.I.t('owner.zonghengjia'),
+      CardOwner.neutral: LocaleService.I.t('owner.neutral'),
     };
-    return names[owner] ?? '中立';
+    return names[owner] ?? LocaleService.I.t('owner.neutral');
   }
   
   CardOwner? _parseOwner(String name) {

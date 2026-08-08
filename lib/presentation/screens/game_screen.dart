@@ -18,7 +18,7 @@ import '../../domain/models/mission_context.dart';
 import '../../domain/models/roguelite_run.dart';
 import '../../l10n/locale_service.dart';
 import '../../data/persistence/save_manager.dart';
-import '../../main.dart' show adService;
+
 import '../../core/theme/app_theme.dart';
 import '../widgets/theme_widgets.dart';
 
@@ -260,9 +260,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
                     const Icon(Icons.pause_circle, color: Colors.white, size: 64),
                     const SizedBox(height: 16),
-                    const Text('已暂停', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                    Text(LocaleService.I.t('game.paused'), style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    Text('点击继续', style: TextStyle(color: Colors.white.withAlpha(180), fontSize: 14)),
+                    Text(LocaleService.I.t('game.tap_to_continue'), style: TextStyle(color: Colors.white.withAlpha(180), fontSize: 14)),
                   ]),
                 ),
               ),
@@ -423,8 +423,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _claimDoubleReward() async {
-    final rewarded = await adService.showRewardedAd(placementId: 'double_reward');
-    if (!rewarded || !mounted) return;
+    if (!mounted) return;
 
     final pd = await SaveManager.loadPlayerData();
     if (pd == null) return;
@@ -600,7 +599,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             Icon(_aiPaused ? Icons.play_arrow : Icons.pause, color: Colors.white, size: 20),
             const SizedBox(width: 4),
-            Text(_aiPaused ? '继续' : '暂停', style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+            Text(_aiPaused ? LocaleService.I.t('game.continue_btn') : LocaleService.I.t('game.pause_btn'), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
           ]),
         ),
       ),
@@ -787,7 +786,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         AudioManager.I.attack();
         AudioManager.I.damage();
         _showDamage(card.id, attacker.attack, DamageIndicatorState.damage);
-        _log('${attacker.name} 攻击 ${card.name}');
+        _log(LocaleService.I.t('game.log_attack', args: {'attacker': attacker.name, 'target': card.name}));
         ref.read(aiGameProvider.notifier).minionAttack(
           widget.playerId,
           attacker,
@@ -921,7 +920,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       // 直接释放
       ref.read(aiGameProvider.notifier).useHeroPower(widget.playerId);
       AudioManager.I.buttonClick();
-      _log('使用英雄技能：${skill.runtimeType}');
+      _log(LocaleService.I.t('game.log_hero_power', args: {'skill': '${skill.runtimeType}'}));
       _flashCard('hero_${widget.playerId}');
       setState(() => _selectedMinion = null);
     }
@@ -1038,7 +1037,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     ref.read(aiGameProvider.notifier).playCard(widget.playerId, card);
     AudioManager.I.playCard();
-    _log('打出 ${card.name}（费用 ${card.cost}）');
+    _log(LocaleService.I.t('game.log_play_card', args: {'name': card.name, 'cost': '${card.cost}'}));
   }
 
   Widget _confirmExitButton() {
@@ -1050,10 +1049,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           color: AppTheme.healthRed.withAlpha(180),
           borderRadius: BorderRadius.circular(4),
         ),
-        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.exit_to_app, size: 14, color: Colors.white),
-          SizedBox(width: 4),
-          Text('退出', style: TextStyle(color: Colors.white, fontSize: 12)),
+          const SizedBox(width: 4),
+          Text(LocaleService.I.t('game.exit'), style: const TextStyle(color: Colors.white, fontSize: 12)),
         ]),
       ),
     );
@@ -1064,11 +1063,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.agedWood,
-        title: const Text('确认退出', style: TextStyle(color: AppTheme.parchment)),
-        content: const Text('退出将失去本局游戏进度，确认退出？', style: TextStyle(color: AppTheme.textSecondary)),
+        title: Text(LocaleService.I.t('game.confirm_exit_title'), style: const TextStyle(color: AppTheme.parchment)),
+        content: Text(LocaleService.I.t('game.confirm_exit_content'), style: const TextStyle(color: AppTheme.textSecondary)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消', style: TextStyle(color: AppTheme.textSecondary))),
-          TextButton(onPressed: () { Navigator.pop(ctx); context.go('/'); }, child: const Text('确认退出', style: TextStyle(color: AppTheme.healthRed))),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(LocaleService.I.t('common.cancel'), style: const TextStyle(color: AppTheme.textSecondary))),
+          TextButton(onPressed: () { Navigator.pop(ctx); context.go('/'); }, child: Text(LocaleService.I.t('game.confirm_exit_action'), style: const TextStyle(color: AppTheme.healthRed))),
         ],
       ),
     );
@@ -1434,7 +1433,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       }
       AudioManager.I.attack();
       AudioManager.I.damage();
-      _log('AI ${attacker.name} 攻击');
+      _log(LocaleService.I.t('game.log_ai_attack', args: {'attacker': attacker.name}));
       await Future.delayed(const Duration(milliseconds: 400));
       if (!mounted) return;
     }
@@ -1446,7 +1445,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     for (final ach in unlocked) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('🏆 ${ach.title}: ${ach.description} (${ach.goldReward}金币)'),
+          content: Text(LocaleService.I.t('game.battle_log_gold', args: {'title': ach.title, 'desc': ach.description, 'reward': '${ach.goldReward}'})),
           backgroundColor: const Color(0xFF2D1B00),
           duration: const Duration(seconds: 4),
           behavior: SnackBarBehavior.floating,

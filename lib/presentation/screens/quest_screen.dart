@@ -74,9 +74,9 @@ class _QuestScreenState extends State<QuestScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(q.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.parchment)),
+                      Text(LocaleService.I.t('quest.${q.id}.title'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.parchment)),
                       const SizedBox(height: 4),
-                      Text(q.description, style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
+                      Text(LocaleService.I.t('quest.${q.id}.desc'), style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
                     ],
                   ),
                 ),
@@ -133,7 +133,7 @@ class _QuestScreenState extends State<QuestScreen> {
   Widget _buildRefreshInfo() {
     return Center(
       child: Text(
-        '${LocaleService.I.t('quest.refresh_count')}: ${_qm.canRefresh ? 1 : 0}/1',
+        '${LocaleService.I.t('quest.refresh_count', args: {'remaining': '${_qm.canRefresh ? 1 : 0}'})}: ${_qm.canRefresh ? 1 : 0}/1',
         style: TextStyle(color: AppTheme.parchment.withAlpha(120)),
       ),
     );

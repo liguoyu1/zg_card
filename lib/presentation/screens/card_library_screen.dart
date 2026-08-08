@@ -4,6 +4,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/card_image_service.dart';
 import '../../data/data_version.dart';
 import '../../data/persistence/save_manager.dart';
+import '../../l10n/locale_service.dart';
 import '../../domain/models/card.dart' as cm;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/card_pool.dart';
@@ -75,7 +76,7 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
     return Scaffold(
       backgroundColor: AppTheme.bgDark,
       appBar: AppBar(
-        title: const Text('卡牌库', style: TextStyle(color: AppTheme.parchment)),
+        title: Text(LocaleService.I.t('card_library.title'), style: const TextStyle(color: AppTheme.parchment)),
         backgroundColor: AppTheme.cardBack,
         iconTheme: const IconThemeData(color: AppTheme.parchment),
         bottom: TabBar(
@@ -84,9 +85,9 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
           labelColor: AppTheme.goldAccent,
           unselectedLabelColor: AppTheme.parchment.withAlpha(153),
           tabs: [
-            const Tab(text: '全部卡牌'),
-            Tab(text: '已拥有 (${_owned.length})'),
-            Tab(text: '愿望单 (${_fav.length})'),
+            Tab(text: LocaleService.I.t('card_library.all_cards')),
+            Tab(text: LocaleService.I.t('card_library.owned_count', args: {'count': '${_owned.length}'})),
+            Tab(text: LocaleService.I.t('card_library.wishlist_count', args: {'count': '${_fav.length}'})),
           ],
         ),
       ),
@@ -185,7 +186,7 @@ class _CardGridViewState extends State<_CardGridView> {
                     style: const TextStyle(color: AppTheme.textMuted, fontSize: 12)),
                 const SizedBox(height: 6),
                 if (card.isMinion)
-                  Text('${card.cost}费 ⚔${card.attack} ❤${card.health}',
+                  Text(LocaleService.I.t('card_library.card_stats', args: {'cost': '${card.cost}', 'attack': '${card.attack}', 'health': '${card.health}'}),
                       style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16)),
                 Text(card.description, textAlign: TextAlign.center,
                     style: TextStyle(color: AppTheme.parchment.withAlpha(200), fontSize: 13, fontStyle: FontStyle.italic)),
@@ -195,11 +196,11 @@ class _CardGridViewState extends State<_CardGridView> {
                         style: const TextStyle(color: AppTheme.textMuted, fontSize: 10))),
                 const SizedBox(height: 12),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                  _statusChip(owned ? '已拥有' : trial ? '试用中' : '未拥有',
+                  _statusChip(owned ? LocaleService.I.t('card_library.owned') : trial ? LocaleService.I.t('card_library.trial') : LocaleService.I.t('card_library.unowned'),
                       owned ? AppTheme.healGreen : trial ? Colors.cyan : Colors.grey),
                   if (owned && card.rarity == cm.Rarity.common)
                     TextButton(onPressed: () => _dust(card, ctx),
-                        child: const Text('分解 +5💎', style: TextStyle(color: Colors.orange))),
+                        child: Text(LocaleService.I.t('card_library.dust_action'), style: const TextStyle(color: Colors.orange))),
                 ]),
                 const SizedBox(height: 8),
                 SizedBox(width: double.infinity,
@@ -216,7 +217,7 @@ class _CardGridViewState extends State<_CardGridView> {
                       if (ctx.mounted) Navigator.of(ctx).pop();
                     },
                     icon: Icon(fav ? Icons.favorite : Icons.favorite_border, color: Colors.redAccent, size: 18),
-                    label: Text(fav ? '移出愿望单' : '加入愿望单'),
+                    label: Text(fav ? LocaleService.I.t('card_library.wishlist_remove') : LocaleService.I.t('card_library.wishlist_add')),
                     style: ElevatedButton.styleFrom(backgroundColor: AppTheme.bgMedium),
                   ),
                 ),
@@ -279,7 +280,7 @@ class _CardGridViewState extends State<_CardGridView> {
             controller: _searchCtrl,
             style: const TextStyle(color: AppTheme.parchment, fontSize: 13),
             decoration: InputDecoration(
-              hintText: '搜索卡牌...', hintStyle: TextStyle(color: AppTheme.textMuted.withAlpha(150)),
+              hintText: LocaleService.I.t('card_library.search_hint'), hintStyle: TextStyle(color: AppTheme.textMuted.withAlpha(150)),
               prefixIcon: const Icon(Icons.search, color: AppTheme.textMuted, size: 18),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -291,19 +292,19 @@ class _CardGridViewState extends State<_CardGridView> {
       Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), color: AppTheme.cardBack,
           child: SingleChildScrollView(scrollDirection: Axis.horizontal,
               child: Row(children: [
-                _chip('all', '全部'), _chip('bingjia', '兵家'), _chip('fajia', '法家'),
-                _chip('rujia', '儒家'), _chip('daojia', '道家'), _chip('mojia', '墨家'),
-                _chip('yinyangjia', '阴阳家'), _chip('zonghengjia', '纵横家'), _chip('neutral', '中立'),
+                _chip('all', LocaleService.I.t('card_library.all')), _chip('bingjia', LocaleService.I.t('owner.bingjia')), _chip('fajia', LocaleService.I.t('owner.fajia')),
+                _chip('rujia', LocaleService.I.t('owner.rujia')), _chip('daojia', LocaleService.I.t('owner.daojia')), _chip('mojia', LocaleService.I.t('owner.mojia')),
+                _chip('yinyangjia', LocaleService.I.t('owner.yinyangjia')), _chip('zonghengjia', LocaleService.I.t('owner.zonghengjia')), _chip('neutral', LocaleService.I.t('owner.neutral')),
               ]))),
       // 拥有状态过滤
       Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), color: AppTheme.cardBack,
           child: SingleChildScrollView(scrollDirection: Axis.horizontal,
               child: Row(children: [
-                _ownChip('all', '全部'), _ownChip('owned', '已拥有'), 
-                _ownChip('trial', '试用中'), _ownChip('unowned', '未拥有'),
+                _ownChip('all', LocaleService.I.t('card_library.all')), _ownChip('owned', LocaleService.I.t('card_library.owned')),
+                _ownChip('trial', LocaleService.I.t('card_library.trial')), _ownChip('unowned', LocaleService.I.t('card_library.unowned')),
               ]))),
       Expanded(child: cards.isEmpty
-          ? Center(child: Text('暂无卡牌', style: TextStyle(color: AppTheme.parchment.withAlpha(128))))
+          ? Center(child: Text(LocaleService.I.t('card_library.no_cards'), style: TextStyle(color: AppTheme.parchment.withAlpha(128))))
           : Padding(padding: const EdgeInsets.all(8),
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -397,13 +398,13 @@ class _CardGridViewState extends State<_CardGridView> {
                   padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                   decoration: BoxDecoration(color: Colors.cyan.withAlpha(179),
                       borderRadius: const BorderRadius.only(topLeft: Radius.circular(4))),
-                  child: const Text('试用', style: TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold)))),
+                  child: Text(LocaleService.I.t('card_library.badge_trial'), style: const TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold)))),
             if (owned)
               Positioned(bottom: 0, left: 0, child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                   decoration: BoxDecoration(color: AppTheme.healGreen.withAlpha(150),
                       borderRadius: const BorderRadius.only(topRight: Radius.circular(4))),
-                  child: const Text('已拥有', style: TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold)))),
+                  child: Text(LocaleService.I.t('card_library.badge_owned'), style: const TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold)))),
           ]),
         ),
       ),
@@ -426,15 +427,15 @@ class _CardGridViewState extends State<_CardGridView> {
     cm.CardType.minion => 'minion', cm.CardType.spell => 'spell', cm.CardType.weapon => 'weapon',
   };
   String _typeName(cm.CardType t) => switch (t) {
-    cm.CardType.minion => '随从', cm.CardType.spell => '法术', cm.CardType.weapon => '武器',
+    cm.CardType.minion => LocaleService.I.t('card_library.type_minion'), cm.CardType.spell => LocaleService.I.t('card_library.type_spell'), cm.CardType.weapon => LocaleService.I.t('card_library.type_weapon'),
   };
   String _schoolName(cm.CardOwner o) => switch (o) {
-    cm.CardOwner.bingjia => '兵家', cm.CardOwner.fajia => '法家', cm.CardOwner.rujia => '儒家',
-    cm.CardOwner.daojia => '道家', cm.CardOwner.mojia => '墨家', cm.CardOwner.yinyangjia => '阴阳家',
-    cm.CardOwner.zonghengjia => '纵横家', cm.CardOwner.neutral => '中立',
+    cm.CardOwner.bingjia => LocaleService.I.t('owner.bingjia'), cm.CardOwner.fajia => LocaleService.I.t('owner.fajia'), cm.CardOwner.rujia => LocaleService.I.t('owner.rujia'),
+    cm.CardOwner.daojia => LocaleService.I.t('owner.daojia'), cm.CardOwner.mojia => LocaleService.I.t('owner.mojia'), cm.CardOwner.yinyangjia => LocaleService.I.t('owner.yinyangjia'),
+    cm.CardOwner.zonghengjia => LocaleService.I.t('owner.zonghengjia'), cm.CardOwner.neutral => LocaleService.I.t('owner.neutral'),
   };
   String _rarityName(cm.Rarity r) => switch (r) {
-    cm.Rarity.common => '普通', cm.Rarity.rare => '稀有', cm.Rarity.epic => '史诗', cm.Rarity.legendary => '传说',
+    cm.Rarity.common => LocaleService.I.t('card_library.rarity_common'), cm.Rarity.rare => LocaleService.I.t('card_library.rarity_rare'), cm.Rarity.epic => LocaleService.I.t('card_library.rarity_epic'), cm.Rarity.legendary => LocaleService.I.t('card_library.rarity_legendary'),
   };
 }
 
@@ -449,9 +450,9 @@ class _WishlistView extends StatelessWidget {
       return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.favorite_border, size: 64, color: AppTheme.parchment.withAlpha(128)),
       const SizedBox(height: 16),
-      const Text('愿望单为空', style: TextStyle(color: AppTheme.parchment, fontSize: 16)),
+      Text(LocaleService.I.t('card_library.wishlist_empty'), style: const TextStyle(color: AppTheme.parchment, fontSize: 16)),
       const SizedBox(height: 8),
-      Text('在卡牌详情中点击「加入愿望单」', style: TextStyle(color: AppTheme.parchment.withAlpha(100), fontSize: 12)),
+      Text(LocaleService.I.t('card_library.wishlist_hint'), style: TextStyle(color: AppTheme.parchment.withAlpha(100), fontSize: 12)),
     ]));
     }
     return Padding(padding: const EdgeInsets.all(8),

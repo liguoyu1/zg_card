@@ -24,7 +24,7 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
     return Scaffold(
       backgroundColor: AppTheme.bgDark,
       appBar: AppBar(
-        title: const Text('Battle Pass'),
+        title: Text(LocaleService.I.t('bp.title')),
         backgroundColor: AppTheme.agedWood,
         foregroundColor: AppTheme.parchment,
       ),
@@ -44,10 +44,10 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          Text('${LocaleService.I.t('bp.level')} ${bp.level}/30',
+          Text('${LocaleService.I.t('bp.level', args: {'level': '${bp.level}'})} ${bp.level}/30',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.goldAccent)),
           const SizedBox(height: 8),
-          Text(bp.premium ? 'Premium' : LocaleService.I.t('bp.free'),
+          Text(bp.premium ? LocaleService.I.t('bp.premium') : LocaleService.I.t('bp.free'),
               style: TextStyle(color: bp.premium ? AppTheme.goldAccent : AppTheme.parchment.withAlpha(150))),
         ],
       ),
@@ -63,7 +63,7 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('XP: ${bp.xp}/${bp.xpToNext}', style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
+              Text(LocaleService.I.t('battle_pass.xp_progress', args: {'xp': '${bp.xp}', 'xpToNext': '${bp.xpToNext}'}), style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
             ],
           ),
           const SizedBox(height: 4),
@@ -161,7 +161,7 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
           onPressed: () async {
             // 简单内购
             final purchased = await PurchaseService.I.purchase('battle_pass_premium');
-            if (purchased) {
+            if (purchased.success) {
               _bp.unlockPremium();
               setState(() {});
             }
