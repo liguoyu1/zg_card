@@ -4,20 +4,52 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:warring_states_card/core/asset_style.dart';
 import 'package:warring_states_card/domain/models/roguelite_run.dart';
 
-/// 存档管理器 - 基于 SharedPreferences，每套图独立存档 key
+/// 存档管理器 - 基于 SharedPreferences，每套图独立存档 key，并按登录账号隔离
 class SaveManager {
   /// 本地玩家数据保存后的回调（用于余额变动后触发服务端对账同步）
   static void Function(PlayerData data)? onPlayerDataSaved;
   /// 本地卡牌收藏保存后的回调（触发完整存档云同步）
   static void Function(Collection c)? onCollectionSaved;
 
+  /// 当前存档所属账号（未登录时为 null，使用无后缀 key 兼容旧版游客存档）
+  static String? accountId;
+
   static String get _suffix => AssetStyle.current.name;
-  static String get _playerDataKey => 'save_player_data_$_suffix';
-  static String get _collectionKey => 'save_collection_$_suffix';
-  static String get _matchHistoryKey => 'save_match_history_$_suffix';
+  static String get _keyPrefix => accountId == null ? '' : '${accountId}_';
+  static String get _playerDataKey => 'save_player_data_$_keyPrefix$_suffix';
+  static String get _collectionKey => 'save_collection_$_keyPrefix$_suffix';
+  static String get _matchHistoryKey => 'save_match_history_$_keyPrefix$_suffix';
   static const String _saveVersionKey = 'save_version';
 
   static Future<void> init() async {}
+
+  /// 切换到指定账号的本地存档区。仅当新 key 无存档、且旧版无账号后缀 key 中
+  /// 的存档确实属于该账号（id 一致）时迁移，避免游客/他人存档串号。
+  static Future<void> ensureAccountStorage(String playerId) async {
+    if (accountId == playerId) return;
+    accountId = playerId;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString(_playerDataKey) != null) return; // 该账号已有本地档
+    final legacyKey = 'save_player_data_$_suffix';
+    final legacy = prefs.getString(legacyKey);
+    if (legacy == null) return;
+    try {
+      final pd = PlayerData.fromJson(jsonDecode(legacy));
+      // 游客档（纯时间戳 id）视为同账号旧档一并迁移；其他账号档不迁移
+      if (pd.id != playerId && !RegExp(r'^\d+$').hasMatch(pd.id)) return;
+      await savePlayerData(pd);
+      final legacyColl = prefs.getString('save_collection_$_suffix');
+      if (legacyColl != null && prefs.getString(_collectionKey) == null) {
+        await saveCollection(Collection.fromJson(jsonDecode(legacyColl)));
+      }
+      final legacyHist = prefs.getString('save_match_history_$_suffix');
+      if (legacyHist != null) {
+        await saveMatchHistory((jsonDecode(legacyHist) as List)
+            .map((j) => MatchRecord.fromJson(j))
+            .toList());
+      }
+    } catch (_) {}
+  }
 
   static Future<void> savePlayerData(PlayerData data) async {
     final prefs = await SharedPreferences.getInstance();

@@ -540,6 +540,18 @@ export async function syncBalance(odID: string, gems: number, gold: number) {
 export async function savePlayerArchive(odID: string, data: any) {
   try {
     if (!data || typeof data !== 'object') return { error: 'Invalid save data' };
+    // 空档（新设备默认档）视为无存档：删除云端记录，防止覆盖真实存档
+    const pd = data?.playerData;
+    const isEmpty =
+      pd &&
+      pd.gems === 0 &&
+      (pd.gold ?? 100) <= 100 &&
+      (!Array.isArray(pd.unlockedCards) || pd.unlockedCards.length === 0) &&
+      (!Array.isArray(pd.unlockedHeroes) || pd.unlockedHeroes.length <= 1);
+    if (isEmpty) {
+      await prisma.playerSave.deleteMany({ where: { playerId: odID } });
+      return { success: true, cleared: true };
+    }
     await prisma.playerSave.upsert({
       where: { playerId: odID },
       update: { data },
