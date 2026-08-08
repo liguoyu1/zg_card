@@ -428,7 +428,7 @@ export async function verifyIAPReceipt(odID: string, receipt: string, productId:
     // 幂等：同一笔交易不重复发放
     const txId = transactionId || info.transactionId;
     const existing = await prisma.transaction.findFirst({ where: { externalId: txId } });
-    if (existing) return { success: true, alreadyProcessed: true, gems: existing.balanceAfter };
+    if (existing) return { success: true, alreadyProcessed: true, gems: existing.balanceAfter, gained: existing.amount };
 
     const player = await prisma.player.findUnique({ where: { id: odID } });
     if (!player) return { error: 'player not found' };
@@ -442,7 +442,7 @@ export async function verifyIAPReceipt(odID: string, receipt: string, productId:
         data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount, balanceAfter: newBalance, detail: 'Apple IAP', externalId: txId },
       }),
     ]);
-    return { success: true, gems: newBalance };
+    return { success: true, gems: newBalance, gained: amount };
   } catch (e: any) {
     return { error: e.message || 'verify iap failed' };
   }

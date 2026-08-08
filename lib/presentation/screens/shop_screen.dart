@@ -164,9 +164,13 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         transactionId: result.transactionId,
       );
       if (resp != null && resp.success) {
+        if (_data != null) {
+          _data = _data!.copyWith(gems: resp.gems);
+          await SaveManager.savePlayerData(_data!);
+        }
         bumpDataVersion();
         await _refresh();
-        _snack(LocaleService.I.t('shop.restore_success', args: {'gems': '${resp.gems}'}));
+        _snack(LocaleService.I.t('shop.restore_success', args: {'gems': '${resp.gained}'}));
       } else {
         _snack('${LocaleService.I.t('shop.restore_verify_failed')}（${resp?.error ?? '?'}）');
       }
@@ -221,9 +225,13 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       transactionId: result.transactionId,
     );
     if (resp != null && resp.success) {
+      if (_data != null) {
+        _data = _data!.copyWith(gems: resp.gems);
+        await SaveManager.savePlayerData(_data!);
+      }
       bumpDataVersion();
       await _refresh();
-      _snack(LocaleService.I.t('shop.buy_success_gems', args: {'gems': '${resp.gems}'}));
+      _snack(LocaleService.I.t('shop.buy_success_gems', args: {'gems': '${resp.gained}'}));
     } else {
       _snack('${LocaleService.I.t('shop.buy_failed_verify')}（${resp?.error ?? '?'}）');
     }
