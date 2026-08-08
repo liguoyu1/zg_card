@@ -159,10 +159,14 @@ export default defineEventHandler(async (event) => {
 
     if (path === '/api/payment/webhook' && method === 'POST') {
       const rawBody = await readRawBody(event);
-      if (!rawBody) return { error: 'Empty body' };
+      if (!rawBody) {
+        setResponseStatus(event, 400);
+        return { error: 'Empty body' };
+      }
 
       const sig = getRequestHeader(event, 'authorization') || '';
       if (!verifyWebhookSignature(rawBody, sig)) {
+        setResponseStatus(event, 400);
         return { error: { code: 'INVALID_SIGNATURE', message: 'Signature mismatch' } };
       }
 
@@ -176,10 +180,19 @@ export default defineEventHandler(async (event) => {
 
         if (odID && sku && GEM_SKU_MAP[sku]) {
           const amount = GEM_SKU_MAP[sku];
-          // 异步处理，先返回 204
-          addGemsFromXsolla(odID, amount, txnId).catch(e =>
-            console.error('[Xsolla] addGems error:', e)
-          );
+          // 同步处理：失败返回 500，Xsolla 会重试；成功返回 204
+          try {
+            const result = await addGemsFromXsolla(odID, amount, txnId);
+            if ('error' in result && result.error) {
+              console.error('[Xsolla] addGems error:', result.error);
+              setResponseStatus(event, 500);
+              return { error: result.error };
+            }
+          } catch (e: any) {
+            console.error('[Xsolla] addGems exception:', e);
+            setResponseStatus(event, 500);
+            return { error: 'internal error' };
+          }
         }
       }
 

@@ -1,21 +1,21 @@
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 // ─── 环境变量 ───
 const MERCHANT_ID = process.env.XSOLLA_MERCHANT_ID || '';
 const API_KEY = process.env.XSOLLA_API_KEY || '';
 const PROJECT_ID = process.env.XSOLLA_PROJECT_ID || '';
-const WEBHOOK_SECRET = process.env.XSOLLA_WEBHOOK_SECRET || '';
+const webhookSecret = () => process.env.XSOLLA_WEBHOOK_SECRET || '';
 
 const XSOLLA_API = 'https://api.xsolla.com';
 const XSOLLA_PAYSTATION = 'https://secure.xsolla.com/paystation4';
 
-// SKU → 钻石数量
+// SKU → 钻石数量（与 iOS IAP_GEM_MAP 保持一致，见 apple_iap.ts）
 export const GEM_SKU_MAP: Record<string, number> = {
   gem_60: 60,
-  gem_300: 300,
-  gem_600: 600,
-  gem_1500: 1500,
-  gem_3000: 3000,
+  gem_300: 350,
+  gem_600: 750,
+  gem_1500: 2000,
+  gem_3000: 4500,
 };
 
 /** 创建 Xsolla 支付令牌 → 返回 PayStation URL */
@@ -65,16 +65,17 @@ export async function createPaymentToken(
   }
 }
 
-/** 验证 Xsolla webhook 签名 */
+/** 验证 Xsolla webhook 签名（HMAC-SHA1，header: Authorization: Signature <hex>） */
 export function verifyWebhookSignature(rawBody: string, signatureHeader: string): boolean {
-  if (!WEBHOOK_SECRET) return false;
+  const secret = webhookSecret();
+  if (!secret) return false;
 
   // header 格式: "Signature <value>"
   const received = signatureHeader.replace(/^Signature\s+/i, '').trim();
   if (!received) return false;
 
-  const computed = createHash('sha1')
-    .update(rawBody + WEBHOOK_SECRET)
+  const computed = createHmac('sha1', secret)
+    .update(rawBody)
     .digest('hex')
     .toLowerCase();
 

@@ -390,6 +390,18 @@ async function _addBalance(odID: string, currency: string, amount: number, detai
 /** Xsolla webhook 专用：加钻 + 幂等检查 */
 export async function addGemsFromXsolla(odID: string, amount: number, externalId: string) {
   try {
+    // Redis 锁防 webhook 并发重试双发；余额乐观锁兜底
+    const redis = await getRedisClient();
+    let lockOk: any = null;
+    try {
+      lockOk = await redis.set(`xsolla:${externalId}`, '1', { NX: true, EX: 300 });
+    } catch {}
+    if (lockOk !== null && !lockOk) {
+      await new Promise((r) => setTimeout(r, 500));
+      const existing = await prisma.transaction.findFirst({ where: { externalId } });
+      if (existing) return { success: true, alreadyProcessed: true };
+      return { error: 'Xsolla order processing in progress' };
+    }
     // 幂等检查：同一笔 transaction 不重复加
     const existing = await prisma.transaction.findFirst({
       where: { externalId },

@@ -194,14 +194,39 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       final ok = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
       if (ok) {
         _snack(LocaleService.I.t('shop.payment_opened'));
-        await Future.delayed(const Duration(seconds: 3));
-        await _refresh();
+        await _pollXsollaBalance(auth.playerId);
         return;
       }
 
       // Android：Xsolla 失败 → 降级 Google IAP
       if (!kIsWeb) await _buyIAP(ga);
     } catch (_) { _snack(LocaleService.I.t('shop.buy_failed_generic')); }
+  }
+
+  /// Web 支付完成后轮询服务端余额，把已到账部分补进本地（服务端 > 本地才补）
+  Future<void> _pollXsollaBalance(String playerId) async {
+    for (var i = 0; i < 6; i++) {
+      await Future.delayed(const Duration(milliseconds: 2500));
+      final b = await BalanceService.getBalance(playerId);
+      final d = _data;
+      if (b == null || d == null) continue;
+      final gemDiff = b.gems - d.gems;
+      final goldDiff = b.gold - d.gold;
+      if (gemDiff > 0 || goldDiff > 0) {
+        _data = d.copyWith(
+          gems: d.gems + (gemDiff > 0 ? gemDiff : 0),
+          gold: d.gold + (goldDiff > 0 ? goldDiff : 0),
+        );
+        await SaveManager.savePlayerData(_data!);
+        bumpDataVersion();
+        await _refresh();
+        if (gemDiff > 0) {
+          _snack(LocaleService.I.t('shop.buy_success_gems', args: {'gems': '$gemDiff'}));
+        }
+        return;
+      }
+    }
+    await _refresh();
   }
 
   Future<void> _buyIAP(int ga) async {
