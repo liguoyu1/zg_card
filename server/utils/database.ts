@@ -17,6 +17,19 @@ export const prisma = new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
 });
 
+/** 启动时幂等建表（PlayerSave），避免依赖外部 migration */
+export async function ensurePlayerSaveTable() {
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "player_saves" (
+      "player_id" TEXT NOT NULL,
+      "data" JSONB NOT NULL,
+      "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "player_saves_pkey" PRIMARY KEY ("player_id")
+    );
+  `).catch(() => {});
+}
+ensurePlayerSaveTable();
+
 // Redis 客户端
 let redisClient: any = null;
 
