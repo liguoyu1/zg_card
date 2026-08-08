@@ -16,6 +16,7 @@ import '../presentation/screens/login_screen.dart';
 import '../presentation/screens/online_game_screen.dart';
 import '../presentation/screens/quest_screen.dart';
 import '../presentation/screens/shop_screen.dart';
+import '../presentation/screens/transactions_screen.dart';
 import '../presentation/screens/training_screen.dart';
 import '../presentation/widgets/responsive_layout.dart';
 
@@ -38,6 +39,7 @@ class AppRouter {
           GoRoute(path: '/progress/battle-pass', builder: (_, __) => const BattlePassScreen()),
           GoRoute(path: '/shop/adventure', builder: (_, __) => const AdventureScreen()),
           GoRoute(path: '/shop/shop', builder: (_, __) => const ShopScreen()),
+          GoRoute(path: '/shop/transactions', builder: (_, __) => const TransactionsScreen()),
         ],
       ),
       // 对战页面在 ShellRoute 外，不显示底部导航栏

@@ -1,6 +1,6 @@
 import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive } from '../../utils/database';
 import { joinMatchQueue, leaveMatchQueue, checkMatchStatus, submitGameAction, pollGameActions } from '../../utils/database';
-import { createPaymentToken, verifyWebhookSignature, GEM_SKU_MAP } from '../../utils/xsolla';
+import { createPaymentToken, verifyWebhookSignature, handleUserValidation, GEM_SKU_MAP } from '../../utils/xsolla';
 
 export default defineEventHandler(async (event) => {
   const method = event.method;
@@ -157,7 +157,8 @@ export default defineEventHandler(async (event) => {
 
     if (method === 'GET' && path.includes('/balance/transactions/')) {
       const odID = path.split('/').pop()!;
-      return await getTransactions(odID);
+      const days = Number(getQuery(event).days) || 3;
+      return await getTransactions(odID, Math.min(Math.max(days, 1), 30));
     }
 
     // === Xsolla 支付 ===
@@ -191,6 +192,12 @@ export default defineEventHandler(async (event) => {
 
       const data = JSON.parse(rawBody);
       const nt = data.notification_type;
+
+      if (nt === 'user_validation') {
+        const result = await handleUserValidation(data, (id) => getPlayerProfile(id));
+        setResponseStatus(event, result.status);
+        return result.body;
+      }
 
       if (nt === 'order_paid' || nt === 'payment') {
         const odID = data.user?.id;

@@ -113,6 +113,22 @@ class BalanceService {
     }
   }
 
+  /// 拉取交易流水（默认最近 3 天，最多 30 天）
+  static Future<List<Map<String, dynamic>>> getTransactions(String odID,
+      {int days = 3}) async {
+    try {
+      final resp = await http
+          .get(Uri.parse('$_baseUrl/api/balance/transactions/$odID?days=$days'));
+      if (resp.statusCode != 200) return [];
+      final body = jsonDecode(resp.body);
+      if (body is! List) return [];
+      return body.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    } catch (e) {
+      debugPrint('BalanceService.getTransactions error: $e');
+      return [];
+    }
+  }
+
   /// 上报本地余额到服务端对账：服务端只入账正差（本地多于服务端），
   /// 负差忽略，保证最终一致且不丢账。
   static Future<void> syncBalance(String playerId, String token,
@@ -149,8 +165,8 @@ class BalanceService {
     }
   }
 
-  /// 拉取远端完整存档（null = 无存档）
-  static Future<String?> downloadSave(String playerId, String token) async {
+  /// 拉取远端完整存档（null = 无存档）；返回存档 JSON 与服务端更新时间
+  static Future<({String json, String updatedAt})?> downloadSave(String playerId, String token) async {
     try {
       final resp = await http.get(
         Uri.parse('$_baseUrl/api/save'),
@@ -159,7 +175,7 @@ class BalanceService {
       if (resp.statusCode != 200) return null;
       final body = jsonDecode(resp.body);
       if (body['success'] != true || body['save'] == null) return null;
-      return jsonEncode(body['save']);
+      return (json: jsonEncode(body['save']), updatedAt: body['updatedAt']?.toString() ?? '');
     } catch (e) {
       debugPrint('BalanceService.downloadSave error: $e');
       return null;

@@ -1390,5 +1390,15 @@
   "achievement.ach_hero_zhangyi_50.reward": "Zhang Yi",
   "achievement.ach_hero_guiguzi_50.name": "Guiguzi",
   "achievement.ach_hero_guiguzi_50.desc": "Win 50 with Guiguzi",
-  "achievement.ach_hero_guiguzi_50.reward": "Guiguzi"
+  "achievement.ach_hero_guiguzi_50.reward": "Guiguzi",
+  "home.transactions": "Transactions",
+  "txn.title": "Transaction History",
+  "txn.earn_gems": "Gems earned",
+  "txn.spend_gems": "Gems spent",
+  "txn.earn_gold": "Gold earned",
+  "txn.spend_gold": "Gold spent",
+  "txn.exchange": "Exchange",
+  "txn.balance": "Balance",
+  "txn.empty": "No transactions yet",
+  "txn.show_month": "View last 1 month"
 }

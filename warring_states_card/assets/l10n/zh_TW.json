@@ -1390,5 +1390,15 @@
   "achievement.ach_hero_lianpo_50.reward": "老将骁勇",
   "achievement.ach_hero_suqing_50.reward": "合纵名士",
   "achievement.ach_hero_zhangyi_50.reward": "连横策士",
-  "achievement.ach_hero_guiguzi_50.reward": "鬼谷传人"
+  "achievement.ach_hero_guiguzi_50.reward": "鬼谷传人",
+  "home.transactions": "交易記錄",
+  "txn.title": "交易記錄",
+  "txn.earn_gems": "獲得鑽石",
+  "txn.spend_gems": "消耗鑽石",
+  "txn.earn_gold": "獲得金幣",
+  "txn.spend_gold": "消耗金幣",
+  "txn.exchange": "兌換",
+  "txn.balance": "餘額",
+  "txn.empty": "暫無交易記錄",
+  "txn.show_month": "查看近 1 個月記錄"
 }

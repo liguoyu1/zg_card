@@ -143,6 +143,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             AudioManager.I.toggleMute();
             setState(() {});
             break;
+          case 'transactions':
+            if (loggedIn) context.push('/shop/transactions');
+            break;
           case 'lang_zh':
             await LocaleService.I.init(localeCode: 'zh');
             await SharedPreferences.getInstance().then((p) => p.setString('locale_code', 'zh'));
@@ -201,6 +204,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           PopupMenuItem(value: 'sound', child: ListTile(
             leading: Icon(AudioManager.I.isMuted ? Icons.volume_off : Icons.volume_up, color: AppTheme.parchment, size: 20),
             title: Text(LocaleService.I.t(AudioManager.I.isMuted ? 'home.sound_off' : 'home.sound_on'), style: TextStyle(color: AppTheme.parchment)),
+            contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
+          )),
+          PopupMenuItem(value: 'transactions', child: ListTile(
+            leading: const Icon(Icons.receipt_long, color: AppTheme.parchment, size: 20),
+            title: Text(LocaleService.I.t('home.transactions'), style: const TextStyle(color: AppTheme.parchment)),
             contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
           )),
           PopupMenuItem(value: 'lang_zh', child: ListTile(

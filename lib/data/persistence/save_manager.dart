@@ -20,6 +20,7 @@ class SaveManager {
   static String get _collectionKey => 'save_collection_$_keyPrefix$_suffix';
   static String get _matchHistoryKey => 'save_match_history_$_keyPrefix$_suffix';
   static const String _saveVersionKey = 'save_version';
+  static String get _saveTsKey => 'save_ts_$_keyPrefix$_suffix';
 
   static Future<void> init() async {}
 
@@ -54,6 +55,7 @@ class SaveManager {
   static Future<void> savePlayerData(PlayerData data) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_playerDataKey, jsonEncode(data.toJson()));
+    await prefs.setInt(_saveTsKey, DateTime.now().millisecondsSinceEpoch);
     onPlayerDataSaved?.call(data);
   }
 
@@ -67,7 +69,14 @@ class SaveManager {
   static Future<void> saveCollection(Collection c) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_collectionKey, jsonEncode(c.toJson()));
+    await prefs.setInt(_saveTsKey, DateTime.now().millisecondsSinceEpoch);
     onCollectionSaved?.call(c);
+  }
+
+  /// 本地存档最后修改时间戳（版本比较用）
+  static Future<int> loadSavedAt() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_saveTsKey) ?? 0;
   }
 
   static Future<Collection?> loadCollection() async {

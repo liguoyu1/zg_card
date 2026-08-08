@@ -636,11 +636,12 @@ export async function spendGold(odID: string, amount: number, detail: string = '
   }
 }
 
-export async function getTransactions(odID: string, limit: number = 50) {
+export async function getTransactions(odID: string, days: number = 3) {
+  const since = new Date(Date.now() - days * 86400000);
   const txns = await prisma.transaction.findMany({
-    where: { playerId: odID },
+    where: { playerId: odID, createdAt: { gte: since } },
     orderBy: { createdAt: 'desc' },
-    take: limit,
+    take: 500,
   });
   return txns;
 }

@@ -6,8 +6,8 @@ import '../../data/persistence/save_manager.dart';
 
 /// 经济状态与完整存档云同步：
 /// 1) 余额对账：本地多于服务端 → 上报（服务端只入账正差，负差忽略）
-/// 2) 完整存档：PlayerData + Collection + 战斗历史 整体上传；登录后若本地
-///    无存档则从服务端拉回（跨设备恢复全部资产）
+/// 2) 完整存档：PlayerData + Collection + 战斗历史，按版本（时间戳）最新者胜，
+///    空档永不覆盖有资产的档，跨设备恢复全部资产
 class BalanceSyncService {
   BalanceSyncService._();
 
@@ -31,8 +31,7 @@ class BalanceSyncService {
     _debounce?.cancel();
   }
 
-  /// 登录后：切换到该账号的本地存档区，并以云端存档为权威恢复，
-  /// 仅当本地是该账号自己的存档且进度更新时才反向覆盖；随后防抖上传。
+  /// 登录后：切换到该账号的本地存档区，与云端合并（版本最新者胜），随后防抖上传
   static Future<void> afterLogin() async {
     if (_playerId == null || _token == null) return;
     await SaveManager.ensureAccountStorage(_playerId!);
@@ -44,36 +43,66 @@ class BalanceSyncService {
     if (_playerId == null || _token == null) return;
     final local = await SaveManager.loadPlayerData();
     final remote = await BalanceService.downloadSave(_playerId!, _token!);
-    final localOwn = local != null &&
-        (local.id == _playerId || RegExp(r'^\d+$').hasMatch(local.id));
-    final remotePd = _extractPlayerData(remote ?? '');
-    final remoteEmpty = remote == null ||
-        remotePd == null ||
-        _isEmptySave(remotePd, _extractCollection(remote));
-    if (localOwn && (remoteEmpty || _progressAtLeast(
-        _progressOf(local, await SaveManager.loadCollection()),
-        _progressOf(remotePd, _extractCollection(remote))))) {
-      if (!_isNullSave(local)) await _uploadArchive(); // 本地更完整，覆盖云端
-      return;
-    }
-    if (remote != null && remote.isNotEmpty && !remoteEmpty) {
-      await SaveManager.importSave(remote);
-      // 修正存档归属（兼容早期被匿名/游客档污染的历史数据）
-      final pd = await SaveManager.loadPlayerData();
-      if (pd != null && pd.id != _playerId) {
-        await SaveManager.savePlayerData(
-            pd.copyWith(id: _playerId!, name: _playerName ?? pd.name));
+    final localColl = await SaveManager.loadCollection();
+    final localHasAssets = local != null &&
+        (local.unlockedCards.isNotEmpty ||
+            local.unlockedHeroes.length > 1 ||
+            (localColl?.cards.isNotEmpty ?? false));
+    final remoteJson = remote?.json ?? '';
+    final remotePd = _extractPlayerData(remoteJson);
+    final remoteHasAssets = remotePd != null &&
+        !_emptySave(remotePd, _extractCollection(remoteJson));
+
+    // 云端无档：本地有资产/登录态档上传为初始档；否则服务端余额兜底
+    if (remote == null || remotePd == null) {
+      if (local == null ||
+          (!localHasAssets &&
+              local.id != _playerId &&
+              !RegExp(r'^\d+$').hasMatch(local.id))) {
+        await _initFromServerBalance();
+      } else {
+        if (local.id != _playerId) {
+          await SaveManager.savePlayerData(
+              local.copyWith(id: _playerId!, name: _playerName ?? local.name));
+        }
+        await _uploadArchive();
       }
       return;
     }
-    // 云端无档：本地匿名档（纯时间戳 id）或本账号档作为账号初始档；否则余额兜底
-    if (local != null &&
-        (local.id == _playerId || RegExp(r'^\d+$').hasMatch(local.id))) {
-      await SaveManager.savePlayerData(
-          local.copyWith(id: _playerId!, name: _playerName ?? local.name));
+    // 云端有资产、本地空档（新设备）→ 恢复云端
+    if (remoteHasAssets && !localHasAssets) {
+      await SaveManager.importSave(remote.json);
+      await _fixOwnership();
+      return;
+    }
+    // 云端空档（被污染）、本地有资产 → 本地覆盖
+    if (!remoteHasAssets && localHasAssets) {
       await _uploadArchive();
       return;
     }
+    // 双方都有资产：版本最新者胜（服务端 updatedAt vs 本地 save_ts）
+    final remoteTs =
+        DateTime.tryParse(remote.updatedAt)?.millisecondsSinceEpoch ?? 0;
+    final localTs = await SaveManager.loadSavedAt();
+    if (remoteTs > localTs) {
+      await SaveManager.importSave(remote.json);
+      await _fixOwnership();
+    } else {
+      await _uploadArchive();
+    }
+  }
+
+  static Future<void> _fixOwnership() async {
+    final pd = await SaveManager.loadPlayerData();
+    if (pd != null && pd.id != _playerId) {
+      await SaveManager.savePlayerData(
+          pd.copyWith(id: _playerId!, name: _playerName ?? pd.name));
+    }
+  }
+
+  /// 云端与本地均无资产时，用服务端余额初始化本地（恢复钻石/金币）
+  static Future<void> _initFromServerBalance() async {
+    if (_playerId == null || _token == null) return;
     final b = await BalanceService.getBalance(_playerId!);
     if (b == null) return;
     final pd = PlayerData(
@@ -86,24 +115,17 @@ class BalanceSyncService {
     await _uploadArchive();
   }
 
-  static bool _isEmptySave(PlayerData pd, Collection? coll) =>
+  static bool _emptySave(PlayerData pd, Collection? coll) =>
       pd.unlockedCards.isEmpty &&
       pd.unlockedHeroes.length <= 1 &&
       (coll == null || coll.cards.isEmpty);
 
-  static bool _isNullSave(PlayerData pd) => _isEmptySave(pd, null);
-
-  /// 粗略进度比较：总局数 + 收藏卡数，用于双端冲突时取较新的一侧
-  static ({int matches, int cards}) _progressOf(
-      PlayerData pd, Collection? coll) {
-    return (matches: pd.totalMatches, cards: coll?.cards.length ?? 0);
-  }
-
-  static bool _progressAtLeast(
-      ({int matches, int cards}) a, ({int matches, int cards}) b) {
-    return a.matches > b.matches ||
-        (a.matches == b.matches && a.cards >= b.cards);
-  }
+  static bool _isDefaultSave(PlayerData d) =>
+      d.firstRun ||
+      (d.gems == 0 &&
+          d.gold <= 100 &&
+          d.unlockedCards.isEmpty &&
+          d.unlockedHeroes.length <= 1);
 
   static PlayerData? _extractPlayerData(String saveJson) {
     try {
@@ -144,9 +166,11 @@ class BalanceSyncService {
     try {
       final data = await SaveManager.loadPlayerData();
       if (data == null) return;
-      await BalanceService.syncBalance(_playerId!, _token!,
-          gems: data.gems, gold: data.gold);
-      await _uploadArchive();
+      if (!_isDefaultSave(data)) {
+        await BalanceService.syncBalance(_playerId!, _token!,
+            gems: data.gems, gold: data.gold);
+        await _uploadArchive();
+      }
     } catch (_) {
       // 离线/失败静默，下次变动或登录时重试
     } finally {

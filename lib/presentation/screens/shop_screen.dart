@@ -375,15 +375,6 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           _gemCard(1500, 19.99, null),
           const SizedBox(height: 6),
           _gemCard(3000, 29.99, null),
-          const SizedBox(height: 12),
-          SizedBox(width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _restorePurchases,
-              icon: const Icon(Icons.restore, size: 16),
-              label: Text(LocaleService.I.t('shop.restore_purchases')),
-              style: OutlinedButton.styleFrom(foregroundColor: AppTheme.textSecondary),
-            ),
-          ),
           const SizedBox(height: 16),
 
           // === 金币 ===
@@ -403,6 +394,16 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           if (_heroShopExpanded) ..._heroShop(),
           const SizedBox(height: 16),
 
+          // === 恢复购买记录（置底） ===
+          SizedBox(width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _restorePurchases,
+              icon: const Icon(Icons.restore, size: 16),
+              label: Text(LocaleService.I.t('shop.restore_purchases')),
+              style: OutlinedButton.styleFrom(foregroundColor: AppTheme.textSecondary),
+            ),
+          ),
+          const SizedBox(height: 8),
         ],
       )),
     );
