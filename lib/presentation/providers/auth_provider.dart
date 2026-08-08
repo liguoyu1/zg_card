@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/services/auth_service.dart' show AuthService, AuthState;
+import '../../domain/services/balance_sync_service.dart';
 
 /// 认证状态 Provider — 全局登录状态管理
 final authProvider =
@@ -14,6 +14,7 @@ class AuthNotifier extends StateNotifier<AuthState?> {
   /// 应用启动时从本地恢复登录态
   Future<void> loadSession() async {
     state = await _service.loadSession();
+    _bindBalanceSync();
   }
 
   bool get isLoggedIn => state != null;
@@ -21,21 +22,21 @@ class AuthNotifier extends StateNotifier<AuthState?> {
   /// 邮箱注册
   Future<String?> register(String email, String password, String name) async {
     final err = await _service.register(email, password, name);
-    if (err == null) state = _service.state;
+    if (err == null) { state = _service.state; _bindBalanceSync(); }
     return err;
   }
 
   /// 邮箱登录
   Future<String?> login(String email, String password) async {
     final err = await _service.login(email, password);
-    if (err == null) state = _service.state;
+    if (err == null) { state = _service.state; _bindBalanceSync(); }
     return err;
   }
 
   /// 游客登录
   Future<String?> guestLogin(String name) async {
     final err = await _service.guestLogin(name);
-    if (err == null) state = _service.state;
+    if (err == null) { state = _service.state; _bindBalanceSync(); }
     return err;
   }
 
@@ -43,6 +44,12 @@ class AuthNotifier extends StateNotifier<AuthState?> {
   Future<void> logout() async {
     await _service.logout();
     state = null;
+    BalanceSyncService.clearSession();
+  }
+
+  void _bindBalanceSync() {
+    final s = state;
+    if (s != null) BalanceSyncService.setSession(s.playerId, s.token);
   }
 
   /// 获取当前玩家ID

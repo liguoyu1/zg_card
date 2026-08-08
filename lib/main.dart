@@ -1,32 +1,29 @@
-import 'dart:async';
-import 'dart:io' show Platform;
-
 import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/audio/audio.dart';
 import 'core/theme/app_theme.dart';
 import 'data/persistence/save_manager.dart';
-import 'domain/services/ad_service.dart';
 import 'domain/services/battle_pass_service.dart';
+import 'domain/services/balance_sync_service.dart';
 import 'domain/services/card_pool.dart';
-import 'domain/services/google_ad_service.dart';
 import 'domain/services/purchase_service.dart';
 import 'domain/services/quest_manager.dart';
 import 'l10n/locale_service.dart';
 import 'routing/app_router.dart';
 
-/// 全局广告服务引用
-AdService adService = NoOpAdService();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 仅初始化必要的持久化层（毫秒级），其余后台异步加载
   await SaveManager.init();
-  await LocaleService.I.init();
+  SaveManager.onPlayerDataSaved = (_) => BalanceSyncService.schedule();
+  final prefs = await SharedPreferences.getInstance();
+  final savedLocale = prefs.getString('locale_code') ?? 'zh';
+  await LocaleService.I.init(localeCode: savedLocale);
 
   // 先 runApp 显示界面，再后台初始化其他
   runApp(const ProviderScope(child: WarringStatesApp()));
@@ -47,23 +44,38 @@ void main() async {
     try {
       BattlePassService.I.init();
     } catch (_) {}
-    _initAds();
   }
 }
 
-bool _isChina() => Platform.localeName.startsWith('zh_');
+class WarringStatesApp extends StatefulWidget {
+  const WarringStatesApp({super.key});
 
-Future<void> _initAds() async {
-  try {
-    // 中国区暂不接入广告；海外使用 AdMob。
-    if (_isChina()) return;
-    final ok = await GoogleAdService().initialize();
-    if (ok) adService = GoogleAdService();
-  } catch (_) {}
+  @override
+  State<WarringStatesApp> createState() => _WarringStatesAppState();
 }
 
-class WarringStatesApp extends StatelessWidget {
-  const WarringStatesApp({super.key});
+class _WarringStatesAppState extends State<WarringStatesApp> {
+  @override
+  void initState() {
+    super.initState();
+    LocaleService.I.localeVersion.addListener(_onLocaleChanged);
+  }
+
+  Locale _locale() {
+    final code = LocaleService.I.localeCode;
+    if (code == 'zh_TW') return const Locale('zh', 'TW');
+    return Locale(code);
+  }
+
+  void _onLocaleChanged() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    LocaleService.I.localeVersion.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,15 +84,17 @@ class WarringStatesApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       scrollBehavior: const _NoOverscrollBehavior(),
       theme: WarringStatesTheme.dark,
-      routerConfig: AppRouter.router,
+      routerConfig: AppRouter.router(refreshListenable: LocaleService.I.localeVersion),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      locale: _locale(),
       supportedLocales: const [
         Locale('en', ''),
         Locale('zh', ''),
+        Locale('zh', 'TW'),
       ],
     );
   }

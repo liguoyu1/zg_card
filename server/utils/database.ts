@@ -479,6 +479,38 @@ export async function addGems(odID: string, amount: number, detail: string = '',
   }
 }
 
+/** 客户端余额对账：本地多于服务端的部分入账（正差），负差忽略；增量更新，不覆盖 */
+export async function syncBalance(odID: string, gems: number, gold: number) {
+  try {
+    const player = await prisma.player.findUnique({ where: { id: odID } });
+    if (!player) return { error: 'player not found' };
+    const ops: any[] = [];
+    const suffix = `${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+    const gemDelta = gems - player.gems;
+    if (gemDelta > 0) {
+      ops.push(
+        prisma.player.update({ where: { id: odID }, data: { gems: { increment: gemDelta } } }),
+        prisma.transaction.create({
+          data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount: gemDelta, balanceAfter: player.gems + gemDelta, detail: '客户端同步', externalId: `sync:${odID}:gem:${suffix}` },
+        }),
+      );
+    }
+    const goldDelta = gold - player.gold;
+    if (goldDelta > 0) {
+      ops.push(
+        prisma.player.update({ where: { id: odID }, data: { gold: { increment: goldDelta } } }),
+        prisma.transaction.create({
+          data: { playerId: odID, type: 'earn_gold', currency: 'gold', amount: goldDelta, balanceAfter: player.gold + goldDelta, detail: '客户端同步', externalId: `sync:${odID}:gold:${suffix}` },
+        }),
+      );
+    }
+    if (ops.length) await prisma.$transaction(ops);
+    return { success: true, gems: player.gems + gemDelta, gold: player.gold + goldDelta };
+  } catch (e: any) {
+    return { error: e.message || 'sync balance failed' };
+  }
+}
+
 export async function spendGems(odID: string, amount: number, detail: string = '') {
   try {
     const player = await prisma.player.findUnique({ where: { id: odID } });

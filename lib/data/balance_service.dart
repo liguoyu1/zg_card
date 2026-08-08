@@ -113,6 +113,24 @@ class BalanceService {
     }
   }
 
+  /// 上报本地余额到服务端对账：服务端只入账正差（本地多于服务端），
+  /// 负差忽略，保证最终一致且不丢账。
+  static Future<void> syncBalance(String playerId, String token,
+      {required int gems, required int gold}) async {
+    try {
+      await http.post(
+        Uri.parse('$_baseUrl/api/balance/sync'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'odID': playerId, 'gems': gems, 'gold': gold}),
+      );
+    } catch (e) {
+      debugPrint('BalanceService.syncBalance error: $e');
+    }
+  }
+
   static Future<bool> addGems(String id, int amount,
       {String detail = '', String? receiptId}) async {
     try {

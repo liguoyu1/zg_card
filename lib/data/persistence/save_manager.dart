@@ -6,6 +6,9 @@ import 'package:warring_states_card/domain/models/roguelite_run.dart';
 
 /// 存档管理器 - 基于 SharedPreferences，每套图独立存档 key
 class SaveManager {
+  /// 本地玩家数据保存后的回调（用于余额变动后触发服务端对账同步）
+  static void Function(PlayerData data)? onPlayerDataSaved;
+
   static String get _suffix => AssetStyle.current.name;
   static String get _playerDataKey => 'save_player_data_$_suffix';
   static String get _collectionKey => 'save_collection_$_suffix';
@@ -17,6 +20,7 @@ class SaveManager {
   static Future<void> savePlayerData(PlayerData data) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_playerDataKey, jsonEncode(data.toJson()));
+    onPlayerDataSaved?.call(data);
   }
 
   static Future<PlayerData?> loadPlayerData() async {
