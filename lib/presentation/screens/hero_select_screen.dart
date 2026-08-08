@@ -12,6 +12,7 @@ import 'package:warring_states_card/domain/models/hero.dart' as h;
 import 'package:warring_states_card/domain/services/hero_data_provider.dart' as provider;
 import 'package:warring_states_card/domain/services/services.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
+import 'package:warring_states_card/shared/widgets/queued_asset_image.dart';
 
 import 'game_screen_args.dart';
 
@@ -202,7 +203,10 @@ class _HeroCard extends StatelessWidget {
                 child: SizedBox(width: imgW, height: cardH, child: () {
                   final p = CardImageService.getHeroImageAsset(hero.id);
                   return p.isNotEmpty
-                      ? Image.asset(p, fit: BoxFit.cover, alignment: Alignment.topCenter)
+                      ? QueuedAssetImage(path: p,
+                          placeholderColor: _kingdomColor(hero.kingdom),
+                          placeholderBuilder: (_) => Container(color: _kingdomColor(hero.kingdom),
+                              child: Center(child: Text(hero.name[0], style: const TextStyle(fontSize: 32, color: Colors.white)))))
                       : Container(color: _kingdomColor(hero.kingdom),
                           child: Center(child: Text(hero.name[0], style: const TextStyle(fontSize: 32, color: Colors.white))));
                 }()),

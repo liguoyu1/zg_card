@@ -8,6 +8,7 @@ import '../../l10n/locale_service.dart';
 import '../../domain/models/card.dart' as cm;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/card_pool.dart';
+import '../../shared/widgets/queued_asset_image.dart';
 
 /// 卡牌库 — 全部卡牌按学派筛选，已拥有标记
 class CardLibraryScreen extends StatefulWidget {
@@ -117,30 +118,6 @@ class _CardGridViewState extends State<_CardGridView> {
   final Set<String> _preloadQueued = {};
   int _preloadInFlight = 0;
   static const int _preloadMaxConcurrent = 3;
-
-  /// 卡片图按渲染顺序排队预加载（每批最多 3 张并发），保证从前到后填充
-  void _queuePreload(String path) {
-    if (path.isEmpty || _preloadQueued.contains(path)) return;
-    _preloadQueued.add(path);
-    _preloadQueue.add(path);
-    _pumpPreload();
-  }
-
-  void _pumpPreload() {
-    if (!mounted) return;
-    while (_preloadInFlight < _preloadMaxConcurrent && _preloadQueue.isNotEmpty) {
-      final p = _preloadQueue.removeAt(0);
-      _preloadInFlight++;
-      precacheImage(AssetImage(p), context)
-          .then((_) => _preloadDone())
-          .catchError((_) => _preloadDone());
-    }
-  }
-
-  void _preloadDone() {
-    _preloadInFlight--;
-    _pumpPreload();
-  }
   // 拥有状态筛选：all / owned / trial / unowned
   String _statusFilter = 'all';
   final _statusFilterCtrl = TextEditingController();
@@ -378,7 +355,6 @@ class _CardGridViewState extends State<_CardGridView> {
     final imgPath = CardImageService.getImageByType(card.id, _typeEng(card.type));
     final rc = _rarityBorder(card.rarity);
     final bc = trial ? Colors.cyan : owned ? AppTheme.healGreen : rc;
-    _queuePreload(imgPath);
 
     return GestureDetector(
       onTap: () => _detail(card),
@@ -392,26 +368,23 @@ class _CardGridViewState extends State<_CardGridView> {
           child: Stack(fit: StackFit.expand, children: [
             // 底图
             if (imgPath.isNotEmpty)
-              Image.asset(imgPath, fit: BoxFit.cover, alignment: Alignment.topCenter,
-                  errorBuilder: (_, __, ___) => Container(color: _costColor(card.cost)),
-                  frameBuilder: (_, child, frame, wasSync) => wasSync || frame != null
-                      ? child
-                      : Container(
-                          color: _costColor(card.cost),
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(width: 14, height: 14,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white70)),
-                              const SizedBox(height: 6),
-                              Text(card.name,
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2, overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
-                            ],
-                          )))
+              QueuedAssetImage(path: imgPath,
+                  placeholderColor: _costColor(card.cost),
+                  placeholderBuilder: (_) => Container(
+                      color: _costColor(card.cost),
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(width: 14, height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white70)),
+                          const SizedBox(height: 6),
+                          Text(card.name,
+                              textAlign: TextAlign.center,
+                              maxLines: 2, overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                        ])))
             else
               Container(color: _costColor(card.cost)),
             // 暗色遮罩让文字可见
