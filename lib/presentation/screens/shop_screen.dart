@@ -165,7 +165,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       );
       if (resp != null && resp.success) {
         if (_data != null) {
-          _data = _data!.copyWith(gems: resp.gems);
+          _data = _data!.copyWith(gems: _data!.gems + resp.gained);
           await SaveManager.savePlayerData(_data!);
         }
         bumpDataVersion();
@@ -226,7 +226,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     );
     if (resp != null && resp.success) {
       if (_data != null) {
-        _data = _data!.copyWith(gems: resp.gems);
+        _data = _data!.copyWith(gems: _data!.gems + resp.gained);
         await SaveManager.savePlayerData(_data!);
       }
       bumpDataVersion();
