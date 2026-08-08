@@ -67,6 +67,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     final odID = ref.read(authProvider)?.playerId ?? '';
     final ok = await BalanceService.spendGold(odID, a, detail: '消费$a金币');
     if (!ok) { _snack(LocaleService.I.t('shop.op_failed')); return false; }
+    _data = _data!.copyWith(gold: _data!.gold - a);
+    await SaveManager.savePlayerData(_data!);
     bumpDataVersion(); await _refresh(); return true;
   }
 
@@ -76,6 +78,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     final odID = ref.read(authProvider)?.playerId ?? '';
     final ok = await BalanceService.spendGems(odID, a, detail: '消费$a钻石');
     if (!ok) { _snack(LocaleService.I.t('shop.op_failed')); return false; }
+    _data = _data!.copyWith(gems: _data!.gems - a);
+    await SaveManager.savePlayerData(_data!);
     bumpDataVersion(); await _refresh(); return true;
   }
 
@@ -309,8 +313,14 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     final odID = ref.read(authProvider)?.playerId ?? '';
     if (!await _spendGems(gemsCost)) return;
     final ok = await BalanceService.addGold(odID, goldReward, detail: '兑换$goldReward金币');
-    if (ok) { _snack(LocaleService.I.t('shop.exchange_success', args: {'gold': '$goldReward'})); } else { _snack(LocaleService.I.t('shop.exchange_failed')); }
-    bumpDataVersion(); await _refresh();
+    if (ok) {
+      _data = _data!.copyWith(gold: _data!.gold + goldReward);
+      await SaveManager.savePlayerData(_data!);
+      bumpDataVersion(); await _refresh();
+      _snack(LocaleService.I.t('shop.exchange_success', args: {'gold': '$goldReward'}));
+    } else {
+      _snack(LocaleService.I.t('shop.exchange_failed'));
+    }
   }
 
   void _buyHero(String hid, int cost) async {
