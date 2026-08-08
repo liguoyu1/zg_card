@@ -79,7 +79,7 @@ class BalanceService {
   /// and returns the new balance. Idempotent per transactionId.
   /// POST /api/balance/verify-iap
   /// Expected server response: { success: true, gems: number }
-  static Future<({bool success, int gems, int gained, String? error})?> verifyIAPReceipt({
+  static Future<({bool success, bool alreadyProcessed, int gems, int gained, String? error})?> verifyIAPReceipt({
     required String playerId,
     required String token,
     required String receipt,
@@ -104,12 +104,12 @@ class BalanceService {
       if (resp.statusCode != 200 || body['success'] != true) {
         final err = (body is Map && body['error'] is String) ? body['error'] as String : 'HTTP ${resp.statusCode}';
         debugPrint('BalanceService.verifyIAPReceipt failed: $err');
-        return (success: false, gems: 0, gained: 0, error: err);
+        return (success: false, alreadyProcessed: false, gems: 0, gained: 0, error: err);
       }
-      return (success: true, gems: body['gems'] as int, gained: (body['gained'] as int?) ?? 0, error: null);
+      return (success: true, alreadyProcessed: body['alreadyProcessed'] == true, gems: body['gems'] as int, gained: (body['gained'] as int?) ?? 0, error: null);
     } catch (e) {
       debugPrint('BalanceService.verifyIAPReceipt error: $e');
-      return (success: false, gems: 0, gained: 0, error: e.toString());
+      return (success: false, alreadyProcessed: false, gems: 0, gained: 0, error: e.toString());
     }
   }
 

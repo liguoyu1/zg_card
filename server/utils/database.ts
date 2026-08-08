@@ -29,7 +29,7 @@ async function getRedisClient() {
       console.log('[Redis] Connected');
     } catch (e) {
       console.log('[Redis] Not available, using memory cache');
-      redisClient = { get: async () => null, set: async () => {}, del: async () => {} };
+      redisClient = { get: async () => null, set: async () => null, del: async () => {} };
     }
   }
   return redisClient;
@@ -425,8 +425,19 @@ export async function verifyIAPReceipt(odID: string, receipt: string, productId:
     const amount = IAP_GEM_MAP[productId];
     if (!amount) return { error: 'Invalid product' };
 
-    // 幂等：同一笔交易不重复发放
+    // 幂等：同一笔交易不重复发放（Redis 锁防并发双发；余额乐观锁兜底）
     const txId = transactionId || info.transactionId;
+    const redis = await getRedisClient();
+    let lockOk: any = null;
+    try {
+      lockOk = await redis.set(`iap:${txId}`, '1', { NX: true, EX: 120 });
+    } catch {}
+    if (lockOk !== null && !lockOk) {
+      await new Promise((r) => setTimeout(r, 800));
+      const existing = await prisma.transaction.findFirst({ where: { externalId: txId } });
+      if (existing) return { success: true, alreadyProcessed: true, gems: existing.balanceAfter, gained: existing.amount };
+      return { error: 'IAP verification in progress' };
+    }
     const existing = await prisma.transaction.findFirst({ where: { externalId: txId } });
     if (existing) return { success: true, alreadyProcessed: true, gems: existing.balanceAfter, gained: existing.amount };
 

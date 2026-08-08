@@ -1,10 +1,6 @@
 import 'dart:async';
-import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart'
-    show InAppPurchasePlatformAddition;
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 /// 购买结果 — 携带收据数据供后端验证
 class PurchaseResult {
@@ -42,6 +38,7 @@ class PurchaseService {
   Stream<PurchaseResult> get restoredStream => _restoredController.stream;
 
   StreamSubscription<List<PurchaseDetails>>? _sub;
+  bool _buying = false;
 
   Future<bool> initialize() async {
     if (_initialized || kIsWeb) return false;
@@ -49,21 +46,30 @@ class PurchaseService {
       _initialized = await _iap.isAvailable();
       debugPrint('🔵 IAP isAvailable: $_initialized');
       if (!_initialized) return false;
-      _sub = _iap.purchaseStream.listen((events) async {
+      _sub = _iap.purchaseStream.listen((events) {
         for (final e in events) {
           if (e.status == PurchaseStatus.purchased) {
-            // Fresh purchase — handled directly by purchase(). Do NOT emit
-            // to restoredStream (that would trigger the restore listener &
-            // double-credit gems).
             _purchasedIds.add(e.productID);
-            if (e.pendingCompletePurchase) {
-              _iap.completePurchase(e);
+            if (!_buying) {
+              // 崩溃/超时后重新交付的未完成交易：补验证补发（服务端幂等，
+              // externalId 去重不会重复到账），再完成交易。
+              final receipt = e.verificationData.serverVerificationData;
+              _restoredController.add(PurchaseResult(
+                success: true,
+                receipt: receipt.isNotEmpty ? receipt : null,
+                transactionId: e.purchaseID,
+                productId: e.productID,
+              ));
+              if (e.pendingCompletePurchase) {
+                _iap.completePurchase(e);
+              }
             }
+            // _buying 时由 purchase() 统一处理验证与 completePurchase
           } else if (e.status == PurchaseStatus.restored) {
             // Restored purchase — emit receipt data so consumer uploads to
             // backend for server-side verification & crediting.
             _purchasedIds.add(e.productID);
-            final receipt = await _serverReceipt(e.verificationData.serverVerificationData);
+            final receipt = e.verificationData.serverVerificationData;
             _restoredController.add(PurchaseResult(
               success: true,
               receipt: receipt.isNotEmpty ? receipt : null,
@@ -133,11 +139,12 @@ class PurchaseService {
 
       final completer = Completer<PurchaseResult>();
       StreamSubscription<List<PurchaseDetails>>? sub;
-      sub = _iap.purchaseStream.listen((events) async {
+      _buying = true;
+      sub = _iap.purchaseStream.listen((events) {
         for (final e in events) {
           if (e.productID == productId) {
             if (e.status == PurchaseStatus.purchased || e.status == PurchaseStatus.restored) {
-              final receipt = await _serverReceipt(e.verificationData.serverVerificationData);
+              final receipt = e.verificationData.serverVerificationData;
               if (e.pendingCompletePurchase) _iap.completePurchase(e);
               completer.complete(PurchaseResult(
                 success: true,
@@ -162,14 +169,19 @@ class PurchaseService {
         purchaseParam: PurchaseParam(productDetails: detail),
       );
 
-      return await completer.future.timeout(
-        const Duration(seconds: 60),
-        onTimeout: () {
-          sub?.cancel();
-          return PurchaseResult(success: false, productId: productId, error: '支付超时');
-        },
-      );
+      try {
+        return await completer.future.timeout(
+          const Duration(seconds: 60),
+          onTimeout: () {
+            sub?.cancel();
+            return PurchaseResult(success: false, productId: productId, error: '支付超时');
+          },
+        );
+      } finally {
+        _buying = false;
+      }
     } catch (e) {
+      _buying = false;
       return PurchaseResult(success: false, productId: productId, error: e.toString());
     }
   }
@@ -190,32 +202,5 @@ class PurchaseService {
     _sub?.cancel();
     _initialized = false;
     _products.clear();
-  }
-
-  /// StoreKit 2 下 serverVerificationData 是 JWS 交易签名，不是 App Store receipt，
-  /// 直接发给服务端 verifyReceipt 会返回 21002。iOS 上先刷新出传统 base64 receipt。
-  static bool _isJws(String s) => s.split('.').length == 3;
-
-  static Future<String?> _appStoreReceipt() async {
-    if (kIsWeb || !Platform.isIOS) return null;
-    final addition = InAppPurchasePlatformAddition.instance;
-    if (addition is! InAppPurchaseStoreKitPlatformAddition) return null;
-    try {
-      final vd = await addition.refreshPurchaseVerificationData();
-      final receipt = vd?.serverVerificationData ?? '';
-      return receipt.isNotEmpty ? receipt : null;
-    } catch (e) {
-      debugPrint('🔴 IAP receipt refresh failed: $e');
-      return null;
-    }
-  }
-
-  /// 组装可上传的 receipt：SK2(JWS) 时先取传统 receipt，取不到则回退 JWS 原样上传。
-  static Future<String> _serverReceipt(String serverVerificationData) async {
-    if (!kIsWeb && Platform.isIOS && _isJws(serverVerificationData)) {
-      final legacy = await _appStoreReceipt();
-      if (legacy != null) return legacy;
-    }
-    return serverVerificationData;
   }
 }

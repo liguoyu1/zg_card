@@ -164,7 +164,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         transactionId: result.transactionId,
       );
       if (resp != null && resp.success) {
-        if (_data != null) {
+        if (_data != null && !resp.alreadyProcessed) {
           _data = _data!.copyWith(gems: _data!.gems + resp.gained);
           await SaveManager.savePlayerData(_data!);
         }
@@ -225,7 +225,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       transactionId: result.transactionId,
     );
     if (resp != null && resp.success) {
-      if (_data != null) {
+      if (_data != null && !resp.alreadyProcessed) {
         _data = _data!.copyWith(gems: _data!.gems + resp.gained);
         await SaveManager.savePlayerData(_data!);
       }
