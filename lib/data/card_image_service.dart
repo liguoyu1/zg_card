@@ -311,4 +311,15 @@ class CardImageService {
     ..._spellImageMap.map((k, v) => MapEntry(k, '$_baseSpells$v')),
     ..._weaponImageMap.map((k, v) => MapEntry(k, '$_baseWeapons$v')),
   };
+
+  /// 全部素材路径（英雄 + 卡牌），供启动全局预加载
+  static List<String> getAllImagePaths() {
+    final paths = <String>[
+      for (final v in _heroImageMap.values)
+        if (v.isNotEmpty) '$_baseHeroes$v',
+      for (final v in _imageMap.values)
+        if (v.isNotEmpty) v,
+    ];
+    return paths;
+  }
 }

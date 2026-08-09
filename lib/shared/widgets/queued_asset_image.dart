@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Card;
 
 /// 全局卡片图片预加载队列：按入队顺序每批最多 3 张并发，
@@ -10,9 +9,16 @@ class AssetPreloadQueue {
   final List<String> _queue = [];
   final Set<String> _done = {};
   final Map<String, List<VoidCallback>> _listeners = {};
+  final Set<String> _target = {};
   int _inFlight = 0;
   static const int _maxConcurrent = 3;
   static const int _maxQueue = 400;
+
+  /// 全局预加载进度（0~1），供启动页进度条展示
+  final ValueNotifier<double> progress = ValueNotifier(0);
+
+  int get targetCount => _target.length;
+  int get targetLoaded => _target.where(_done.contains).length;
 
   bool isDone(String path) => _done.contains(path);
 
@@ -27,6 +33,23 @@ class AssetPreloadQueue {
     if (_queue.length >= _maxQueue) return;
     _queue.add(path);
     _pump();
+  }
+
+  /// 批量入队（启动全局预加载用），进度按该集合统计
+  void queueAll(Iterable<String> paths) {
+    for (final p in paths) {
+      if (p.isEmpty) continue;
+      _target.add(p);
+      if (!_done.contains(p) && !_queue.contains(p)) {
+        _queue.add(p);
+      }
+    }
+    _pump();
+    _notify();
+  }
+
+  void _notify() {
+    progress.value = _target.isEmpty ? 1 : targetLoaded / _target.length;
   }
 
   void _pump() {
@@ -51,6 +74,7 @@ class AssetPreloadQueue {
       for (final cb in cbs) {
         try { cb(); } catch (_) {}
       }
+      _notify();
       _inFlight--;
       _pump();
     }
@@ -65,18 +89,14 @@ class AssetPreloadQueue {
     _queue.clear();
     _done.clear();
     _listeners.clear();
+    _target.clear();
     _inFlight = 0;
+    progress.value = 0;
   }
 }
 
 /// 顺序加载的资产图片：加载完成前显示 [placeholder]，完成后无缝显示图片。
 class QueuedAssetImage extends StatefulWidget {
-  final String path;
-  final BoxFit fit;
-  final AlignmentGeometry alignment;
-  final Color? placeholderColor;
-  final Widget Function(String path)? placeholderBuilder;
-
   const QueuedAssetImage({
     super.key,
     required this.path,
@@ -85,6 +105,12 @@ class QueuedAssetImage extends StatefulWidget {
     this.placeholderColor,
     this.placeholderBuilder,
   });
+
+  final String path;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final Color? placeholderColor;
+  final Widget Function(String path)? placeholderBuilder;
 
   @override
   State<QueuedAssetImage> createState() => _QueuedAssetImageState();

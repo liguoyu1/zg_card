@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/audio.dart';
 import '../../core/theme/app_theme.dart';
+import '../../data/card_image_service.dart';
+import '../../shared/widgets/queued_asset_image.dart';
 import 'home_screen.dart';
 
 /// 战国卡牌启动画面
@@ -51,6 +53,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     // 预初始化音频（非阻塞）
     _initAudio();
+
+    // 启动全局预加载：全部英雄 + 卡牌素材进入队列（后台 3 并发，进度可观察）
+    AssetPreloadQueue.I.queueAll(CardImageService.getAllImagePaths());
 
     // 2秒后自动跳转
     Future.delayed(const Duration(seconds: 2), () {
@@ -229,17 +234,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(2),
-              child: _LoadingProgressBar(),
+              child: const _LoadingProgressBar(),
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            'Loading...',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppTheme.parchment.withAlpha(153),
-              letterSpacing: 2,
-            ),
+          ValueListenableBuilder<double>(
+            valueListenable: AssetPreloadQueue.I.progress,
+            builder: (_, v, __) {
+              final pct = (v * 100).clamp(0, 100).toStringAsFixed(0);
+              return Text(
+                '素材加载 $pct%',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppTheme.parchment.withAlpha(153),
+                  letterSpacing: 2,
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -249,21 +260,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
 /// 加载进度条动画
 class _LoadingProgressBar extends StatefulWidget {
+  const _LoadingProgressBar();
+
   @override
   State<_LoadingProgressBar> createState() => _LoadingProgressBarState();
 }
 
 class _LoadingProgressBarState extends State<_LoadingProgressBar>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
   }
 
   @override
@@ -274,12 +284,16 @@ class _LoadingProgressBarState extends State<_LoadingProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
+    _controller
+      ..stop()
+      ..forward(from: AssetPreloadQueue.I.progress.value);
+    return ValueListenableBuilder<double>(
+      valueListenable: AssetPreloadQueue.I.progress,
+      builder: (_, v, __) {
+        _controller.value = v;
         return FractionallySizedBox(
           alignment: Alignment.centerLeft,
-          widthFactor: _controller.value,
+          widthFactor: v,
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
