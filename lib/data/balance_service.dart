@@ -147,8 +147,10 @@ class BalanceService {
     }
   }
 
-  /// 上传完整存档（PlayerData + Collection + 战斗历史）
-  static Future<bool> uploadSave(String playerId, String token, String saveJson) async {
+  /// 上传完整存档；返回 (ok, updatedAt)：ok=false 表示失败，
+  /// updatedAt 是服务端保存后的时间戳（毫秒），用于云端版本对齐（0=云端已清空）
+  static Future<({bool ok, int updatedAt})> uploadSave(
+      String playerId, String token, String saveJson) async {
     try {
       final resp = await http.put(
         Uri.parse('$_baseUrl/api/save'),
@@ -158,15 +160,28 @@ class BalanceService {
         },
         body: jsonEncode({'odID': playerId, 'save': jsonDecode(saveJson)}),
       );
-      return resp.statusCode == 200;
+      if (resp.statusCode != 200) return (ok: false, updatedAt: 0);
+      final body = jsonDecode(resp.body);
+      final ts = body is Map ? body['updatedAt'] : null;
+      return (
+        ok: true,
+        updatedAt: ts == null
+            ? 0
+            : DateTime.tryParse(ts.toString())?.millisecondsSinceEpoch ?? 0,
+      );
     } catch (e) {
       debugPrint('BalanceService.uploadSave error: $e');
-      return false;
+      return (ok: false, updatedAt: 0);
     }
   }
 
   /// 拉取远端完整存档（null = 无存档）；返回存档 JSON 与服务端更新时间
-  static Future<({String json, String updatedAt})?> downloadSave(String playerId, String token) async {
+  /// 拉取远端完整存档。
+  /// 返回 null = 网络/服务端/解析失败（调用方不得据此覆盖任何数据）；
+  /// ok=false 且 json 为空 = 该账号在云端没有存档；
+  /// ok=true 且 json 非空 = 云端有存档。
+  static Future<({bool ok, String json, String updatedAt})?> downloadSave(
+      String playerId, String token) async {
     try {
       final resp = await http.get(
         Uri.parse('$_baseUrl/api/save'),
@@ -174,10 +189,110 @@ class BalanceService {
       );
       if (resp.statusCode != 200) return null;
       final body = jsonDecode(resp.body);
-      if (body['success'] != true || body['save'] == null) return null;
-      return (json: jsonEncode(body['save']), updatedAt: body['updatedAt']?.toString() ?? '');
+      if (body['success'] != true) return null;
+      if (body['save'] == null) {
+        return (ok: true, json: '', updatedAt: '');
+      }
+      return (
+        ok: true,
+        json: jsonEncode(body['save']),
+        updatedAt: body['updatedAt']?.toString() ?? '',
+      );
     } catch (e) {
       debugPrint('BalanceService.downloadSave error: $e');
+      return null;
+    }
+  }
+
+  /// 钻石→金币兑换（服务端单事务），返回权威余额
+  static Future<({bool ok, int gems, int gold, String? error})?>
+      exchangeGemsToGold(String playerId, String token,
+          {required int gemsCost, required int goldReward}) async {
+    try {
+      final resp = await http.post(
+        Uri.parse('$_baseUrl/api/balance/exchange'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'gemsCost': gemsCost, 'goldReward': goldReward}),
+      );
+      final body = jsonDecode(resp.body);
+      if (resp.statusCode != 200 || body['success'] != true) {
+        return (
+          ok: false,
+          gems: 0,
+          gold: 0,
+          error: (body is Map && body['error'] is String)
+              ? body['error'] as String
+              : 'HTTP ${resp.statusCode}',
+        );
+      }
+      return (
+        ok: true,
+        gems: body['gems'] is int ? body['gems'] as int : 0,
+        gold: body['gold'] is int ? body['gold'] as int : 0,
+        error: null,
+      );
+    } catch (e) {
+      debugPrint('BalanceService.exchangeGemsToGold error: $e');
+      return null;
+    }
+  }
+
+  /// 服务端购买卡/英雄（单事务扣款+入档），返回权威状态
+  static Future<({bool ok, int gold, List<String> unlockedCards,
+      List<String> unlockedHeroes, String? error})?>
+      purchasePlayerAsset(String playerId, String token,
+          {required String kind, required String assetId, required int cost}) async {
+    try {
+      final resp = await http.post(
+        Uri.parse('$_baseUrl/api/shop/buy-${kind == 'hero' ? 'hero' : 'card'}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'assetId': assetId, 'cost': cost}),
+      );
+      final body = jsonDecode(resp.body);
+      if (resp.statusCode != 200 || body['success'] != true) {
+        return (
+          ok: false,
+          gold: 0,
+          unlockedCards: const <String>[],
+          unlockedHeroes: const <String>[],
+          error: (body is Map && body['error'] is String)
+              ? body['error'] as String
+              : 'HTTP ${resp.statusCode}',
+        );
+      }
+      return (
+        ok: true,
+        gold: body['gold'] is int ? body['gold'] as int : int.tryParse(body['gold'].toString()) ?? 0,
+        unlockedCards: List<String>.from(body['unlockedCards'] ?? const []),
+        unlockedHeroes: List<String>.from(body['unlockedHeroes'] ?? const []),
+        error: null,
+      );
+    } catch (e) {
+      debugPrint('BalanceService.purchasePlayerAsset error: $e');
+      return null;
+    }
+  }
+
+  /// 轻量查询资产版本（updatedAt 毫秒）；0 = 云端无档；null = 查询失败
+  static Future<int?> fetchRemoteVersion(String playerId, String token) async {
+    try {
+      final resp = await http.get(
+        Uri.parse('$_baseUrl/api/save/version'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (resp.statusCode != 200) return null;
+      final body = jsonDecode(resp.body);
+      final v = body['updatedAt'];
+      if (v == null) return 0;
+      return DateTime.tryParse(v.toString())?.millisecondsSinceEpoch ?? -1;
+    } catch (e) {
+      debugPrint('BalanceService.fetchRemoteVersion error: $e');
       return null;
     }
   }

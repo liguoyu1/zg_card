@@ -55,11 +55,27 @@ class WarringStatesApp extends StatefulWidget {
   State<WarringStatesApp> createState() => _WarringStatesAppState();
 }
 
-class _WarringStatesAppState extends State<WarringStatesApp> {
+class _WarringStatesAppState extends State<WarringStatesApp>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     LocaleService.I.localeVersion.addListener(_onLocaleChanged);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      BalanceSyncService.refreshNow();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    LocaleService.I.localeVersion.removeListener(_onLocaleChanged);
+    super.dispose();
   }
 
   Locale _locale() {
@@ -70,12 +86,6 @@ class _WarringStatesAppState extends State<WarringStatesApp> {
 
   void _onLocaleChanged() {
     setState(() {});
-  }
-
-  @override
-  void dispose() {
-    LocaleService.I.localeVersion.removeListener(_onLocaleChanged);
-    super.dispose();
   }
 
   @override

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../data/data_version.dart';
 import '../../data/persistence/save_manager.dart';
+import '../../domain/services/balance_sync_service.dart';
 import '../../domain/models/quest.dart';
 import '../../domain/services/achievement_service.dart';
 import '../../l10n/locale_service.dart';
@@ -24,11 +26,22 @@ class _AchievementScreenState extends State<AchievementScreen>
   _AchCategory _category = _AchCategory.all;
 
   @override
-  void initState() { super.initState(); _tabCtrl = TabController(length: 2, vsync: this); _load(); }
-  @override
-  void dispose() { _tabCtrl.dispose(); super.dispose(); }
+  void initState() {
+    super.initState();
+    dataVersionNotifier.addListener(_load);
+    _tabCtrl = TabController(length: 2, vsync: this);
+    _load(syncFirst: true);
+  }
 
-  Future<void> _load() async {
+  @override
+  void dispose() {
+    dataVersionNotifier.removeListener(_load);
+    _tabCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _load({bool syncFirst = false}) async {
+    if (syncFirst) await BalanceSyncService.refreshNow();
     final d = await SaveManager.loadPlayerData();
     final col = await SaveManager.loadCollection();
     final h = await SaveManager.loadMatchHistory();

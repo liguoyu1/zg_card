@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:warring_states_card/core/asset_style.dart';
+import 'package:warring_states_card/data/data_version.dart';
 import 'package:warring_states_card/domain/models/roguelite_run.dart';
 
 /// 存档管理器 - 基于 SharedPreferences，每套图独立存档 key，并按登录账号隔离
@@ -57,6 +58,7 @@ class SaveManager {
     await prefs.setString(_playerDataKey, jsonEncode(data.toJson()));
     await prefs.setInt(_saveTsKey, DateTime.now().millisecondsSinceEpoch);
     onPlayerDataSaved?.call(data);
+    bumpDataVersion();
   }
 
   static Future<PlayerData?> loadPlayerData() async {
@@ -71,6 +73,7 @@ class SaveManager {
     await prefs.setString(_collectionKey, jsonEncode(c.toJson()));
     await prefs.setInt(_saveTsKey, DateTime.now().millisecondsSinceEpoch);
     onCollectionSaved?.call(c);
+    bumpDataVersion();
   }
 
   /// 本地存档最后修改时间戳（版本比较用）
@@ -89,6 +92,7 @@ class SaveManager {
   static Future<void> saveMatchHistory(List<MatchRecord> records) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_matchHistoryKey, jsonEncode(records.map((r) => r.toJson()).toList()));
+    bumpDataVersion();
   }
 
   static Future<List<MatchRecord>> loadMatchHistory() async {
@@ -105,10 +109,43 @@ class SaveManager {
     await saveMatchHistory(history);
   }
 
+  /// 用户操作明细（事件流）：只增不改、仅存本地，与云同步的状态资产分开保存。
+  /// 状态（余额/卡/英雄）= 明细的总结，可通过 addEvent 追溯
+  static const String _eventsKey = 'local_events';
+
+  static Future<List<Map<String, dynamic>>> loadEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    final str = prefs.getString(_eventsKey);
+    if (str == null) return [];
+    try {
+      return (jsonDecode(str) as List)
+          .map((j) => Map<String, dynamic>.from(j as Map))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /// 追加一条用户操作明细（购买/兑换/抽卡等），失败不影响主要流程
+  static Future<void> addEvent(Map<String, dynamic> ev) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final events = await loadEvents();
+      events.add({
+        'id': DateTime.now().microsecondsSinceEpoch.toString(),
+        'at': DateTime.now().toIso8601String(),
+        ...ev,
+      });
+      // 仅保留最近 500 条防御性上限
+      if (events.length > 500) events.removeRange(0, events.length - 500);
+      await prefs.setString(_eventsKey, jsonEncode(events));
+    } catch (_) {}
+  }
+
+  /// 资产存档导出（PlayerData + Collection）——对局记录只存本地，不进云端
   static Future<String> exportSave() async => jsonEncode({
     'playerData': (await loadPlayerData())?.toJson(),
     'collection': (await loadCollection())?.toJson(),
-    'matchHistory': (await loadMatchHistory()).map((r) => r.toJson()).toList(),
     'exportTime': DateTime.now().toIso8601String(),
   });
 
@@ -116,9 +153,7 @@ class SaveManager {
     final data = jsonDecode(jsonStr);
     if (data['playerData'] != null) await savePlayerData(PlayerData.fromJson(data['playerData']));
     if (data['collection'] != null) await saveCollection(Collection.fromJson(data['collection']));
-    if (data['matchHistory'] != null) {
-      await saveMatchHistory((data['matchHistory'] as List).map((j) => MatchRecord.fromJson(j)).toList());
-    }
+    // 对局记录仅本地，不随云端资产导入/覆盖
   }
 
   static Future<void> clearAll() async {
@@ -127,6 +162,7 @@ class SaveManager {
     await prefs.remove(_collectionKey);
     await prefs.remove(_matchHistoryKey);
     await prefs.remove(_saveVersionKey);
+    bumpDataVersion();
   }
 
   // Roguelite 存读（也按风格隔离）

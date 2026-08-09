@@ -7,6 +7,7 @@ import '../../data/persistence/save_manager.dart';
 import '../../l10n/locale_service.dart';
 import '../../domain/models/card.dart' as cm;
 import '../../domain/services/card_data_provider.dart';
+import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/card_pool.dart';
 import '../../shared/widgets/queued_asset_image.dart';
 
@@ -33,12 +34,12 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
     _tc = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addObserver(this);
     dataVersionNotifier.addListener(_load);
-    _load();
+    _load(syncFirst: true);
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState s) {
-    if (s == AppLifecycleState.resumed) _load();
+    if (s == AppLifecycleState.resumed) _load(syncFirst: true);
   }
 
   @override
@@ -49,7 +50,8 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
     super.dispose();
   }
 
-  Future<void> _load() async {
+  Future<void> _load({bool syncFirst = false}) async {
+    if (syncFirst) await BalanceSyncService.refreshNow();
     final pd = await SaveManager.loadPlayerData();
     final ownedIds = pd?.unlockedCards ?? [];
     final owned = Set<String>.from(ownedIds);

@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warring_states_card/core/theme/app_theme.dart';
 import 'package:warring_states_card/data/card_image_service.dart';
+import 'package:warring_states_card/data/data_version.dart';
 import 'package:warring_states_card/data/persistence/save_manager.dart';
+import 'package:warring_states_card/domain/services/balance_sync_service.dart';
 import 'package:warring_states_card/domain/models/card.dart' as domain;
 import 'package:warring_states_card/domain/models/hero.dart' as h;
 import 'package:warring_states_card/domain/services/hero_data_provider.dart' as provider;
@@ -32,10 +34,18 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    dataVersionNotifier.addListener(_load);
+    _load(syncFirst: true);
   }
 
-  Future<void> _load() async {
+  @override
+  void dispose() {
+    dataVersionNotifier.removeListener(_load);
+    super.dispose();
+  }
+
+  Future<void> _load({bool syncFirst = false}) async {
+    if (syncFirst) await BalanceSyncService.refreshNow();
     final pd = await SaveManager.loadPlayerData();
     if (pd == null) { if (mounted) setState(() => _loading = false); return; }
     var ids = Set<String>.from(pd.unlockedHeroes);
