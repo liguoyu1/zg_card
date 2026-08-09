@@ -59,6 +59,7 @@ model Transaction {
   balanceAfter Int
   detail      String?  // 购买钻石/兑换金币/购买卡牌
   externalId  String?  // 苹果/谷歌收据ID
+  platform    String?
   createdAt   DateTime @default(now()) @map("created_at")
 
   player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)

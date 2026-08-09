@@ -75,6 +75,10 @@
   "result_draw": "平局",
   
   "ok": "确定",
+  "shop.xsolla_success": "购买成功",
+  "shop.xsolla_success_desc": "钻石已到账，返回商店查看余额",
+  "shop.xsolla_failed": "支付未完成",
+  "shop.xsolla_failed_desc": "钻石未到账，可稍后在商店重试",
   "cancel": "取消",
   "confirm": "确认",
   "close": "关闭"

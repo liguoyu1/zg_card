@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,8 +8,10 @@ import '../../core/asset_style.dart';
 import '../../core/audio/audio_manager.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/persistence/save_manager.dart';
+import '../../data/xsolla_payment_service.dart';
 import '../../domain/models/card.dart' as domain;
 import '../../domain/services/card_data_provider.dart';
+import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/card_pool.dart';
 import '../../domain/services/purchase_service.dart';
 import '../../l10n/locale_service.dart';
@@ -34,10 +37,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _init() async {
-    // 恢复登录态
-    if (mounted) ref.read(authProvider.notifier).loadSession();
-    final d = await SaveManager.loadPlayerData();
+    // 先用本地存档渲染，避免账号同步期间空白/初始状态停留
+    var d = await SaveManager.loadPlayerData();
     if (mounted) setState(() { _cachedData = d; _loading = false; });
+    // 恢复登录态并等待首次云端同步完成，同步后刷新为账号最新资产
+    await ref.read(authProvider.notifier).loadSession();
+    await BalanceSyncService.waitForInitialSync();
+    d = await SaveManager.loadPlayerData();
+    if (mounted && d != null) setState(() { _cachedData = d; });
+    // Xsolla 支付返回：记录状态并回商店页展示结果弹窗
+    final xsollaStatus = kIsWeb ? XsollaPaymentService.consumeReturnStatus() : null;
+    if (xsollaStatus != null && ref.read(authProvider) != null) {
+      XsollaPaymentService.pendingReturnStatus = xsollaStatus;
+      if (mounted) context.go('/shop/shop');
+    }
     if (d != null && d.firstRun) {
       final pd = d.copyWith(firstRun: false);
       await SaveManager.savePlayerData(pd);

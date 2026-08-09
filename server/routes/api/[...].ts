@@ -1,11 +1,12 @@
-import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive } from '../../utils/database';
+import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency } from '../../utils/database';
 import { joinMatchQueue, leaveMatchQueue, checkMatchStatus, submitGameAction, pollGameActions } from '../../utils/database';
-import { createPaymentToken, verifyWebhookSignature, handleUserValidation, GEM_SKU_MAP } from '../../utils/xsolla';
+import { createPaymentToken, verifyWebhookSignature, handleUserValidation, resolveXsollaAmount, GEM_SKU_MAP } from '../../utils/xsolla';
 
 export default defineEventHandler(async (event) => {
   const method = event.method;
   const path = event.path;
-  console.log('[API]', method, path);
+  // 请求日志：默认开（测试阶段）；上线后设 LOG_REQUESTS=false 关闭；错误日志始终保留
+  if (process.env.LOG_REQUESTS !== 'false') console.log('[API]', method, path);
   
   setResponseHeaders(event, {
     'Access-Control-Allow-Origin': '*',
@@ -101,6 +102,15 @@ export default defineEventHandler(async (event) => {
       return await verifyIAPReceipt(odID, receipt, productId, transactionId);
     }
 
+    if (method === 'POST' && path === '/api/balance/exchange') {
+      const auth = getRequestHeader(event, 'authorization');
+      if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };
+      const token = verifyToken(auth.slice(7));
+      if (!token) return { error: 'Invalid token' };
+      const { gemsCost, goldReward } = await readBody(event);
+      return await exchangeCurrency(token.playerId, Number(gemsCost) || 0, Number(goldReward) || 0);
+    }
+
     if (method === 'POST' && path.endsWith('/balance/sync')) {
       const auth = getRequestHeader(event, 'authorization');
       if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };
@@ -120,6 +130,24 @@ export default defineEventHandler(async (event) => {
       const { odID, save } = await readBody(event);
       if (odID !== token.playerId) return { error: 'Forbidden' };
       return await savePlayerArchive(odID, save);
+    }
+
+    if (method === 'POST' && (path === '/api/shop/buy-card' || path === '/api/shop/buy-hero')) {
+      const auth = getRequestHeader(event, 'authorization');
+      if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };
+      const token = verifyToken(auth.slice(7));
+      if (!token) return { error: 'Invalid token' };
+      const { assetId, cost } = await readBody(event);
+      if (!assetId || typeof assetId !== 'string') return { error: 'assetId required' };
+      return await purchasePlayerAsset(token.playerId, path.endsWith('/buy-hero') ? 'hero' : 'card', assetId, Number(cost) || 0);
+    }
+
+    if (method === 'GET' && path === '/api/save/version') {
+      const auth = getRequestHeader(event, 'authorization');
+      if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };
+      const token = verifyToken(auth.slice(7));
+      if (!token) return { error: 'Invalid token' };
+      return await getPlayerSaveVersion(token.playerId);
     }
 
     if (method === 'GET' && path.endsWith('/save')) {
@@ -185,13 +213,17 @@ export default defineEventHandler(async (event) => {
       }
 
       const sig = getRequestHeader(event, 'authorization') || '';
-      if (!verifyWebhookSignature(rawBody, sig)) {
+      const sigOk = verifyWebhookSignature(rawBody, sig);
+      console.log('[Xsolla][webhook]', 'notification=', rawBody.slice(0, 60), 'sigOk=', sigOk);
+      if (!sigOk) {
+        console.error('[Xsolla][webhook] INVALID_SIGNATURE from', sig.slice(0, 24), '...');
         setResponseStatus(event, 400);
         return { error: { code: 'INVALID_SIGNATURE', message: 'Signature mismatch' } };
       }
 
       const data = JSON.parse(rawBody);
       const nt = data.notification_type;
+      console.log('[Xsolla][webhook] type=', nt, 'user=', data.user?.id?.value ?? data.user?.id ?? data.user?.external_id);
 
       if (nt === 'user_validation') {
         const result = await handleUserValidation(data, (id) => getPlayerProfile(id));
@@ -200,15 +232,21 @@ export default defineEventHandler(async (event) => {
       }
 
       if (nt === 'order_paid' || nt === 'payment') {
-        const odID = data.user?.id;
-        const sku = data.purchase?.virtual_currency?.sku;
-        const txnId = data.transaction?.id || data.notification_id;
+        const odID = data.user?.id?.value ?? data.user?.id ?? data.user?.external_id;
+        const txnId = data.transaction?.id ?? data.billing?.transaction?.id ?? data.notification_id;
+        if (!txnId) {
+          console.error('[Xsolla][order_paid] missing transaction id, return 500 for retry');
+          setResponseStatus(event, 500);
+          return { error: 'Missing transaction id' };
+        }
 
-        if (odID && sku && GEM_SKU_MAP[sku]) {
-          const amount = GEM_SKU_MAP[sku];
+        // 套餐模式：商店已售数量优先；目录模式：SKU 映射
+        const amount = resolveXsollaAmount(data);
+        if (odID && amount > 0) {
           // 同步处理：失败返回 500，Xsolla 会重试；成功返回 204
           try {
             const result = await addGemsFromXsolla(odID, amount, txnId);
+            console.log('[Xsolla][order_paid]', 'odID=', odID, 'amount=', amount, 'txn=', txnId, 'result=', JSON.stringify(result));
             if ('error' in result && result.error) {
               console.error('[Xsolla] addGems error:', result.error);
               setResponseStatus(event, 500);

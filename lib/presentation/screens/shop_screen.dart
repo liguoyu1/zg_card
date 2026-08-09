@@ -14,6 +14,7 @@ import '../../data/persistence/save_manager.dart';
 import '../../domain/models/card.dart' as cm;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/hero_data_provider.dart';
+import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/purchase_service.dart';
 import '../../data/xsolla_payment_service.dart';
 import '../../l10n/locale_service.dart';
@@ -36,12 +37,38 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    _load(syncFirst: true);
     dataVersionNotifier.addListener(_load);
     PurchaseService.I.ensureReady().then((_) { if (mounted) setState(() {}); });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _handleXsollaReturn());
   }
 
-  Future<void> _load() async {
+  /// Xsolla 支付跳回：弹窗展示结果 + 轮询服务端补钻
+  Future<void> _handleXsollaReturn() async {
+    final status = XsollaPaymentService.takeReturnStatus();
+    if (status == null || !mounted) return;
+    final ok = status.toLowerCase().contains('success');
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(ok ? LocaleService.I.t('shop.xsolla_success') : LocaleService.I.t('shop.xsolla_failed')),
+        content: Text(ok
+            ? LocaleService.I.t('shop.xsolla_success_desc')
+            : LocaleService.I.t('shop.xsolla_failed_desc')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(LocaleService.I.t('ok')),
+          ),
+        ],
+      ),
+    );
+    final auth = ref.read(authProvider);
+    if (ok && auth != null) await _pollXsollaBalance(auth.playerId);
+  }
+
+  Future<void> _load({bool syncFirst = false}) async {
+    if (syncFirst) await BalanceSyncService.refreshNow(); // 在线：等云端同步完成后渲染
     final d = await SaveManager.loadPlayerData();
     _heroShopCache = 'hs_${_cycleKey(8)}';
     if (mounted) setState(() { _data = d; _loading = false; });
@@ -59,28 +86,6 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   Future<void> _refresh() async {
     final d = await SaveManager.loadPlayerData();
     if (mounted) setState(() => _data = d);
-  }
-
-  Future<bool> _spendGold(int a) async {
-    if (!await _requireLogin()) return false;
-    if (_data == null || _data!.gold < a) { _snack(LocaleService.I.t('shop.gold_insufficient_short')); return false; }
-    final odID = ref.read(authProvider)?.playerId ?? '';
-    final ok = await BalanceService.spendGold(odID, a, detail: '消费$a金币');
-    if (!ok) { _snack(LocaleService.I.t('shop.op_failed')); return false; }
-    _data = _data!.copyWith(gold: _data!.gold - a);
-    await SaveManager.savePlayerData(_data!);
-    bumpDataVersion(); await _refresh(); return true;
-  }
-
-  Future<bool> _spendGems(int a) async {
-    if (!await _requireLogin()) return false;
-    if (_data == null || _data!.gems < a) { _snack(LocaleService.I.t('shop.gems_insufficient_short')); return false; }
-    final odID = ref.read(authProvider)?.playerId ?? '';
-    final ok = await BalanceService.spendGems(odID, a, detail: '消费$a钻石');
-    if (!ok) { _snack(LocaleService.I.t('shop.op_failed')); return false; }
-    _data = _data!.copyWith(gems: _data!.gems - a);
-    await SaveManager.savePlayerData(_data!);
-    bumpDataVersion(); await _refresh(); return true;
   }
 
   void _snack(String s) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s))); }
@@ -120,14 +125,16 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     return false;
   }
 
-  // ===== 单卡直购 =====
+  // ===== 单卡直购（服务端事务：扣款+入档，返回权威状态） =====
   void _buySingleCard(cm.Card card) async {
     final price = _cardPrice(card);
-    if (!await _spendGold(price)) return;
-    final ids = [..._data!.unlockedCards, card.id];
-    await SaveManager.savePlayerData(_data!.copyWith(unlockedCards: ids));
-    bumpDataVersion();
-    _snack(LocaleService.I.t('shop.purchase_success_name', args: {'name': card.name}));
+    final res = await _purchase('card', card.id, price);
+    if (res == null) return;
+    await SaveManager.addEvent({
+      'type': 'card_purchase',
+      'data': {'cardId': card.id, 'cost': price, 'currency': 'gold'},
+    });
+    _snack(res.error ?? LocaleService.I.t('shop.purchase_success_name', args: {'name': card.name}));
     await _refresh();
   }
 
@@ -197,6 +204,10 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       final sku = _gemProductId(ga);
       final ok = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
       if (ok) {
+        await SaveManager.addEvent({
+          'type': 'gem_purchase',
+          'data': {'productId': sku, 'channel': 'xsolla', 'status': 'opened'},
+        });
         _snack(LocaleService.I.t('shop.payment_opened'));
         await _pollXsollaBalance(auth.playerId);
         return;
@@ -222,6 +233,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           gold: d.gold + (goldDiff > 0 ? goldDiff : 0),
         );
         await SaveManager.savePlayerData(_data!);
+        if (gemDiff > 0) {
+          await SaveManager.addEvent({
+            'type': 'gem_purchase',
+            'data': {'gems': gemDiff, 'channel': 'xsolla', 'status': 'credited'},
+          });
+        }
         bumpDataVersion();
         await _refresh();
         if (gemDiff > 0) {
@@ -257,6 +274,10 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       if (_data != null && !resp.alreadyProcessed) {
         _data = _data!.copyWith(gems: _data!.gems + resp.gained);
         await SaveManager.savePlayerData(_data!);
+        await SaveManager.addEvent({
+          'type': 'gem_purchase',
+          'data': {'productId': result.productId, 'gems': resp.gained, 'channel': 'iap'},
+        });
       }
       bumpDataVersion();
       await _refresh();
@@ -307,30 +328,73 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         () => _buyGem(diamonds));
   }
 
-  // 钻石→金币：10:1
-  Future<void> _buyGoldBundle(int gemsCost, int goldReward) async {
+  // 钻石→金币：10:1（服务端单事务：扣钻石+发金币）
+  Future<void> _buyGoldExchange(int gemsCost, int goldReward) async {
     if (!await _requireLogin()) return;
-    final odID = ref.read(authProvider)?.playerId ?? '';
-    if (!await _spendGems(gemsCost)) return;
-    final ok = await BalanceService.addGold(odID, goldReward, detail: '兑换$goldReward金币');
-    if (ok) {
-      _data = _data!.copyWith(gold: _data!.gold + goldReward);
-      await SaveManager.savePlayerData(_data!);
-      bumpDataVersion(); await _refresh();
-      _snack(LocaleService.I.t('shop.exchange_success', args: {'gold': '$goldReward'}));
-    } else {
-      _snack(LocaleService.I.t('shop.exchange_failed'));
+    final auth = ref.read(authProvider);
+    if (auth == null) return;
+    if (_data == null || _data!.gems < gemsCost) {
+      _snack(LocaleService.I.t('shop.gems_insufficient_short'));
+      return;
     }
+    final res = await BalanceService.exchangeGemsToGold(
+      auth.playerId, auth.token, gemsCost: gemsCost, goldReward: goldReward,
+    );
+    if (res == null) { _snack(LocaleService.I.t('shop.exchange_failed')); return; }
+    if (!res.ok) {
+      _snack(res.error ?? LocaleService.I.t('shop.exchange_failed'));
+      // 失败时用服务端余额回读校准（可能并发冲突，提示重试）
+      await _refresh();
+      return;
+    }
+    _data = _data!.copyWith(gems: res.gems, gold: res.gold);
+    await SaveManager.savePlayerData(_data!);
+    await SaveManager.addEvent({
+      'type': 'gold_exchange',
+      'data': {'gemsCost': gemsCost, 'gold': goldReward},
+    });
+    bumpDataVersion(); await _refresh();
+    _snack(LocaleService.I.t('shop.exchange_success', args: {'gold': '$goldReward'}));
   }
 
   void _buyHero(String hid, int cost) async {
     if (_data!.unlockedHeroes.contains(hid)) return;
-    if (_data!.gold >= cost) {
-      await SaveManager.savePlayerData(_data!.copyWith(gold: _data!.gold - cost,
-          unlockedHeroes: [..._data!.unlockedHeroes, hid]));
-      bumpDataVersion();
-    } else { _snack(LocaleService.I.t('shop.gold_insufficient_short')); return; }
-    await _refresh(); _snack(LocaleService.I.t('shop.buy_success'));
+    final res = await _purchase('hero', hid, cost);
+    if (res == null) return;
+    await SaveManager.addEvent({
+      'type': 'hero_purchase',
+      'data': {'heroId': hid, 'cost': cost, 'currency': 'gold'},
+    });
+    _snack(res.error ?? LocaleService.I.t('shop.buy_success'));
+    await _refresh();
+  }
+
+  /// 统一购买入口：服务端事务处理当前这笔购买，成功后用返回的权威状态落存本地
+  Future<({String? error})?> _purchase(String kind, String assetId, int cost) async {
+    if (!await _requireLogin()) return (error: null);
+    final auth = ref.read(authProvider);
+    if (auth == null) return (error: null);
+    if (_data == null || _data!.gold < cost) {
+      _snack(LocaleService.I.t('shop.gold_insufficient_short'));
+      return (error: null);
+    }
+    final res = await BalanceService.purchasePlayerAsset(
+      auth.playerId, auth.token,
+      kind: kind, assetId: assetId, cost: cost,
+    );
+    if (res == null) { _snack(LocaleService.I.t('shop.op_failed')); return (error: null); }
+    if (!res.ok) {
+      _snack(res.error ?? LocaleService.I.t('shop.op_failed'));
+      return (error: res.error);
+    }
+    // 服务端返回的余额与解锁列表为权威状态
+    await SaveManager.savePlayerData(_data!.copyWith(
+      gold: res.gold,
+      unlockedCards: kind == 'card' ? res.unlockedCards : _data!.unlockedCards,
+      unlockedHeroes: kind == 'hero' ? res.unlockedHeroes : _data!.unlockedHeroes,
+    ));
+    bumpDataVersion();
+    return (error: null);
   }
 
   int _heroPrice(String hid) {
@@ -380,11 +444,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           // === 金币 ===
           _foldable(LocaleService.I.t('shop.gold_title'), _goldExpanded, (v) => setState(() => _goldExpanded = v), LocaleService.I.t('shop.gold_exchange')),
           if (_goldExpanded) ...[
-            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '1000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '100'}), const Text('100💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldBundle(100, 1000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '1000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '100'}), const Text('100💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(100, 1000)),
             const SizedBox(height: 4),
-            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '5000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '500'}), const Text('500💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldBundle(500, 5000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '5000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '500'}), const Text('500💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(500, 5000)),
             const SizedBox(height: 4),
-            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '10000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '1000'}), const Text('1000💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldBundle(1000, 10000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '10000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '1000'}), const Text('1000💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(1000, 10000)),
           ],
           const SizedBox(height: 16),
 

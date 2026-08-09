@@ -75,6 +75,10 @@
   "result_draw": "Draw",
   
   "ok": "OK",
+  "shop.xsolla_success": "Purchase successful",
+  "shop.xsolla_success_desc": "Diamonds added, check balance in the shop",
+  "shop.xsolla_failed": "Payment incomplete",
+  "shop.xsolla_failed_desc": "Diamonds not added, retry later in the shop",
   "cancel": "Cancel",
   "confirm": "Confirm",
   "close": "Close"

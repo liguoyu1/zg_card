@@ -395,7 +395,7 @@ async function _addBalance(odID: string, currency: string, amount: number, detai
       data: { [field]: newBalance, balanceVersion: { increment: 1 } },
     }),
     prisma.transaction.create({
-      data: { playerId: odID, type: txType, currency, amount, balanceAfter: newBalance, detail, externalId },
+      data: { playerId: odID, type: txType, currency, amount, balanceAfter: newBalance, detail, externalId, platform: 'web' },
     }),
   ]);
 }
@@ -430,7 +430,7 @@ export async function addGemsFromXsolla(odID: string, amount: number, externalId
         data: { gems: newBalance, balanceVersion: { increment: 1 } },
       }),
       prisma.transaction.create({
-        data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount, balanceAfter: newBalance, detail: 'Xsolla购买', externalId },
+        data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount, balanceAfter: newBalance, detail: 'Xsolla购买', externalId, platform: 'xsolla' },
       }),
     ]);
     return { success: true, gems: newBalance };
@@ -475,7 +475,7 @@ export async function verifyIAPReceipt(odID: string, receipt: string, productId:
         data: { gems: newBalance, balanceVersion: { increment: 1 } },
       }),
       prisma.transaction.create({
-        data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount, balanceAfter: newBalance, detail: 'Apple IAP', externalId: txId },
+        data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount, balanceAfter: newBalance, detail: 'Apple IAP', externalId: txId, platform: 'ios' },
       }),
     ]);
     return { success: true, gems: newBalance, gained: amount };
@@ -495,12 +495,41 @@ export async function addGems(odID: string, amount: number, detail: string = '',
         data: { gems: newBalance, balanceVersion: { increment: 1 } },
       }),
       prisma.transaction.create({
-        data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount, balanceAfter: newBalance, detail: detail || '购买钻石', externalId: receiptId },
+        data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount, balanceAfter: newBalance, detail: detail || '购买钻石', externalId: receiptId, platform: receiptId ? 'ios' : 'other' },
       }),
     ]);
     return { success: true, gems: newBalance, balanceVersion: player.balanceVersion + 1 };
   } catch (e: any) {
     return { error: e.message || 'add gems failed' };
+  }
+}
+
+/** 钻石→金币兑换（单事务：扣钻石+发金币+双流水），并发冲突时返回 error 由客户端重试 */
+export async function exchangeCurrency(odID: string, gemsCost: number, goldReward: number) {
+  try {
+    const player = await prisma.player.findUnique({ where: { id: odID } });
+    if (!player) return { error: 'player not found' };
+    const cost = Math.max(0, Math.floor(Number(gemsCost) || 0));
+    const reward = Math.max(0, Math.floor(Number(goldReward) || 0));
+    if (player.gems < cost) return { error: 'insufficient gems', gems: player.gems };
+    if (reward <= 0 || cost <= 0) return { error: 'invalid amount' };
+    const newGems = player.gems - cost;
+    const newGold = player.gold + reward;
+    await prisma.$transaction([
+      prisma.player.update({
+        where: { id: odID, balanceVersion: player.balanceVersion },
+        data: { gems: newGems, gold: newGold, balanceVersion: { increment: 1 } },
+      }),
+      prisma.transaction.create({
+        data: { playerId: odID, type: 'spend_gems', currency: 'gem', amount: -cost, balanceAfter: newGems, detail: `兑换${reward}金币`, platform: 'web' },
+      }),
+      prisma.transaction.create({
+        data: { playerId: odID, type: 'earn_gold', currency: 'gold', amount: reward, balanceAfter: newGold, detail: '钻石兑换', platform: 'web' },
+      }),
+    ]);
+    return { success: true, gems: newGems, gold: newGold, balanceVersion: player.balanceVersion + 1 };
+  } catch (e: any) {
+    return { error: e.message || 'exchange failed' };
   }
 }
 
@@ -516,7 +545,7 @@ export async function syncBalance(odID: string, gems: number, gold: number) {
       ops.push(
         prisma.player.update({ where: { id: odID }, data: { gems: { increment: gemDelta } } }),
         prisma.transaction.create({
-          data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount: gemDelta, balanceAfter: player.gems + gemDelta, detail: '客户端同步', externalId: `sync:${odID}:gem:${suffix}` },
+          data: { playerId: odID, type: 'earn_gems', currency: 'gem', amount: gemDelta, balanceAfter: player.gems + gemDelta, detail: '客户端同步', externalId: `sync:${odID}:gem:${suffix}`, platform: 'web' },
         }),
       );
     }
@@ -525,7 +554,7 @@ export async function syncBalance(odID: string, gems: number, gold: number) {
       ops.push(
         prisma.player.update({ where: { id: odID }, data: { gold: { increment: goldDelta } } }),
         prisma.transaction.create({
-          data: { playerId: odID, type: 'earn_gold', currency: 'gold', amount: goldDelta, balanceAfter: player.gold + goldDelta, detail: '客户端同步', externalId: `sync:${odID}:gold:${suffix}` },
+          data: { playerId: odID, type: 'earn_gold', currency: 'gold', amount: goldDelta, balanceAfter: player.gold + goldDelta, detail: '客户端同步', externalId: `sync:${odID}:gold:${suffix}`, platform: 'web' },
         }),
       );
     }
@@ -536,7 +565,65 @@ export async function syncBalance(odID: string, gems: number, gold: number) {
   }
 }
 
-/** 保存玩家完整存档（PlayerData + Collection + 战斗历史） */
+/** 购买卡牌/英雄：服务端事务处理（扣款+入档），返回权威状态供客户端落存 */
+export async function purchasePlayerAsset(
+  odID: string,
+  kind: 'card' | 'hero',
+  assetId: string,
+  cost: number,
+) {
+  try {
+    const player = await prisma.player.findUnique({ where: { id: odID } });
+    if (!player) return { error: 'player not found' };
+    const price = Math.max(0, Math.floor(Number(cost) || 0));
+    if (player.gold < price) return { error: 'insufficient gold', gold: player.gold };
+
+    const save = await prisma.playerSave.findUnique({ where: { playerId: odID } });
+    const data = (save?.data as any) || {};
+    const pd = data.playerData && typeof data.playerData === 'object' ? { ...data.playerData } : {};
+    const key = kind === 'card' ? 'unlockedCards' : 'unlockedHeroes';
+    const list: string[] = Array.isArray(pd[key]) ? [...(pd[key] as string[])] : [];
+    if (list.includes(assetId)) return { error: 'already owned', gold: player.gold };
+    list.push(assetId);
+    pd[key] = list;
+    const newSave = { ...data, playerData: pd };
+
+    const newGold = player.gold - price;
+    await prisma.$transaction([
+      prisma.player.update({
+        where: { id: odID, balanceVersion: player.balanceVersion },
+        data: { gold: newGold, balanceVersion: { increment: 1 } },
+      }),
+      prisma.transaction.create({
+        data: {
+          playerId: odID,
+          type: 'spend_gold',
+          currency: 'gold',
+          amount: -price,
+          balanceAfter: newGold,
+          detail: kind === 'card' ? `购买卡牌 ${assetId}` : `购买英雄 ${assetId}`,
+          platform: 'web',
+        },
+      }),
+      prisma.playerSave.upsert({
+        where: { playerId: odID },
+        update: { data: newSave },
+        create: { playerId: odID, data: newSave },
+      }),
+    ]);
+    return {
+      success: true,
+      gold: newGold,
+      balanceVersion: player.balanceVersion + 1,
+      unlockedCards: (pd.unlockedCards as string[]) ?? [],
+      unlockedHeroes: (pd.unlockedHeroes as string[]) ?? [],
+    };
+  } catch (e: any) {
+    return { error: e.message || 'purchase asset failed' };
+  }
+}
+
+/** 保存玩家存档（PlayerData + Collection + 战斗历史） */
 export async function savePlayerArchive(odID: string, data: any) {
   try {
     if (!data || typeof data !== 'object') return { error: 'Invalid save data' };
@@ -552,14 +639,27 @@ export async function savePlayerArchive(odID: string, data: any) {
       await prisma.playerSave.deleteMany({ where: { playerId: odID } });
       return { success: true, cleared: true };
     }
-    await prisma.playerSave.upsert({
+    const saved = await prisma.playerSave.upsert({
       where: { playerId: odID },
       update: { data },
       create: { playerId: odID, data },
     });
-    return { success: true };
+    return { success: true, updatedAt: saved.updatedAt.toISOString() };
   } catch (e: any) {
     return { error: e.message || 'save archive failed' };
+  }
+}
+
+/** 读取玩家完整存档版本（轻量轮询用，只查 updatedAt） */
+export async function getPlayerSaveVersion(odID: string) {
+  try {
+    const row = await prisma.playerSave.findUnique({
+      where: { playerId: odID },
+      select: { updatedAt: true },
+    });
+    return { success: true, updatedAt: row ? row.updatedAt.toISOString() : null };
+  } catch (e: any) {
+    return { error: e.message || 'load save version failed' };
   }
 }
 
@@ -586,7 +686,7 @@ export async function spendGems(odID: string, amount: number, detail: string = '
         data: { gems: newBalance, balanceVersion: { increment: 1 } },
       }),
       prisma.transaction.create({
-        data: { playerId: odID, type: 'spend_gems', currency: 'gem', amount: -amount, balanceAfter: newBalance, detail },
+        data: { playerId: odID, type: 'spend_gems', currency: 'gem', amount: -amount, balanceAfter: newBalance, detail, platform: 'web' },
       }),
     ]);
     return { success: true, gems: newBalance, balanceVersion: player.balanceVersion + 1 };
@@ -606,7 +706,7 @@ export async function addGold(odID: string, amount: number, detail: string = '')
         data: { gold: newBalance, balanceVersion: { increment: 1 } },
       }),
       prisma.transaction.create({
-        data: { playerId: odID, type: 'earn_gold', currency: 'gold', amount, balanceAfter: newBalance, detail },
+        data: { playerId: odID, type: 'earn_gold', currency: 'gold', amount, balanceAfter: newBalance, detail, platform: 'web' },
       }),
     ]);
     return { success: true, gold: newBalance, balanceVersion: player.balanceVersion + 1 };
@@ -627,7 +727,7 @@ export async function spendGold(odID: string, amount: number, detail: string = '
         data: { gold: newBalance, balanceVersion: { increment: 1 } },
       }),
       prisma.transaction.create({
-        data: { playerId: odID, type: 'spend_gold', currency: 'gold', amount: -amount, balanceAfter: newBalance, detail },
+        data: { playerId: odID, type: 'spend_gold', currency: 'gold', amount: -amount, balanceAfter: newBalance, detail, platform: 'web' },
       }),
     ]);
     return { success: true, gold: newBalance, balanceVersion: player.balanceVersion + 1 };

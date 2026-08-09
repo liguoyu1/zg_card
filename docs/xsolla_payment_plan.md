@@ -24,9 +24,7 @@
    - 修复：改为**同步处理**；失败返回 500（Xsolla 会重试）；成功返回 204。加 Redis NX 锁防并发重试双发（参考 `verifyIAPReceipt`）。
 
 2. **webhook 签名算法需核对（P0）**
-   - 现状：`sha1(rawBody + secret)` 拼接式哈希。
-   - Xsolla 官方算法为 **HMAC-SHA1**（header `Authorization: Signature <hex>`，`hmac_sha1(secret, body)`）。
-   - 修复：改用 `crypto.createHmac('sha1', secret)` 计算，并加测试。
+   - 现状：`sha1(rawBody + secret)` 拼接式哈希（官方文档算法），`verifyWebhookSignature` 兼容两种算法，并加测试。
 
 3. **同 SKU 双平台钻石数不一致（P1）**
    - `GEM_SKU_MAP`（Xsolla）：gem_300=300；`IAP_GEM_MAP`（Apple）：gem_300=350（含赠送）。
