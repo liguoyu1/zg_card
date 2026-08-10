@@ -21,12 +21,19 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   @override
   void initState() {
     super.initState();
+    // 登录态变化后自动刷新（如支付跳回、登录恢复完成）
+    ref.listenManual(authProvider, (_, __) => _load());
     _load();
   }
 
   Future<void> _load() async {
-    final auth = ref.read(authProvider);
-    if (auth == null) { setState(() => _loading = false); return; }
+    // 支付/登录返回后冷启动：等待登录态恢复（至多 3s），避免误显示"暂无交易记录"
+    var auth = ref.read(authProvider);
+    for (var i = 0; i < 10 && auth == null; i++) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      auth = ref.read(authProvider);
+    }
+    if (auth == null) { if (mounted) setState(() => _loading = false); return; }
     final list = await BalanceService.getTransactions(auth.playerId, days: _days);
     if (!mounted) return;
     setState(() { _txns = list; _loading = false; });
