@@ -185,8 +185,8 @@ export default defineEventHandler(async (event) => {
 
     if (method === 'GET' && path.includes('/balance/transactions/')) {
       const odID = path.split('/').pop()!;
-      const days = Number(getQuery(event).days) || 3;
-      return await getTransactions(odID, Math.min(Math.max(days, 1), 30));
+      const days = Number(getQuery(event).days) || 0;
+      return await getTransactions(odID, Math.min(Math.max(days, 0), 3650));
     }
 
     // === Xsolla 支付 ===
@@ -223,7 +223,7 @@ export default defineEventHandler(async (event) => {
 
       const data = JSON.parse(rawBody);
       const nt = data.notification_type;
-      console.log('[Xsolla][webhook] type=', nt, 'user=', data.user?.id?.value ?? data.user?.id ?? data.user?.external_id);
+      console.log('[Xsolla][webhook] type=', nt, 'user=', data.user?.id?.value ?? data.user?.id ?? data.user?.external_id, 'payload=', JSON.stringify(data).slice(0, 1200));
 
       if (nt === 'user_validation') {
         const result = await handleUserValidation(data, (id) => getPlayerProfile(id));
@@ -242,21 +242,25 @@ export default defineEventHandler(async (event) => {
 
         // 套餐模式：商店已售数量优先；目录模式：SKU 映射
         const amount = resolveXsollaAmount(data);
-        if (odID && amount > 0) {
-          // 同步处理：失败返回 500，Xsolla 会重试；成功返回 204
-          try {
-            const result = await addGemsFromXsolla(odID, amount, txnId);
-            console.log('[Xsolla][order_paid]', 'odID=', odID, 'amount=', amount, 'txn=', txnId, 'result=', JSON.stringify(result));
-            if ('error' in result && result.error) {
-              console.error('[Xsolla] addGems error:', result.error);
-              setResponseStatus(event, 500);
-              return { error: result.error };
-            }
-          } catch (e: any) {
-            console.error('[Xsolla] addGems exception:', e);
+        if (!odID || amount <= 0) {
+          // 解析失败不允许静默 204（Xsolla 不会重试 → 钻石永久丢失）：返回 500 触发重试并留完整日志
+          console.error('[Xsolla][order_paid] PARSE_FAILED', 'odID=', odID, 'amount=', amount, 'txn=', txnId, 'payload=', JSON.stringify(data));
+          setResponseStatus(event, 500);
+          return { error: 'cannot resolve odID or amount' };
+        }
+        // 同步处理：失败返回 500，Xsolla 会重试；成功返回 204
+        try {
+          const result = await addGemsFromXsolla(odID, amount, txnId);
+          console.log('[Xsolla][order_paid]', 'odID=', odID, 'amount=', amount, 'txn=', txnId, 'result=', JSON.stringify(result));
+          if ('error' in result && result.error) {
+            console.error('[Xsolla] addGems error:', result.error);
             setResponseStatus(event, 500);
-            return { error: 'internal error' };
+            return { error: result.error };
           }
+        } catch (e: any) {
+          console.error('[Xsolla] addGems exception:', e);
+          setResponseStatus(event, 500);
+          return { error: 'internal error' };
         }
       }
 
