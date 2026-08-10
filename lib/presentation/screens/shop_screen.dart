@@ -63,7 +63,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         ],
       ),
     );
-    final auth = ref.read(authProvider);
+    // 支付标签页冷启动时登录可能尚未恢复：等待至多 3s 拿到 playerId 再轮询补钻
+    var auth = ref.read(authProvider);
+    for (var i = 0; i < 10 && auth == null; i++) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      auth = ref.read(authProvider);
+    }
     if (ok && auth != null) await _pollXsollaBalance(auth.playerId);
   }
 

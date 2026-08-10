@@ -37,6 +37,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _init() async {
+    // Xsolla 支付返回：优先消费 URL 状态并立即跳回商店（不依赖登录/云同步，避免卡在主页）
+    final xsollaStatus = kIsWeb ? XsollaPaymentService.consumeReturnStatus() : null;
+    if (xsollaStatus != null && mounted) {
+      XsollaPaymentService.pendingReturnStatus = xsollaStatus;
+      context.go('/shop/shop');
+    }
     // 先用本地存档渲染，避免账号同步期间空白/初始状态停留
     var d = await SaveManager.loadPlayerData();
     if (mounted) setState(() { _cachedData = d; _loading = false; });
@@ -45,12 +51,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await BalanceSyncService.waitForInitialSync();
     d = await SaveManager.loadPlayerData();
     if (mounted && d != null) setState(() { _cachedData = d; });
-    // Xsolla 支付返回：记录状态并回商店页展示结果弹窗
-    final xsollaStatus = kIsWeb ? XsollaPaymentService.consumeReturnStatus() : null;
-    if (xsollaStatus != null && ref.read(authProvider) != null) {
-      XsollaPaymentService.pendingReturnStatus = xsollaStatus;
-      if (mounted) context.go('/shop/shop');
-    }
     if (d != null && d.firstRun) {
       final pd = d.copyWith(firstRun: false);
       await SaveManager.savePlayerData(pd);
