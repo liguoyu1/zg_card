@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../l10n/locale_service.dart';
 
 /// 客服邮箱 —— 上线前替换为真实客服邮箱
-const String kSupportEmail = 'support@warring-states.example.com';
+const String kSupportEmail = 'zgfylgy@163.com';
 
 /// 打开客服邮件（mailto），可附带玩家 ID 便于客服定位
 Future<void> openSupportMail({String? playerId}) async {
