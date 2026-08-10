@@ -709,6 +709,7 @@
   "common.cancel": "Cancel",
   "common.confirm": "Confirm",
   "common.gold": "Gold",
+  "common.gem": "Diamonds",
   "common.loading": "Loading...",
   "deck_edit.all": "All",
   "deck_edit.deck_label": "Deck {count}/30",
@@ -1400,5 +1401,10 @@
   "txn.exchange": "Exchange",
   "txn.balance": "Balance",
   "txn.empty": "No transactions yet",
-  "txn.show_month": "View last 1 month"
+  "txn.show_month": "View last 1 month",
+  "ok": "OK",
+  "shop.xsolla_success": "Purchase successful",
+  "shop.xsolla_success_desc": "Diamonds added, check balance in the shop",
+  "shop.xsolla_failed": "Payment incomplete",
+  "shop.xsolla_failed_desc": "Diamonds not added, retry later in the shop"
 }

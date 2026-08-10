@@ -709,6 +709,7 @@
   "common.cancel": "取消",
   "common.confirm": "确认",
   "common.gold": "金币",
+  "common.gem": "钻石",
   "common.loading": "加载中...",
   "deck_edit.all": "全部",
   "deck_edit.deck_label": "卡组 {count}/30",
@@ -1400,5 +1401,10 @@
   "txn.exchange": "兑换",
   "txn.balance": "余额",
   "txn.empty": "暂无交易记录",
-  "txn.show_month": "查看近 1 个月记录"
+  "txn.show_month": "查看近 1 个月记录",
+  "ok": "确定",
+  "shop.xsolla_success": "购买成功",
+  "shop.xsolla_success_desc": "钻石已到账，返回商店查看余额",
+  "shop.xsolla_failed": "支付未完成",
+  "shop.xsolla_failed_desc": "钻石未到账，可稍后在商店重试"
 }

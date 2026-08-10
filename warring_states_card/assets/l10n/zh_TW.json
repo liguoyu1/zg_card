@@ -709,6 +709,7 @@
   "common.cancel": "取消",
   "common.confirm": "確認",
   "common.gold": "金幣",
+  "common.gem": "鑽石",
   "common.loading": "加載中...",
   "deck_edit.all": "全部",
   "deck_edit.deck_label": "卡组 {count}/30",
@@ -1400,5 +1401,10 @@
   "txn.exchange": "兌換",
   "txn.balance": "餘額",
   "txn.empty": "暫無交易記錄",
-  "txn.show_month": "查看近 1 個月記錄"
+  "txn.show_month": "查看近 1 個月記錄",
+  "ok": "確定",
+  "shop.xsolla_success": "購買成功",
+  "shop.xsolla_success_desc": "鑽石已到賬，返回商店查看餘額",
+  "shop.xsolla_failed": "支付未完成",
+  "shop.xsolla_failed_desc": "鑽石未到賬，可稍後在商店重試"
 }
