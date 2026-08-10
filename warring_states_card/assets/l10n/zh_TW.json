@@ -1406,5 +1406,8 @@
   "shop.xsolla_success": "購買成功",
   "shop.xsolla_success_desc": "鑽石已到賬，返回商店查看餘額",
   "shop.xsolla_failed": "支付未完成",
-  "shop.xsolla_failed_desc": "鑽石未到賬，可稍後在商店重試"
+  "shop.xsolla_failed_desc": "鑽石未到賬，可稍後在商店重試",
+  "home.contact_support": "聯絡客服",
+  "support.mail_subject": "遊戲客服 - 支付問題",
+  "support.mail_body": "玩家 ID：{playerId}\n\n如遇支付問題，請在郵件中附上支付交易號（Transaction number），方便我們快速處理。"
 }

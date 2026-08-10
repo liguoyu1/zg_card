@@ -1406,5 +1406,8 @@
   "shop.xsolla_success": "Purchase successful",
   "shop.xsolla_success_desc": "Diamonds added, check balance in the shop",
   "shop.xsolla_failed": "Payment incomplete",
-  "shop.xsolla_failed_desc": "Diamonds not added, retry later in the shop"
+  "shop.xsolla_failed_desc": "Diamonds not added, retry later in the shop",
+  "home.contact_support": "Contact Support",
+  "support.mail_subject": "Customer Support - Payment Issue",
+  "support.mail_body": "Player ID: {playerId}\n\nFor payment issues, please include your transaction number in the email so we can help faster."
 }

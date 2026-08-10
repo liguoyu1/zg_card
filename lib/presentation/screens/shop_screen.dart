@@ -17,6 +17,7 @@ import '../../domain/services/hero_data_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/purchase_service.dart';
 import '../../data/xsolla_payment_service.dart';
+import '../../data/support_config.dart';
 import '../../l10n/locale_service.dart';
 import '../providers/auth_provider.dart';
 
@@ -56,6 +57,13 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
             ? LocaleService.I.t('shop.xsolla_success_desc')
             : LocaleService.I.t('shop.xsolla_failed_desc')),
         actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              openSupportMail(playerId: ref.read(authProvider)?.playerId);
+            },
+            child: Text(LocaleService.I.t('home.contact_support'), style: const TextStyle(color: AppTheme.healthRed)),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(LocaleService.I.t('ok')),
@@ -308,9 +316,13 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 
   // ─── 赠送配置：修改此处即可调整各档位赠送额，不影响 SKU 映射 ───
+  // iOS 走 IAP 用基础赠送；Web/Android 走 Xsolla 追加手续费让利补贴（服务端 GEM_SKU_MAP 同值）
   static int _gemBonus(int ga) {
     const bonus = {60: 0, 300: 50, 600: 150, 1500: 500, 3000: 1500};
-    return bonus[ga] ?? 0;
+    var b = bonus[ga] ?? 0;
+    if (!kIsWeb && Platform.isIOS) return b;
+    const xsollaExtra = {60: 5, 300: 30, 600: 60, 1500: 165, 3000: 375};
+    return b + (xsollaExtra[ga] ?? 0);
   }
 
   Widget _gemCard(int diamonds, double usd, String? bonus) {
