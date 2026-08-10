@@ -118,8 +118,10 @@ export async function handleUserValidation(
   data: any,
   findUser: (id: string) => Promise<unknown>,
 ): Promise<{ status: number; body: Record<string, unknown> }> {
-  const uid = data?.user?.id;
-  if (uid === undefined || uid === null || uid === '') {
+  // Xsolla user_validation 的 user.id 是对象 { value, type }，必须解包 value 再查库
+  const raw = data?.user?.id?.value ?? data?.user?.id;
+  const uid = typeof raw === 'object' ? raw?.value : raw;
+  if (uid === undefined || uid === null || String(uid) === '') {
     return { status: 400, body: { error: 'Missing user id' } };
   }
   const user = await findUser(String(uid));
