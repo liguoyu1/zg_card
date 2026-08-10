@@ -33,9 +33,29 @@ model Player {
   quests        Quest[]
   dailyRewards  DailyReward[]
   transactions  Transaction[]
+  supportTickets SupportTicket[]
   save         PlayerSave?
 
   @@map("players")
+}
+
+// 客服工单（用户反馈 + 提交时的订单快照，客服后台查看）
+model SupportTicket {
+  id        String   @id @default(cuid())
+  playerId  String   @map("player_id")
+  category  String   @default("other") // payment / game / other
+  message   String
+  contact   String? // 用户留下的联系方式
+  platform  String? // ios / android / web
+  data      Json // 提交时快照：玩家信息 + 近30天订单流水
+  status    String   @default("open") // open / closed
+  closedAt  DateTime? @map("closed_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("support_tickets")
+  @@index([status, createdAt])
 }
 
 // 客户端整包存档（PlayerData + Collection + 战斗历史），用于跨设备回滚

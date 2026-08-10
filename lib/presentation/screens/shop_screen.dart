@@ -17,7 +17,7 @@ import '../../domain/services/hero_data_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/purchase_service.dart';
 import '../../data/xsolla_payment_service.dart';
-import '../../data/support_config.dart';
+import '../../data/support_service.dart';
 import '../../l10n/locale_service.dart';
 import '../providers/auth_provider.dart';
 
@@ -57,13 +57,25 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
             ? LocaleService.I.t('shop.xsolla_success_desc')
             : LocaleService.I.t('shop.xsolla_failed_desc')),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              openSupportMail(playerId: ref.read(authProvider)?.playerId);
-            },
-            child: Text(LocaleService.I.t('home.contact_support'), style: const TextStyle(color: AppTheme.healthRed)),
-          ),
+          if (!ok) ...[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                openAfterSalesPage();
+              },
+              child: Text(LocaleService.I.t('shop.after_sales'), style: const TextStyle(color: AppTheme.healthRed)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                final auth = ref.read(authProvider);
+                if (auth != null) {
+                  showSupportDialog(context, token: auth.token, category: 'payment');
+                }
+              },
+              child: Text(LocaleService.I.t('home.contact_support')),
+            ),
+          ],
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(LocaleService.I.t('ok')),

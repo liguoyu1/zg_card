@@ -9,7 +9,7 @@ import '../../core/audio/audio_manager.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/persistence/save_manager.dart';
 import '../../data/xsolla_payment_service.dart';
-import '../../data/support_config.dart';
+import '../../data/support_service.dart';
 import '../../domain/models/card.dart' as domain;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
@@ -161,7 +161,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             if (loggedIn) context.push('/shop/transactions');
             break;
           case 'support':
-            await openSupportMail(playerId: auth?.playerId);
+            if (auth != null) {
+              await showSupportDialog(context, token: auth.token);
+            }
             break;
           case 'lang_zh':
             await LocaleService.I.init(localeCode: 'zh');

@@ -30,6 +30,30 @@ export async function ensurePlayerSaveTable() {
 }
 ensurePlayerSaveTable();
 
+/** 启动时幂等建表（SupportTicket），避免依赖外部 migration */
+export async function ensureSupportTicketTable() {
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "support_tickets" (
+      "id" TEXT NOT NULL,
+      "player_id" TEXT NOT NULL,
+      "category" TEXT NOT NULL DEFAULT 'other',
+      "message" TEXT NOT NULL,
+      "contact" TEXT,
+      "platform" TEXT,
+      "data" JSONB NOT NULL,
+      "status" TEXT NOT NULL DEFAULT 'open',
+      "closed_at" TIMESTAMP(3),
+      "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "support_tickets_pkey" PRIMARY KEY ("id")
+    );
+  `).catch(() => {});
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS "support_tickets_status_created_at_idx"
+    ON "support_tickets" ("status", "created_at");
+  `).catch(() => {});
+}
+ensureSupportTicketTable();
+
 // Redis 客户端
 let redisClient: any = null;
 
@@ -737,13 +761,56 @@ export async function spendGold(odID: string, amount: number, detail: string = '
 }
 
 export async function getTransactions(odID: string, days: number = 3) {
-  const since = new Date(Date.now() - days * 86400000);
+  // days<=0 表示查询全部历史
+  const since = days > 0 ? new Date(Date.now() - days * 86400000) : undefined;
   const txns = await prisma.transaction.findMany({
-    where: { playerId: odID, createdAt: { gte: since } },
+    where: { playerId: odID, ...(since ? { createdAt: { gte: since } } : {}) },
     orderBy: { createdAt: 'desc' },
-    take: 500,
+    take: 2000,
   });
   return txns;
+}
+
+// ─── 客服工单 ───
+/** 创建工单：自动附带玩家信息 + 近30天订单流水快照 */
+export async function createSupportTicket(
+  playerId: string,
+  input: { category?: string; message: string; contact?: string; platform?: string },
+) {
+  const player = await prisma.player.findUnique({
+    where: { id: playerId },
+    select: { id: true, name: true, email: true },
+  });
+  const transactions = await getTransactions(playerId, 30);
+  const ticket = await prisma.supportTicket.create({
+    data: {
+      playerId,
+      category: input.category || 'other',
+      message: input.message,
+      contact: input.contact?.trim() || null,
+      platform: input.platform?.trim() || null,
+      data: { player, transactions },
+    },
+  });
+  return { id: ticket.id, createdAt: ticket.createdAt };
+}
+
+/** 客服后台：拉取工单列表（open / closed / 全部） */
+export async function listSupportTickets(status?: string, limit: number = 50) {
+  return prisma.supportTicket.findMany({
+    where: status === 'open' || status === 'closed' ? { status } : undefined,
+    orderBy: { createdAt: 'desc' },
+    take: Math.min(Math.max(limit, 1), 200),
+  });
+}
+
+/** 客服后台：关闭工单 */
+export async function closeSupportTicket(id: string) {
+  const ticket = await prisma.supportTicket.update({
+    where: { id },
+    data: { status: 'closed', closedAt: new Date() },
+  });
+  return { id: ticket.id, status: ticket.status };
 }
 
 export async function initDatabase() {

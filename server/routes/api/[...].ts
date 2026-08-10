@@ -1,6 +1,13 @@
 import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency } from '../../utils/database';
 import { joinMatchQueue, leaveMatchQueue, checkMatchStatus, submitGameAction, pollGameActions } from '../../utils/database';
+import { createSupportTicket, listSupportTickets, closeSupportTicket } from '../../utils/database';
 import { createPaymentToken, verifyWebhookSignature, handleUserValidation, resolveXsollaAmount, GEM_SKU_MAP } from '../../utils/xsolla';
+
+/** 客服后台鉴权：x-admin-key 头或 ?key= 查询参数，需配置 SUPPORT_ADMIN_KEY */
+function isSupportAdmin(event: any): boolean {
+  const key = getQuery(event).key || getRequestHeader(event, 'x-admin-key') || '';
+  return !!process.env.SUPPORT_ADMIN_KEY && key === process.env.SUPPORT_ADMIN_KEY;
+}
 
 export default defineEventHandler(async (event) => {
   const method = event.method;
@@ -187,6 +194,33 @@ export default defineEventHandler(async (event) => {
       const odID = path.split('/').pop()!;
       const days = Number(getQuery(event).days) || 0;
       return await getTransactions(odID, Math.min(Math.max(days, 0), 3650));
+    }
+
+    // === 客服工单 ===
+    if (method === 'POST' && path === '/api/support/tickets') {
+      const auth = getRequestHeader(event, 'authorization');
+      if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };
+      const token = verifyToken(auth.slice(7));
+      if (!token) return { error: 'Invalid token' };
+      const { message, category, contact, platform } = await readBody(event);
+      if (!message || typeof message !== 'string' || message.trim().length === 0) return { error: 'message required' };
+      if (message.length > 2000) return { error: 'message too long' };
+      return await createSupportTicket(token.playerId, {
+        message: message.trim(),
+        category: typeof category === 'string' ? category : undefined,
+        contact: typeof contact === 'string' ? contact : undefined,
+        platform: typeof platform === 'string' ? platform : undefined,
+      });
+    }
+
+    if (method === 'GET' && path === '/api/support/tickets') {
+      if (!isSupportAdmin(event)) { setResponseStatus(event, 403); return { error: 'Forbidden' }; }
+      return await listSupportTickets(getQuery(event).status as string | undefined);
+    }
+
+    if (method === 'POST' && path.includes('/support/tickets/') && path.endsWith('/close')) {
+      if (!isSupportAdmin(event)) { setResponseStatus(event, 403); return { error: 'Forbidden' }; }
+      return await closeSupportTicket(path.split('/').pop()!);
     }
 
     // === Xsolla 支付 ===

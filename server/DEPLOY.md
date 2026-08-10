@@ -19,6 +19,7 @@
 DATABASE_URL=postgresql://postgres:QCgwYJrdxEMxiWMPpWppepUrNZbZJQrI@zephyr.proxy.rlwy.net:41714/railway
 REDIS_URL=redis://redis.railway.internal:6379
 JWT_SECRET=warring-states-2026-secret
+SUPPORT_ADMIN_KEY=自行生成一段随机密钥，客服后台查询工单用
 NODE_ENV=production
 ```
 

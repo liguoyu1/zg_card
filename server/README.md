@@ -26,6 +26,7 @@ npm install
 DATABASE_URL="postgresql://user:password@host:5432/warring_states_card"
 REDIS_URL="redis://host:6379"
 JWT_SECRET="your-secret-key"
+SUPPORT_ADMIN_KEY="客服后台查询工单用的密钥"
 ```
 
 ### 3. 初始化数据库
@@ -69,6 +70,14 @@ npm run dev
 |------|------|------|
 | GET | `/api/leaderboard` | 获取排行榜 |
 
+### 客服工单
+
+| 方法 | 路径 | 描述 |
+|------|------|------|
+| POST | `/api/support/tickets` | 用户提交反馈（需登录 token；服务端自动附带玩家信息 + 近30天订单流水快照） |
+| GET | `/api/support/tickets?status=open` | 客服后台拉取工单（需 `x-admin-key: <SUPPORT_ADMIN_KEY>` 或 `?key=`） |
+| POST | `/api/support/tickets/:id/close` | 客服关闭工单（同上鉴权） |
+
 ### WebSocket
 
 | 消息类型 | 描述 |
@@ -95,6 +104,7 @@ railway add redis
 - `DATABASE_URL` - PostgreSQL 连接字符串
 - `REDIS_URL` - Redis 连接字符串
 - `JWT_SECRET` - JWT 密钥
+- `SUPPORT_ADMIN_KEY` - 客服后台查看工单的管理密钥
 
 ### 3. 部署
 
