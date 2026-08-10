@@ -11,14 +11,14 @@ const XSOLLA_STORE = 'https://store.xsolla.com/api';
 const XSOLLA_PAYSTATION = 'https://secure.xsolla.com/paystation4';
 const XSOLLA_PAYSTATION_SANDBOX = 'https://sandbox-secure.xsolla.com/paystation4';
 
-// SKU → 钻石数量（Xsolla 专属：含手续费让利补贴）
-// Xsolla 手续费约 8% < IAP 15%，将差价全额让利给用户（约 +8.5% 钻），平台仍比 IAP 省约 7%
+// SKU → 钻石数量（Xsolla 专属：活动赠予 +20%）
+// 以各档位总额（如 gem_300 → 350）为基准新增 20% 活动钻（如 420），平台手续费仍低于 IAP
 export const GEM_SKU_MAP: Record<string, number> = {
-  gem_60: 65,
-  gem_300: 380,
-  gem_600: 810,
-  gem_1500: 2165,
-  gem_3000: 4875,
+  gem_60: 72,
+  gem_300: 420,
+  gem_600: 900,
+  gem_1500: 2400,
+  gem_3000: 5400,
 };
 
 /** 创建 Xsolla 支付令牌 → 返回 PayStation URL */

@@ -316,12 +316,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 
   // ─── 赠送配置：修改此处即可调整各档位赠送额，不影响 SKU 映射 ───
-  // iOS 走 IAP 用基础赠送；Web/Android 走 Xsolla 追加手续费让利补贴（服务端 GEM_SKU_MAP 同值）
+  // iOS 走 IAP 用基础赠送；Web/Android 走 Xsolla 追加活动赠予 +20%（服务端 GEM_SKU_MAP 同值）
   static int _gemBonus(int ga) {
     const bonus = {60: 0, 300: 50, 600: 150, 1500: 500, 3000: 1500};
     var b = bonus[ga] ?? 0;
     if (!kIsWeb && Platform.isIOS) return b;
-    const xsollaExtra = {60: 5, 300: 30, 600: 60, 1500: 165, 3000: 375};
+    const xsollaExtra = {60: 12, 300: 70, 600: 150, 1500: 400, 3000: 900};
     return b + (xsollaExtra[ga] ?? 0);
   }
 
