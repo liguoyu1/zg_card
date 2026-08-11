@@ -97,7 +97,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               _buildHeader(),
               _buildGoldDivider(),
               Expanded(
-                child: SingleChildScrollView(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await BalanceSyncService.refreshNow();
+                    if (mounted) setState(() {});
+                  },
+                  color: AppTheme.goldAccent,
+                  child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(top: 16, bottom: 24),
                   child: Column(
                     children: [
@@ -111,6 +118,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       _buildVersionText(),
                     ],
                   ),
+                ),
                 ),
               ),
             ],

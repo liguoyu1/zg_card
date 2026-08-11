@@ -450,7 +450,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       backgroundColor: AppTheme.bgDark,
       appBar: AppBar(title: Text(LocaleService.I.t('shop.title_bar'), style: const TextStyle(color: AppTheme.parchment)),
           backgroundColor: AppTheme.agedWood, foregroundColor: AppTheme.parchment),
-      body: SingleChildScrollView(padding: const EdgeInsets.all(16), child: Column(
+      body: RefreshIndicator(
+        onRefresh: () => _load(syncFirst: true),
+        color: AppTheme.goldAccent,
+        child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16), child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, children: [
           _BalanceBar(gold: _data?.gold ?? 0, gems: _data?.gems ?? 0),
           const SizedBox(height: 16),
@@ -502,6 +507,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           const SizedBox(height: 8),
         ],
       )),
+      ),
     );
   }
 
