@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 
+import 'xsolla_launch.dart';
 import 'xsolla_return.dart';
 
 /// Xsolla 支付服务 — 创建令牌 → 浏览器打开 PayStation → webhook 回调加钻
@@ -37,9 +37,10 @@ class XsollaPaymentService {
       final url = data['url'] as String?;
       if (url == null) return false;
 
-      // 同页打开 PayStation（不新建标签页）：Web 支付完成后自然跳回游戏，
-      // 由 home 检测 return_url 的 status 跳回商店页；Android 走系统浏览器
-      await launchUrl(Uri.parse(url));
+      // Web：同页跳转 PayStation（window.location，避免弹窗拦截）；
+      // 支付完成后 Xsolla 跳回游戏，home 检测 status/标记返回商店页
+      // Android/iOS：系统浏览器打开
+      return launchXsolla(url);
       return true;
     } catch (_) {
       return false;
