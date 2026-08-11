@@ -89,7 +89,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       await Future.delayed(const Duration(milliseconds: 300));
       auth = ref.read(authProvider);
     }
-    if (ok && auth != null) await _pollXsollaBalance(auth.playerId);
+    // 无论弹窗状态如何都轮询补钻：status 偶发异常（canceled/pending）但服务端实际已入账
+    if (auth != null) await _pollXsollaBalance(auth.playerId);
   }
 
   Future<void> _load({bool syncFirst = false}) async {
@@ -244,7 +245,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 
   /// Web 支付完成后轮询服务端余额，把已到账部分补进本地（服务端 > 本地才补）
-  Future<void> _pollXsollaBalance(String playerId) async {
+  /// 轮询服务端余额补差；返回是否补到钻石
+  Future<bool> _pollXsollaBalance(String playerId) async {
     for (var i = 0; i < 6; i++) {
       await Future.delayed(const Duration(milliseconds: 2500));
       final b = await BalanceService.getBalance(playerId);
@@ -269,10 +271,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         if (gemDiff > 0) {
           _snack(LocaleService.I.t('shop.buy_success_gems', args: {'gems': '$gemDiff'}));
         }
-        return;
+        return true;
       }
     }
     await _refresh();
+    return false;
   }
 
   Future<void> _buyIAP(int ga) async {
