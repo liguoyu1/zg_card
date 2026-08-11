@@ -37,7 +37,9 @@ class XsollaPaymentService {
       final url = data['url'] as String?;
       if (url == null) return false;
 
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      // 同页打开 PayStation（不新建标签页）：Web 支付完成后自然跳回游戏，
+      // 由 home 检测 return_url 的 status 跳回商店页；Android 走系统浏览器
+      await launchUrl(Uri.parse(url));
       return true;
     } catch (_) {
       return false;

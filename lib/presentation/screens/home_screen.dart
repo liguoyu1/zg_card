@@ -40,8 +40,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _init() async {
     // Xsolla 支付返回：优先消费 URL 状态并立即跳回商店（不依赖登录/云同步，避免卡在主页）
     final xsollaStatus = kIsWeb ? XsollaPaymentService.consumeReturnStatus() : null;
-    if (xsollaStatus != null && mounted) {
-      XsollaPaymentService.pendingReturnStatus = xsollaStatus;
+    // 兜底：支付标记存在（status 偶发丢失）也回商店页
+    final pending = await SaveManager.consumeXsollaPending();
+    if ((xsollaStatus != null || pending) && mounted) {
+      if (xsollaStatus != null) XsollaPaymentService.pendingReturnStatus = xsollaStatus;
       context.go('/shop/shop');
     }
     // 先用本地存档渲染，避免账号同步期间空白/初始状态停留

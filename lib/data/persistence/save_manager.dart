@@ -142,6 +142,26 @@ class SaveManager {
     } catch (_) {}
   }
 
+  static const String _xsollaPendingKey = 'xsolla_pending';
+
+  /// 标记/清除 Xsolla 支付进行中（跳回后用于返回商店页的兜底）
+  static Future<void> markXsollaPending(bool v) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (v) {
+      await prefs.setBool(_xsollaPendingKey, true);
+    } else {
+      await prefs.remove(_xsollaPendingKey);
+    }
+  }
+
+  /// 读取并清除 Xsolla 支付进行中标记
+  static Future<bool> consumeXsollaPending() async {
+    final prefs = await SharedPreferences.getInstance();
+    final v = prefs.getBool(_xsollaPendingKey) ?? false;
+    if (v) await prefs.remove(_xsollaPendingKey);
+    return v;
+  }
+
   /// 资产存档导出（PlayerData + Collection）——对局记录只存本地，不进云端
   static Future<String> exportSave() async => jsonEncode({
     'playerData': (await loadPlayerData())?.toJson(),

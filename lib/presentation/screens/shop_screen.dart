@@ -228,6 +228,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 
       // Web / Android：Xsolla
       final sku = _gemProductId(ga);
+      // 记录"支付进行中"标记：跳回后无论 status 是否携带都返回商店页（原页面）
+      await SaveManager.markXsollaPending(true);
       final ok = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
       if (ok) {
         await SaveManager.addEvent({
