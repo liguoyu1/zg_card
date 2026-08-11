@@ -267,8 +267,8 @@ export default defineEventHandler(async (event) => {
 
       if (nt === 'order_paid' || nt === 'payment') {
         const odID = data.user?.id?.value ?? data.user?.id ?? data.user?.external_id;
-        const txnId = data.transaction?.id ?? data.billing?.transaction?.id ?? data.notification_id;
-        if (!txnId) {
+        const txnId = String(data.transaction?.id ?? data.billing?.transaction?.id ?? data.notification_id);
+        if (!txnId || txnId === 'undefined') {
           console.error('[Xsolla][order_paid] missing transaction id, return 500 for retry');
           setResponseStatus(event, 500);
           return { error: 'Missing transaction id' };
