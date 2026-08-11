@@ -82,6 +82,9 @@ class BalanceSyncService {
       if (needFullSync) {
         // 首次/版本端点不可用/云端有更新 → 拉取并与本地合并
         await _syncFromCloud();
+        // 服务端权威余额校正：webhook 等外部入账（如 Xsolla）只更新 player 表，
+        // 存档合并拿不到增量，这里用 /balance/get 补差（只增不减）
+        await _reconcileBalanceFromServer();
         _lastRemoteVersion = v ?? DateTime.now().millisecondsSinceEpoch;
         _bootstrapped = true;
       }
@@ -234,6 +237,23 @@ class BalanceSyncService {
           : Collection.fromJson(Map<String, dynamic>.from(c as Map));
     } catch (_) {
       return null;
+    }
+  }
+
+  /// 用服务端权威余额校正本地（仅当服务端更高时补差，绝不回退）
+  static Future<void> _reconcileBalanceFromServer() async {
+    if (_playerId == null || _token == null) return;
+    final b = await BalanceService.getBalance(_playerId!);
+    if (b == null) return;
+    final pd = await SaveManager.loadPlayerData();
+    if (pd == null) return;
+    final gemGain = b.gems - pd.gems;
+    final goldGain = b.gold - pd.gold;
+    if (gemGain > 0 || goldGain > 0) {
+      await SaveManager.savePlayerData(pd.copyWith(
+        gems: pd.gems + (gemGain > 0 ? gemGain : 0),
+        gold: pd.gold + (goldGain > 0 ? goldGain : 0),
+      ));
     }
   }
 
