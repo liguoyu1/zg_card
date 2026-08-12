@@ -113,7 +113,7 @@ class BalanceService {
     }
   }
 
-  /// 拉取交易流水（默认最近 3 天，最多 30 天）
+  /// 拉取交易流水（默认最近 3 天；0 表示全部历史）
   static Future<List<Map<String, dynamic>>> getTransactions(String odID,
       {int days = 3}) async {
     try {
@@ -126,6 +126,21 @@ class BalanceService {
     } catch (e) {
       debugPrint('BalanceService.getTransactions error: $e');
       return [];
+    }
+  }
+
+  /// 查询该玩家在 [afterMs] 之后是否有 Xsolla 入账记录（webhook 校验+发钻成功的直接结果）
+  static Future<bool> checkXsollaCredited(String odID, int afterMs) async {
+    try {
+      final uri = Uri.parse(
+          '$_baseUrl/api/payment/recent/$odID?after=$afterMs');
+      final resp = await http.get(uri);
+      if (resp.statusCode != 200) return false;
+      final body = jsonDecode(resp.body);
+      return body['credited'] == true;
+    } catch (e) {
+      debugPrint('BalanceService.checkXsollaCredited error: $e');
+      return false;
     }
   }
 

@@ -144,6 +144,21 @@ class SaveManager {
 
   static const String _xsollaPendingKey = 'xsolla_pending';
   static const String _xsollaPreGemsKey = 'xsolla_pre_gems';
+  static const String _xsollaPendingAtKey = 'xsolla_pending_at';
+
+  /// 记录支付发起时间戳（跳回后按订单查询服务端是否已入账）
+  static Future<void> markXsollaPendingAt(int ms) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_xsollaPendingAtKey, ms);
+  }
+
+  /// 读取并清除支付发起时间戳
+  static Future<int?> consumeXsollaPendingAt() async {
+    final prefs = await SharedPreferences.getInstance();
+    final v = prefs.getInt(_xsollaPendingAtKey);
+    if (v != null) await prefs.remove(_xsollaPendingAtKey);
+    return v;
+  }
 
   /// 记录支付发起前的钻石数（跳回后以服务端到账为准判定弹窗结果）
   static Future<void> markXsollaPreGems(int gems) async {

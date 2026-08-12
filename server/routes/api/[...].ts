@@ -1,6 +1,6 @@
 import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency } from '../../utils/database';
 import { joinMatchQueue, leaveMatchQueue, checkMatchStatus, submitGameAction, pollGameActions } from '../../utils/database';
-import { createSupportTicket, listSupportTickets, closeSupportTicket } from '../../utils/database';
+import { createSupportTicket, listSupportTickets, closeSupportTicket, prisma } from '../../utils/database';
 import { createPaymentToken, verifyWebhookSignature, handleUserValidation, resolveXsollaAmount, GEM_SKU_MAP } from '../../utils/xsolla';
 
 /** 客服后台鉴权：x-admin-key 头或 ?key= 查询参数，需配置 SUPPORT_ADMIN_KEY */
@@ -224,6 +224,25 @@ export default defineEventHandler(async (event) => {
     }
 
     // === Xsolla 支付 ===
+    // 查询该玩家在指定时间后是否有 Xsolla 入账记录（webhook 校验+发钻成功的直接结果）
+    if (path.startsWith('/api/payment/recent/') && method === 'GET') {
+      const odID = path.split('/').pop()!;
+      const after = Number(getQuery(event).after) || 0;
+      const txn = await prisma.transaction.findFirst({
+        where: {
+          playerId: odID,
+          detail: 'Xsolla购买',
+          createdAt: { gt: new Date(after) },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+      return {
+        credited: !!txn,
+        amount: txn?.amount ?? 0,
+        createdAt: txn?.createdAt ?? null,
+      };
+    }
+
     if (path === '/api/payment/create-token' && method === 'POST') {
       const auth = getRequestHeader(event, 'authorization');
       if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };

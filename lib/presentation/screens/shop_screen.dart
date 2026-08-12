@@ -51,30 +51,30 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     // 先强制云端同步：以服务端到账为准判定结果（Xsolla 的 status 参数偶发与真实结果不一致）
     await _load(syncFirst: true);
     if (!mounted) return;
-    final preGems = await SaveManager.consumeXsollaPreGems();
-    // 以服务端权威余额为准（直接查 /balance/get，不经存档同步链路）
+    // 按订单查询服务端是否已入账（webhook 校验+发钻的直接结果），而非余额推断
     var auth = ref.read(authProvider);
     for (var i = 0; i < 10 && auth == null; i++) {
       await Future.delayed(const Duration(milliseconds: 300));
       auth = ref.read(authProvider);
     }
-    var gained = preGems != null && (_data?.gems ?? 0) > preGems;
-    // 轮询服务端余额（容忍网络抖动与结算延迟），最多约 14s；查询失败自动重试
-    if (!gained && auth != null && preGems != null) {
-      for (var i = 0; i < 7 && !gained; i++) {
-        try {
-          final b = await BalanceService.getBalance(auth.playerId);
-          gained = b != null && b.gems > preGems;
-        } catch (_) {}
-        if (!gained && i < 6) {
-          await Future.delayed(const Duration(seconds: 2));
+    final st = status.toLowerCase();
+    final okByStatus = st.contains('success');
+    var credited = false;
+    if (!okByStatus && auth != null) {
+      final pendingAt = await SaveManager.consumeXsollaPendingAt();
+      if (pendingAt != null) {
+        // 轮询订单入账状态（结算延迟），最多约 20s；查询失败自动重试
+        for (var i = 0; i < 11 && !credited; i++) {
+          credited = await BalanceService.checkXsollaCredited(auth.playerId, pendingAt);
+          if (!credited && i < 10) {
+            await Future.delayed(const Duration(seconds: 2));
+          }
         }
       }
     }
-    // 异步结算订单（待入账）跳回时 status 可能非 successful 但最终会到账：
-    // 弹窗只分"成功/处理中"，不再用 status 判定失败，避免误报"未完成"
-    final st = status.toLowerCase();
-    final ok = st.contains('success') || gained;
+    // 弹窗只分"成功/处理中"：服务端确认入账（或 status 成功）→ 购买成功；
+    // 未确认 → 处理中（结算后自动到账），不再误报"未完成"
+    final ok = okByStatus || credited;
     final pending = !ok;
     await showDialog<void>(
       context: context,
@@ -257,8 +257,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       final sku = _gemProductId(ga);
       // 记录"支付进行中"标记：跳回后无论 status 是否携带都返回商店页（原页面）
       await SaveManager.markXsollaPending(true);
-      // 记录支付前钻石数：跳回后以服务端到账为准判定弹窗结果（status 参数不可靠）
-      await SaveManager.markXsollaPreGems(_data?.gems ?? 0);
+      // 记录支付发起时间：跳回后按订单查询服务端是否已入账（因果正确的判定）
+      await SaveManager.markXsollaPendingAt(DateTime.now().millisecondsSinceEpoch);
       final ok = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
       if (ok) {
         await SaveManager.addEvent({
