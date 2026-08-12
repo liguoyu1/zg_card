@@ -1423,5 +1423,7 @@
   "txn.hero_purchase": "購買武將",
   "txn.pending": "待入帳",
   "shop.xsolla_pending": "支付處理中",
-  "shop.xsolla_pending_desc": "訂單處理中：結算完成後鑽石自動到賬；若您已取消支付，請忽略本提示"
+  "shop.xsolla_pending_desc": "訂單處理中：結算完成後鑽石自動到賬；若您已取消支付，請忽略本提示",
+  "home.skin": "皮膚",
+  "home.skin_coming_soon": "皮膚還在優化中，敬請期待"
 }

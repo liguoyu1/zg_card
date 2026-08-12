@@ -175,6 +175,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               await showSupportDialog(context, token: auth.token);
             }
             break;
+          case 'skin':
+            if (!context.mounted) break;
+            await showDialog<void>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                backgroundColor: AppTheme.agedWood,
+                title: Text(LocaleService.I.t('home.skin'), style: const TextStyle(color: AppTheme.parchment)),
+                content: Text(LocaleService.I.t('home.skin_coming_soon'),
+                    style: const TextStyle(color: AppTheme.textSecondary)),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: Text(LocaleService.I.t('ok'), style: const TextStyle(color: Colors.grey)),
+                  ),
+                ],
+              ),
+            );
+            break;
           case 'lang_zh':
             await LocaleService.I.init(localeCode: 'zh');
             await SharedPreferences.getInstance().then((p) => p.setString('locale_code', 'zh'));
