@@ -52,12 +52,26 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     await _load(syncFirst: true);
     if (!mounted) return;
     final preGems = await SaveManager.consumeXsollaPreGems();
-    // 弹窗如实反映当前状态：已到账（同步后余额增加）或 status 成功 → 成功；
-    // 未到账 → 按 status 显示处理中/未完成；到账与否由弹窗后的轮询补齐提示
+    // 以服务端权威余额为准（直接查 /balance/get，不经存档同步链路）
+    var auth = ref.read(authProvider);
+    for (var i = 0; i < 10 && auth == null; i++) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      auth = ref.read(authProvider);
+    }
+    var gained = preGems != null && (_data?.gems ?? 0) > preGems;
+    if (!gained && auth != null && preGems != null) {
+      final b = await BalanceService.getBalance(auth.playerId);
+      gained = b != null && b.gems > preGems;
+    }
+    // status 只用于明确失败判定；其余一律按"处理中"显示，避免误报"未完成"
     final st = status.toLowerCase();
-    final gained = preGems != null && (_data?.gems ?? 0) > preGems;
+    final failed = st.contains('cancel') ||
+        st.contains('error') ||
+        st.contains('fail') ||
+        st.contains('declin') ||
+        st.contains('reject');
     final ok = st.contains('success') || gained;
-    final pending = !ok && st.contains('pending');
+    final pending = !ok && !failed;
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -99,11 +113,6 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       ),
     );
     // 弹窗后后台轮询：结算完成后自动提示「购买成功 +X 钻」并刷新余额（服务端为准）
-    var auth = ref.read(authProvider);
-    for (var i = 0; i < 10 && auth == null; i++) {
-      await Future.delayed(const Duration(milliseconds: 300));
-      auth = ref.read(authProvider);
-    }
     if (auth != null) await _pollXsollaBalance(auth.playerId);
   }
 
