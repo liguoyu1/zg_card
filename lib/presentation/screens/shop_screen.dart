@@ -52,15 +52,25 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     await _load(syncFirst: true);
     if (!mounted) return;
     final preGems = await SaveManager.consumeXsollaPreGems();
+    // 弹窗如实反映当前状态：已到账（同步后余额增加）或 status 成功 → 成功；
+    // 未到账 → 按 status 显示处理中/未完成；到账与否由弹窗后的轮询补齐提示
+    final st = status.toLowerCase();
     final gained = preGems != null && (_data?.gems ?? 0) > preGems;
-    final ok = status.toLowerCase().contains('success') || gained;
+    final ok = st.contains('success') || gained;
+    final pending = !ok && st.contains('pending');
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(ok ? LocaleService.I.t('shop.xsolla_success') : LocaleService.I.t('shop.xsolla_failed')),
+        title: Text(ok
+            ? LocaleService.I.t('shop.xsolla_success')
+            : pending
+                ? LocaleService.I.t('shop.xsolla_pending')
+                : LocaleService.I.t('shop.xsolla_failed')),
         content: Text(ok
             ? LocaleService.I.t('shop.xsolla_success_desc')
-            : LocaleService.I.t('shop.xsolla_failed_desc')),
+            : pending
+                ? LocaleService.I.t('shop.xsolla_pending_desc')
+                : LocaleService.I.t('shop.xsolla_failed_desc')),
         actions: [
           if (!ok) ...[
             TextButton(
@@ -88,13 +98,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         ],
       ),
     );
-    // 支付标签页冷启动时登录可能尚未恢复：等待至多 3s 拿到 playerId 再轮询补钻
+    // 弹窗后后台轮询：结算完成后自动提示「购买成功 +X 钻」并刷新余额（服务端为准）
     var auth = ref.read(authProvider);
     for (var i = 0; i < 10 && auth == null; i++) {
       await Future.delayed(const Duration(milliseconds: 300));
       auth = ref.read(authProvider);
     }
-    // 无论弹窗状态如何都轮询补钻：status 偶发异常（canceled/pending）但服务端实际已入账
     if (auth != null) await _pollXsollaBalance(auth.playerId);
   }
 

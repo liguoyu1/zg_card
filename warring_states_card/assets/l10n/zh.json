@@ -1421,5 +1421,7 @@
   "txn.gem_purchase": "钻石充值",
   "txn.card_purchase": "购买卡牌",
   "txn.hero_purchase": "购买武将",
-  "txn.pending": "待入账"
+  "txn.pending": "待入账",
+  "shop.xsolla_pending": "支付处理中",
+  "shop.xsolla_pending_desc": "订单已提交，结算完成后钻石自动到账，请稍后在商店查看"
 }
