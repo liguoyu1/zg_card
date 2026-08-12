@@ -1421,5 +1421,7 @@
   "txn.gem_purchase": "鑽石儲值",
   "txn.card_purchase": "購買卡牌",
   "txn.hero_purchase": "購買武將",
-  "txn.pending": "待入帳"
+  "txn.pending": "待入帳",
+  "shop.xsolla_pending": "支付處理中",
+  "shop.xsolla_pending_desc": "訂單已提交，結算完成後鑽石自動到賬，請稍後在商店查看"
 }

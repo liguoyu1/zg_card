@@ -1421,5 +1421,7 @@
   "txn.gem_purchase": "Gem top-up",
   "txn.card_purchase": "Card purchase",
   "txn.hero_purchase": "Hero purchase",
-  "txn.pending": "Pending"
+  "txn.pending": "Pending",
+  "shop.xsolla_pending": "Payment processing",
+  "shop.xsolla_pending_desc": "Order submitted. Diamonds are added automatically once settled, check the shop shortly"
 }
