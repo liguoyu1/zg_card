@@ -25,8 +25,12 @@ class CardPool {
   }
 
   /// 新玩家初始卡牌种子：15张随机普通 + 5张随机稀有
+  /// 新用户低价初始英雄池（金币 8000 档，价值最低的三位）
+  static const List<String> starterHeroPool = ['H_B001', 'H_R001', 'H_D001'];
+
   static Future<void> seedStarterCards() async {
     var data = await SaveManager.loadPlayerData();
+    final isNew = data == null;
     data ??= PlayerData(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: 'Player',
@@ -44,8 +48,14 @@ class CardPool {
       ..shuffle(rng);
     final rareIds = rare.take(starterRare).map((c) => c.id).toList();
 
+    // 新用户：随机发放一名低价初始英雄（替代固定 H_B001）
+    final starterHero = isNew
+        ? starterHeroPool[rng.nextInt(starterHeroPool.length)]
+        : null;
+
     final newData = data.copyWith(
       unlockedCards: [...commonIds, ...rareIds],
+      unlockedHeroes: starterHero != null ? [starterHero] : data.unlockedHeroes,
     );
     await SaveManager.savePlayerData(newData);
   }
