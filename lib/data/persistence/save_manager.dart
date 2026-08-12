@@ -38,7 +38,7 @@ class SaveManager {
     try {
       final pd = PlayerData.fromJson(jsonDecode(legacy));
       // 游客档（纯时间戳 id）视为同账号旧档一并迁移；其他账号档不迁移
-      if (pd.id != playerId && !RegExp(r'^\d+$').hasMatch(pd.id)) return;
+      if (pd.id != playerId) return;  // 只迁移同账号旧档；游客档不再并入（防卡牌虚高）
       await savePlayerData(pd);
       final legacyColl = prefs.getString('save_collection_$_suffix');
       if (legacyColl != null && prefs.getString(_collectionKey) == null) {
