@@ -1425,5 +1425,6 @@
   "shop.xsolla_pending": "Payment processing",
   "shop.xsolla_pending_desc": "Order processing: diamonds are added automatically once settled. If you cancelled the payment, please ignore this.",
   "home.skin": "Skins",
-  "home.skin_coming_soon": "Skins are still in development, stay tuned"
+  "home.skin_coming_soon": "Skins are still in development, stay tuned",
+  "home.style_coming_soon": "Chibi style is still in development, stay tuned"
 }

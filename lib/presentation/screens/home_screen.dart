@@ -300,7 +300,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildStyleToggle() {
     final isChibi = AssetStyle.current == AssetStyle.chibiCute;
     return GestureDetector(
-      onTap: () => setState(() { AssetStyle.current = isChibi ? AssetStyle.fantasyRpg : AssetStyle.chibiCute; }),
+      // Q 版资源尚未上架：点击提示，避免切换到空卡牌
+      onTap: () async {
+        if (isChibi) return; // 已是 Q 版（不应出现），直接返回
+        if (!context.mounted) return;
+        await showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: AppTheme.agedWood,
+            title: Text(LocaleService.I.t('home.style_toggle_q'),
+                style: const TextStyle(color: AppTheme.parchment)),
+            content: Text(LocaleService.I.t('home.style_coming_soon'),
+                style: const TextStyle(color: AppTheme.textSecondary)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(LocaleService.I.t('ok'), style: const TextStyle(color: Colors.grey)),
+              ),
+            ],
+          ),
+        );
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(color: AppTheme.bgMedium.withAlpha(150), borderRadius: BorderRadius.circular(4), border: Border.all(color: AppTheme.borderLight.withAlpha(80))),
