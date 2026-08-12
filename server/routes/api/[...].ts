@@ -11,7 +11,8 @@ function isSupportAdmin(event: any): boolean {
 
 export default defineEventHandler(async (event) => {
   const method = event.method;
-  const path = event.path;
+  // event.path 在 h3/Nitro 含 query string，先剥离，避免 split('/').pop() 解析 odID 时带上 ?xxx
+  const path = event.path.split('?')[0];
   // 请求日志：默认开（测试阶段）；上线后设 LOG_REQUESTS=false 关闭；错误日志始终保留
   if (process.env.LOG_REQUESTS !== 'false') console.log('[API]', method, path);
   
