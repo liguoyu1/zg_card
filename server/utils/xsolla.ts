@@ -84,7 +84,7 @@ export async function createPaymentToken(
           quantity: 1,
           sandbox,
           settings: {
-            return_url: process.env.XSOLLA_RETURN_URL || 'https://frontend-production-e3a8.up.railway.app',
+            return_url: process.env.XSOLLA_RETURN_URL || 'https://wscard.games',
             redirect_policy: {
               redirect_conditions: 'successful',
               delay: 5,
