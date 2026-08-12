@@ -206,7 +206,7 @@ List<Map<String, dynamic>> mergeTransactionRows(
   for (final e in events) {
     final data = (e['data'] as Map?) ?? const {};
     if (e['type'] == 'gem_purchase' && data['status'] == 'credited') {
-      creditedKeys.add('${data['channel']}|${data['productId']}');
+      creditedKeys.add('${data['channel']}');
     }
   }
 
@@ -245,8 +245,7 @@ List<Map<String, dynamic>> mergeTransactionRows(
         final gems = (data['gems'] as num?)?.toInt();
         final channel = data['channel']?.toString() ?? '';
         final status = data['status']?.toString() ?? '';
-        if (status == 'opened' &&
-            creditedKeys.contains('$channel|${data['productId']}')) {
+        if (status == 'opened' && creditedKeys.contains(channel)) {
           continue;
         }
         if (gems != null && sameDayServer('earn_gems', gems, at)) {

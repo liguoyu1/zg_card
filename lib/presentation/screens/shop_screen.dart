@@ -59,9 +59,17 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       auth = ref.read(authProvider);
     }
     var gained = preGems != null && (_data?.gems ?? 0) > preGems;
+    // 轮询服务端余额（容忍网络抖动与结算延迟），最多约 14s；查询失败自动重试
     if (!gained && auth != null && preGems != null) {
-      final b = await BalanceService.getBalance(auth.playerId);
-      gained = b != null && b.gems > preGems;
+      for (var i = 0; i < 7 && !gained; i++) {
+        try {
+          final b = await BalanceService.getBalance(auth.playerId);
+          gained = b != null && b.gems > preGems;
+        } catch (_) {}
+        if (!gained && i < 6) {
+          await Future.delayed(const Duration(seconds: 2));
+        }
+      }
     }
     // 异步结算订单（待入账）跳回时 status 可能非 successful 但最终会到账：
     // 弹窗只分"成功/处理中"，不再用 status 判定失败，避免误报"未完成"
@@ -255,7 +263,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       if (ok) {
         await SaveManager.addEvent({
           'type': 'gem_purchase',
-          'data': {'productId': sku, 'channel': 'xsolla', 'status': 'opened'},
+          'data': {
+            'productId': sku,
+            'channel': 'xsolla',
+            'status': 'opened',
+            'gems': ga + _gemBonus(ga),
+          },
         });
         _snack(LocaleService.I.t('shop.payment_opened'));
         await _pollXsollaBalance(auth.playerId);
