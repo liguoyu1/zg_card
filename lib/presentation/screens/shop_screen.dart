@@ -63,15 +63,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       final b = await BalanceService.getBalance(auth.playerId);
       gained = b != null && b.gems > preGems;
     }
-    // status 只用于明确失败判定；其余一律按"处理中"显示，避免误报"未完成"
+    // 异步结算订单（待入账）跳回时 status 可能非 successful 但最终会到账：
+    // 弹窗只分"成功/处理中"，不再用 status 判定失败，避免误报"未完成"
     final st = status.toLowerCase();
-    final failed = st.contains('cancel') ||
-        st.contains('error') ||
-        st.contains('fail') ||
-        st.contains('declin') ||
-        st.contains('reject');
     final ok = st.contains('success') || gained;
-    final pending = !ok && !failed;
+    final pending = !ok;
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(

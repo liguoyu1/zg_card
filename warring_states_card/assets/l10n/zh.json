@@ -1423,5 +1423,5 @@
   "txn.hero_purchase": "购买武将",
   "txn.pending": "待入账",
   "shop.xsolla_pending": "支付处理中",
-  "shop.xsolla_pending_desc": "订单已提交，结算完成后钻石自动到账，请稍后在商店查看"
+  "shop.xsolla_pending_desc": "订单处理中：结算完成后钻石自动到账；若您已取消支付，请忽略本提示"
 }
