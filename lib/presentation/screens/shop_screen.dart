@@ -48,7 +48,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   Future<void> _handleXsollaReturn() async {
     final status = XsollaPaymentService.takeReturnStatus();
     if (status == null || !mounted) return;
-    final ok = status.toLowerCase().contains('success');
+    // 先强制云端同步：以服务端到账为准判定结果（Xsolla 的 status 参数偶发与真实结果不一致）
+    await _load(syncFirst: true);
+    if (!mounted) return;
+    final preGems = await SaveManager.consumeXsollaPreGems();
+    final gained = preGems != null && (_data?.gems ?? 0) > preGems;
+    final ok = status.toLowerCase().contains('success') || gained;
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -230,6 +235,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       final sku = _gemProductId(ga);
       // 记录"支付进行中"标记：跳回后无论 status 是否携带都返回商店页（原页面）
       await SaveManager.markXsollaPending(true);
+      // 记录支付前钻石数：跳回后以服务端到账为准判定弹窗结果（status 参数不可靠）
+      await SaveManager.markXsollaPreGems(_data?.gems ?? 0);
       final ok = await XsollaPaymentService.I.purchase(auth.playerId, auth.token, sku: sku);
       if (ok) {
         await SaveManager.addEvent({

@@ -143,6 +143,21 @@ class SaveManager {
   }
 
   static const String _xsollaPendingKey = 'xsolla_pending';
+  static const String _xsollaPreGemsKey = 'xsolla_pre_gems';
+
+  /// 记录支付发起前的钻石数（跳回后以服务端到账为准判定弹窗结果）
+  static Future<void> markXsollaPreGems(int gems) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_xsollaPreGemsKey, gems);
+  }
+
+  /// 读取并清除支付前钻石数
+  static Future<int?> consumeXsollaPreGems() async {
+    final prefs = await SharedPreferences.getInstance();
+    final v = prefs.getInt(_xsollaPreGemsKey);
+    if (v != null) await prefs.remove(_xsollaPreGemsKey);
+    return v;
+  }
 
   /// 标记/清除 Xsolla 支付进行中（跳回后用于返回商店页的兜底）
   static Future<void> markXsollaPending(bool v) async {
