@@ -31,6 +31,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   PlayerData? _cachedData;
   bool _loading = true;
 
+  /// 支持的语言（下拉框显示母语名）
+  static const List<({String code, String label})> _languages = [
+    (code: 'en', label: 'English'),
+    (code: 'zh', label: '简体中文'),
+    (code: 'zh_TW', label: '繁體中文'),
+    (code: 'fr', label: 'Français'),
+    (code: 'de', label: 'Deutsch'),
+    (code: 'ja', label: '日本語'),
+    (code: 'ru', label: 'Русский'),
+    (code: 'es', label: 'Español'),
+    (code: 'fil', label: 'Filipino'),
+    (code: 'ms', label: 'Bahasa Melayu'),
+    (code: 'th', label: 'ไทย'),
+  ];
+
+  /// 切换语言：生效并持久化
+  Future<void> _changeLanguage(String code) async {
+    await LocaleService.I.init(localeCode: code);
+    await SharedPreferences.getInstance()
+        .then((p) => p.setString('locale_code', code));
+    if (mounted) setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -263,21 +286,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             title: Text(LocaleService.I.t('home.contact_support'), style: const TextStyle(color: AppTheme.parchment)),
             contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
           )),
-          PopupMenuItem(value: 'lang_zh', child: ListTile(
-            leading: const Icon(Icons.language, color: AppTheme.parchment, size: 20),
-            title: Text(LocaleService.I.t('home.lang_zh'), style: const TextStyle(color: AppTheme.parchment)),
-            contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
-          )),
-          PopupMenuItem(value: 'lang_en', child: ListTile(
-            leading: const Icon(Icons.language, color: AppTheme.parchment, size: 20),
-            title: Text(LocaleService.I.t('home.lang_en'), style: const TextStyle(color: AppTheme.parchment)),
-            contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
-          )),
-          PopupMenuItem(value: 'lang_zh_TW', child: ListTile(
-            leading: const Icon(Icons.language, color: AppTheme.parchment, size: 20),
-            title: Text(LocaleService.I.t('home.lang_zh_TW'), style: const TextStyle(color: AppTheme.parchment)),
-            contentPadding: EdgeInsets.zero, visualDensity: VisualDensity.compact,
-          )),
+          PopupMenuItem<String>(
+            enabled: false,
+            child: Row(children: [
+              const Icon(Icons.language, color: AppTheme.parchment, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: LocaleService.I.localeCode,
+                    isExpanded: true,
+                    isDense: true,
+                    dropdownColor: AppTheme.agedWood,
+                    style: const TextStyle(color: AppTheme.parchment, fontSize: 13),
+                    onChanged: (v) {
+                      if (v != null && v != LocaleService.I.localeCode) {
+                        _changeLanguage(v);
+                      }
+                    },
+                    items: [
+                      for (final l in _languages)
+                        DropdownMenuItem(
+                          value: l.code,
+                          child: Text(l.label,
+                              style: const TextStyle(color: AppTheme.parchment, fontSize: 13)),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ]),
+          ),
           const PopupMenuDivider(),
           PopupMenuItem(value: 'logout', child: ListTile(
             leading: const Icon(Icons.logout, color: Colors.redAccent, size: 20),

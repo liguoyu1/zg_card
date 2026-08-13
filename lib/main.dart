@@ -23,7 +23,7 @@ void main() async {
   SaveManager.onPlayerDataSaved = (_) => BalanceSyncService.schedule();
   SaveManager.onCollectionSaved = (_) => BalanceSyncService.schedule();
   final prefs = await SharedPreferences.getInstance();
-  final savedLocale = prefs.getString('locale_code') ?? 'zh';
+  final savedLocale = prefs.getString('locale_code') ?? 'en';
   await LocaleService.I.init(localeCode: savedLocale);
 
   // 先 runApp 显示界面，再后台初始化其他
@@ -106,6 +106,14 @@ class _WarringStatesAppState extends State<WarringStatesApp>
         Locale('en', ''),
         Locale('zh', ''),
         Locale('zh', 'TW'),
+        Locale('fr', ''),
+        Locale('de', ''),
+        Locale('ja', ''),
+        Locale('ru', ''),
+        Locale('es', ''),
+        Locale('fil', ''),
+        Locale('ms', ''),
+        Locale('th', ''),
       ],
     );
   }

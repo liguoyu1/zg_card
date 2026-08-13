@@ -9,8 +9,9 @@ class LocaleService {
   LocaleService._();
   static final LocaleService I = LocaleService._();
 
-  String _localeCode = 'zh';
+  String _localeCode = 'en';
   Map<String, dynamic>? _data;
+  Map<String, dynamic>? _enData;
 
   /// 语言变更通知（重建整个 Widget 树）
   final ValueNotifier<int> localeVersion = ValueNotifier(0);
@@ -21,23 +22,21 @@ class LocaleService {
   /// 是否已初始化
   bool get isInitialized => _data != null;
 
-  /// 初始化：加载指定语言的 JSON
-  Future<void> init({String localeCode = 'zh'}) async {
+  /// 初始化：加载指定语言的 JSON；缺失 key 一律回退英文（en）
+  Future<void> init({String localeCode = 'en'}) async {
     _localeCode = localeCode;
-
+    try {
+      _enData ??= json.decode(
+              await rootBundle.loadString('assets/l10n/en.json'))
+          as Map<String, dynamic>;
+    } catch (_) {}
     try {
       final jsonStr =
           await rootBundle.loadString('assets/l10n/$localeCode.json');
       _data = json.decode(jsonStr) as Map<String, dynamic>;
     } catch (e) {
-      debugPrint('LocaleService: 加载 $localeCode.json 失败 ($e)，回退 zh');
-      if (localeCode != 'zh') {
-        final fallback =
-            await rootBundle.loadString('assets/l10n/zh.json');
-        _data = json.decode(fallback) as Map<String, dynamic>;
-      } else {
-        _data = {};
-      }
+      debugPrint('LocaleService: 加载 $localeCode.json 失败 ($e)，回退 en');
+      _data = _enData ?? {};
     }
     // 数据加载完成后通知 UI 刷新
     localeVersion.value++;
@@ -65,10 +64,12 @@ class LocaleService {
     if (current is String) {
       result = current;
     } else if (current == null) {
-      // 尝试扁平 key
-      result = _data![key] as String? ?? '⚠$key';
+      // 尝试扁平 key；缺失回退英文（en），再缺失才显示 key
+      result = _data![key] as String? ??
+          _enData?[key] as String? ??
+          '⚠$key';
     } else {
-      result = '⚠$key';
+      result = _enData?[key] as String? ?? '⚠$key';
     }
 
     // 插值替换
