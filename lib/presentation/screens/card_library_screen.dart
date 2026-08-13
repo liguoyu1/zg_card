@@ -187,7 +187,7 @@ class _CardGridViewState extends State<_CardGridView> {
                       : _imgPlaceholder(card, 200),
                 ),
                 const SizedBox(height: 12),
-                Text(card.name, style: const TextStyle(color: AppTheme.goldAccent,
+                Text(card.lname, style: const TextStyle(color: AppTheme.goldAccent,
                     fontSize: 20, fontWeight: FontWeight.bold)),
                 Text('${_typeName(card.type)} · ${_schoolName(card.owner)} · ${_rarityName(card.rarity)}',
                     style: const TextStyle(color: AppTheme.textMuted, fontSize: 12)),
@@ -195,7 +195,7 @@ class _CardGridViewState extends State<_CardGridView> {
                 if (card.isMinion)
                   Text(LocaleService.I.t('card_library.card_stats', args: {'cost': '${card.cost}', 'attack': '${card.attack}', 'health': '${card.health}'}),
                       style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16)),
-                Text(card.description, textAlign: TextAlign.center,
+                Text(card.ldescription, textAlign: TextAlign.center,
                     style: TextStyle(color: AppTheme.parchment.withAlpha(200), fontSize: 13, fontStyle: FontStyle.italic)),
                 if (card.flavor.isNotEmpty)
                   Padding(padding: const EdgeInsets.only(top: 6),
@@ -263,7 +263,7 @@ class _CardGridViewState extends State<_CardGridView> {
 
   Widget _imgPlaceholder(cm.Card card, double h) => Container(height: h,
       color: _costColor(card.cost).withAlpha(100),
-      child: Center(child: Text(card.name[0],
+      child: Center(child: Text(card.lname[0],
           style: const TextStyle(color: AppTheme.parchment, fontSize: 40))));
 
   Color _costColor(int cost) {
@@ -382,7 +382,7 @@ class _CardGridViewState extends State<_CardGridView> {
                           const SizedBox(width: 14, height: 14,
                               child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white70)),
                           const SizedBox(height: 6),
-                          Text(card.name,
+                          Text(card.lname,
                               textAlign: TextAlign.center,
                               maxLines: 2, overflow: TextOverflow.ellipsis,
                               style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
@@ -399,7 +399,7 @@ class _CardGridViewState extends State<_CardGridView> {
                   style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold))))),
             // 名称
             Positioned(left: 4, right: 4, top: 28,
-                child: Text(card.name,
+                child: Text(card.lname,
                     style: const TextStyle(fontSize: 9, color: Colors.white,
                         fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 3, color: Colors.black87)]),
                     maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),

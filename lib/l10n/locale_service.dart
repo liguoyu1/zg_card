@@ -45,7 +45,8 @@ class LocaleService {
   /// 通过 key 获取字符串，支持 {param} 插值
   /// 优先查找 exact key，再按父级 key 降级查找
   /// e.g. t('adventure.title') → _data['adventure']['title']
-  String t(String key, {Map<String, String>? args}) {
+  String t(String key, {Map<String, String>? args, String? fallback}) {
+    if (_data == null && fallback != null) return fallback;
     if (_data == null) return '⚠$key';
 
     // 尝试点号路径
@@ -70,6 +71,9 @@ class LocaleService {
           '⚠$key';
     } else {
       result = _enData?[key] as String? ?? '⚠$key';
+    }
+    if (result.startsWith('⚠') && fallback != null) {
+      result = fallback;
     }
 
     // 插值替换

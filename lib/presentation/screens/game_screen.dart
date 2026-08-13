@@ -318,7 +318,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           .toList();
       if (rarePool.isNotEmpty) {
         final card = rarePool[rng % rarePool.length];
-        _rewardCardName = card.name;
+        _rewardCardName = card.lname;
         _rewardCardRarity = card.rarity;
       }
     } else {
@@ -328,7 +328,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           .toList();
       if (commonPool.isNotEmpty) {
         final card = commonPool[DateTime.now().millisecondsSinceEpoch % commonPool.length];
-        _rewardCardName = card.name;
+        _rewardCardName = card.lname;
         _rewardCardRarity = card.rarity;
       }
       _rewardGold = 50 + (DateTime.now().millisecondsSinceEpoch % 51); // 50-100
@@ -559,7 +559,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 HeroAvatar(hero: player.hero, health: player.health, armor: player.armor, hasWeapon: player.hasWeapon),
                 const SizedBox(height: 2),
                 SizedBox(width: 56,
-                  child: Text(player.hero.name, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
+                  child: Text(player.hero.lname, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
                     style: const TextStyle(color: AppTheme.parchment, fontSize: 10, fontWeight: FontWeight.bold))),
               ],
             ),
@@ -586,7 +586,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   Row(mainAxisSize: MainAxisSize.min, children: [
                     Icon(Icons.auto_awesome, color: Colors.red.withAlpha(150), size: 14),
                     const SizedBox(width: 2),
-                    Text(player.hero.heroPowerName, style: const TextStyle(color: Colors.red, fontSize: 10)),
+                    Text(player.hero.lpowerName, style: const TextStyle(color: Colors.red, fontSize: 10)),
                   ]),
                 const SizedBox(width: 4),
                 _buildHandCountBadge(player, isOpponent),
@@ -804,7 +804,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         AudioManager.I.attack();
         AudioManager.I.damage();
         _showDamage(card.id, attacker.attack, DamageIndicatorState.damage);
-        _log(LocaleService.I.t('game.log_attack', args: {'attacker': attacker.name, 'target': card.name}));
+        _log(LocaleService.I.t('game.log_attack', args: {'attacker': attacker.name, 'target': card.lname}));
         ref.read(aiGameProvider.notifier).minionAttack(
           widget.playerId,
           attacker,
@@ -1055,7 +1055,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     ref.read(aiGameProvider.notifier).playCard(widget.playerId, card);
     AudioManager.I.playCard();
-    _log(LocaleService.I.t('game.log_play_card', args: {'name': card.name, 'cost': '${card.cost}'}));
+    _log(LocaleService.I.t('game.log_play_card', args: {'name': card.lname, 'cost': '${card.cost}'}));
   }
 
   Widget _confirmExitButton() {
@@ -1134,7 +1134,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             ),
             const SizedBox(width: 4),
             Text(
-              isTargeting ? LocaleService.I.t('game.select_target') : player.hero.heroPowerName,
+              isTargeting ? LocaleService.I.t('game.select_target') : player.hero.lpowerName,
               style: TextStyle(
                 color: isTargeting
                     ? AppTheme.goldAccent

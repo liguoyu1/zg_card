@@ -198,7 +198,7 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
             // 名称
             Positioned(
               left: 2, right: 2, top: 22,
-              child: Text(card.name, style: const TextStyle(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 2, color: Colors.black87)]),
+              child: Text(card.lname, style: const TextStyle(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 2, color: Colors.black87)]),
                 maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
             ),
             // 攻击/生命
@@ -248,7 +248,7 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(card.name, style: const TextStyle(color: AppTheme.parchment, fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(card.lname, style: const TextStyle(color: AppTheme.parchment, fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text(LocaleService.I.t('basic_card.cost_type', args: {'cost': '${card.cost}', 'type': _typeName(card.type)}), style: TextStyle(color: AppTheme.parchment.withAlpha(179), fontSize: 13)),
                 if (card.isMinion) ...[
@@ -260,7 +260,7 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
                   Wrap(spacing: 4, children: card.keywords.map((k) => _keywordBadge(k)).toList()),
                 ],
                 const SizedBox(height: 4),
-                Text(card.description, style: TextStyle(color: AppTheme.parchment.withAlpha(230), fontSize: 12, fontStyle: FontStyle.italic)),
+                Text(card.ldescription, style: TextStyle(color: AppTheme.parchment.withAlpha(230), fontSize: 12, fontStyle: FontStyle.italic)),
               ],
             ),
           ),

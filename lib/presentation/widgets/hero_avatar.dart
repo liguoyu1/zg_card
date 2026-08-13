@@ -206,7 +206,7 @@ class _HeroAvatarState extends State<HeroAvatar> with TickerProviderStateMixin {
 
   Widget _buildAvatarBody() {
     final heroColor = _getHeroColor();
-    final firstChar = widget.hero.name.isNotEmpty ? widget.hero.name[0] : '?';
+    final firstChar = widget.hero.lname.isNotEmpty ? widget.hero.lname[0] : '?';
     // 用 CardImageService 获取正确路径（assets/fantasy_rpg/heroes/xxx.png）
     final artPath = CardImageService.getHeroImageAsset(widget.hero.id);
 

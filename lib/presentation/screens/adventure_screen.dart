@@ -289,9 +289,9 @@ class _AdventureScreenState extends State<AdventureScreen> {
               return ListTile(
                 leading: CircleAvatar(
                   backgroundColor: AppTheme.goldAccent,
-                  child: Text(hero.name[0], style: const TextStyle(color: Colors.white)),
+                  child: Text(hero.lname[0], style: const TextStyle(color: Colors.white)),
                 ),
-                title: Text(hero.name, style: const TextStyle(color: AppTheme.parchment)),
+                title: Text(hero.lname, style: const TextStyle(color: AppTheme.parchment)),
                 onTap: () { Navigator.pop(ctx); _startRun(hero); },
               );
             },
@@ -486,7 +486,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
               style: TextStyle(color: AppTheme.parchment.withAlpha(180))),
           const SizedBox(height: 16),
           ...rewardCards.take(3).map((card) => ListTile(
-            title: Text(card.name, style: const TextStyle(color: AppTheme.parchment)),
+            title: Text(card.lname, style: const TextStyle(color: AppTheme.parchment)),
             subtitle: Text('💰${card.cost} ⚔${card.attack} ❤${card.health}',
                 style: TextStyle(color: AppTheme.parchment.withAlpha(150))),
             onTap: () {

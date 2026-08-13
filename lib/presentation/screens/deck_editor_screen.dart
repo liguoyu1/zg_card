@@ -163,7 +163,7 @@ class _DeckEditorScreenState extends State<DeckEditorScreen> {
               // Name
               Expanded(
                 child: Text(
-                  card.name,
+                  card.lname,
                   style: const TextStyle(
                       color: _parchment,
                       fontWeight: FontWeight.w600,

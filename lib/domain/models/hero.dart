@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+
+import '../../l10n/locale_service.dart';
 import 'card.dart';
 
 /// 英雄技能类型
@@ -52,6 +54,18 @@ class Hero extends Equatable {
     }
   }
   
+  /// 本地化显示名
+  String get lname => LocaleService.I.t('hero.$id.name', fallback: name);
+  /// 本地化技能名
+  String get lpowerName =>
+      LocaleService.I.t('hero.$id.powerName', fallback: heroPowerName);
+  /// 本地化技能描述
+  String get lpowerDesc =>
+      LocaleService.I.t('hero.$id.powerDesc', fallback: heroPowerDescription);
+  /// 本地化王国
+  String get lkingdom =>
+      LocaleService.I.t('hero.$id.kingdom', fallback: kingdom);
+
   @override
   List<Object?> get props => [id, name, className, kingdom, health, heroPowerName, skillType, flavor];
 }

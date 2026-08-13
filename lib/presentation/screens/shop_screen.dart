@@ -187,7 +187,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       'type': 'card_purchase',
       'data': {'cardId': card.id, 'cost': price, 'currency': 'gold'},
     });
-    _snack(res.error ?? LocaleService.I.t('shop.purchase_success_name', args: {'name': card.name}));
+    _snack(res.error ?? LocaleService.I.t('shop.purchase_success_name', args: {'name': card.lname}));
     await _refresh();
   }
 

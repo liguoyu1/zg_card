@@ -101,7 +101,7 @@ class _CardChoice extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(card.name,
+            Text(card.lname,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 14, color: _parchment)),
             const SizedBox(height: 4),

@@ -148,7 +148,7 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.agedWood,
-        title: Text(hero.name, style: const TextStyle(color: AppTheme.parchment)),
+        title: Text(hero.lname, style: const TextStyle(color: AppTheme.parchment)),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           _DifficultyButton(label: LocaleService.I.t('difficulty.easy'), color: Colors.green, onTap: () => _startGame(ctx, hero, AIDifficulty.simple)),
           const SizedBox(height: 6),
@@ -216,16 +216,16 @@ class _HeroCard extends StatelessWidget {
                       ? QueuedAssetImage(path: p,
                           placeholderColor: _kingdomColor(hero.kingdom),
                           placeholderBuilder: (_) => Container(color: _kingdomColor(hero.kingdom),
-                              child: Center(child: Text(hero.name[0], style: const TextStyle(fontSize: 32, color: Colors.white)))))
+                              child: Center(child: Text(hero.lname[0], style: const TextStyle(fontSize: 32, color: Colors.white)))))
                       : Container(color: _kingdomColor(hero.kingdom),
-                          child: Center(child: Text(hero.name[0], style: const TextStyle(fontSize: 32, color: Colors.white))));
+                          child: Center(child: Text(hero.lname[0], style: const TextStyle(fontSize: 32, color: Colors.white))));
                 }()),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
                   Row(children: [
-                    Flexible(child: Text(hero.name, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: nameSize, fontWeight: FontWeight.bold, color: AppTheme.textPrimary))),
+                    Flexible(child: Text(hero.lname, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: nameSize, fontWeight: FontWeight.bold, color: AppTheme.textPrimary))),
                     if (!unlocked) ...[
                       const SizedBox(width: 4),
                       const Icon(Icons.lock, color: Colors.grey, size: 14),
@@ -242,7 +242,7 @@ class _HeroCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     const Icon(Icons.bolt, size: 14, color: AppTheme.manaBlue),
                     const SizedBox(width: 3),
-                    Flexible(child: Text(hero.heroPowerName, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12))),
+                    Flexible(child: Text(hero.lpowerName, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12))),
                   ]),
                 ]),
               ),

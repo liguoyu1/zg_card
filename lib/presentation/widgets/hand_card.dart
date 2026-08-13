@@ -265,7 +265,7 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
                   right: 2,
                   top: 24,
                   child: Text(
-                    widget.card.name,
+                    widget.card.lname,
                     style: const TextStyle(
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
@@ -387,7 +387,7 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    widget.card.name,
+                    widget.card.lname,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -419,7 +419,7 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
             const SizedBox(height: 4),
             // 描述
             Text(
-              widget.card.description,
+              widget.card.ldescription,
               style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 10,

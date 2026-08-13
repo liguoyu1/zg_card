@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../l10n/locale_service.dart';
+
 /// 卡牌类型
 enum CardType { minion, spell, weapon }
 
@@ -68,6 +70,16 @@ class Card extends Equatable {
   /// 风怒第一次攻击是否已使用
   final bool hasUsedFirstWindfuryAttack;
   
+  /// 本地化显示名（主语言缺省值=原名）
+  String get lname =>
+      LocaleService.I.t('card.$id.name', fallback: name);
+  /// 本地化描述（缺省=原描述）
+  String get ldescription =>
+      LocaleService.I.t('card.$id.description', fallback: description);
+  /// 本地化风味文本（缺省=原风味）
+  String get lflavor =>
+      LocaleService.I.t('card.$id.flavor', fallback: flavor);
+
   /// 便捷属性
   bool get isMinion => type == CardType.minion;
   bool get isSpell => type == CardType.spell;

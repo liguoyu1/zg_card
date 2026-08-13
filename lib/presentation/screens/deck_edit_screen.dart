@@ -268,7 +268,7 @@ class _DeckEditScreenState extends ConsumerState<DeckEditScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  card.name.length > 4 ? card.name.substring(0, 4) : card.name,
+                  card.lname.length > 4 ? card.lname.substring(0, 4) : card.lname,
                   style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
@@ -340,7 +340,7 @@ class _DeckEditScreenState extends ConsumerState<DeckEditScreen> {
             const SizedBox(width: 4),
             Expanded(
               child: Text(
-                card.name,
+                card.lname,
                 style: const TextStyle(fontSize: 10),
                 overflow: TextOverflow.ellipsis,
               ),

@@ -207,7 +207,7 @@ class _HeroAvatarState extends State<HeroAvatar> with TickerProviderStateMixin {
 
   Widget _buildAvatarBody() {
     final heroColor = _getHeroColor();
-    final firstChar = widget.hero.name.isNotEmpty ? widget.hero.name[0] : '?';
+    final firstChar = widget.hero.lname.isNotEmpty ? widget.hero.lname[0] : '?';
     final artPath = CardImageService.getHeroImageAsset(widget.hero.id);
     final hasArt = artPath.isNotEmpty;
 
