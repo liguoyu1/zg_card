@@ -316,6 +316,18 @@ class _CardGridViewState extends State<_CardGridView> {
           ? Center(child: Text(LocaleService.I.t('card_library.no_cards'), style: TextStyle(color: AppTheme.parchment.withAlpha(128))))
           : Padding(padding: const EdgeInsets.all(8),
               child: CustomScrollView(slivers: [
+                if (widget.showBanner)
+                  // 所有卡牌之前：广告与单张卡牌同尺寸（宽高比 0.72 一致）
+                  SliverToBoxAdapter(
+                    child: LayoutBuilder(builder: (_, c) {
+                      final cardW = (c.maxWidth - 18) / 4; // 单卡宽度
+                      final cardH = cardW / 0.72; // 单卡高度（与网格 childAspectRatio 一致）
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
+                      );
+                    }),
+                  ),
                 SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),
@@ -324,18 +336,6 @@ class _CardGridViewState extends State<_CardGridView> {
                     childCount: cards.length,
                   ),
                 ),
-                if (widget.showBanner)
-                  // 所有卡牌之后：广告与单张卡牌同尺寸（宽高比 0.72 一致）
-                  SliverToBoxAdapter(
-                    child: LayoutBuilder(builder: (_, c) {
-                      final cardW = (c.maxWidth - 18) / 4; // 单卡宽度
-                      final cardH = cardW / 0.72; // 单卡高度（与网格 childAspectRatio 一致）
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
-                      );
-                    }),
-                  ),
               ]))),
     ]);
   }
@@ -488,15 +488,7 @@ class _WishlistView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (cards.isEmpty) {
       return ListView(children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.25,
-            child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.favorite_border, size: 64, color: AppTheme.parchment.withAlpha(128)),
-          const SizedBox(height: 16),
-          Text(LocaleService.I.t('card_library.wishlist_empty'), style: const TextStyle(color: AppTheme.parchment, fontSize: 16)),
-          const SizedBox(height: 8),
-          Text(LocaleService.I.t('card_library.wishlist_hint'), style: TextStyle(color: AppTheme.parchment.withAlpha(100), fontSize: 12)),
-        ]))),
-        // 空愿望单也展示广告（与单张卡牌同尺寸，宽高比 0.72）
+        // 广告置顶（与单张卡牌同尺寸，宽高比 0.72）
         LayoutBuilder(builder: (_, c) {
           final cardW = (c.maxWidth - 18) / 4;
           final cardH = cardW / 0.72;
@@ -505,10 +497,29 @@ class _WishlistView extends StatelessWidget {
             child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
           );
         }),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.25,
+            child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.favorite_border, size: 64, color: AppTheme.parchment.withAlpha(128)),
+          const SizedBox(height: 16),
+          Text(LocaleService.I.t('card_library.wishlist_empty'), style: const TextStyle(color: AppTheme.parchment, fontSize: 16)),
+          const SizedBox(height: 8),
+          Text(LocaleService.I.t('card_library.wishlist_hint'), style: TextStyle(color: AppTheme.parchment.withAlpha(100), fontSize: 12)),
+        ]))),
       ]);
     }
     return Padding(padding: const EdgeInsets.all(8),
         child: CustomScrollView(slivers: [
+          // 愿望单最前：广告与单张卡牌同尺寸（宽高比 0.72）
+          SliverToBoxAdapter(
+            child: LayoutBuilder(builder: (_, c) {
+              final cardW = (c.maxWidth - 18) / 4;
+              final cardH = cardW / 0.72;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
+              );
+            }),
+          ),
           SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),
@@ -528,17 +539,6 @@ class _WishlistView extends StatelessWidget {
                         maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),
                   ])),
             ), childCount: cards.length),
-          ),
-          // 愿望单末尾：广告与单张卡牌同尺寸（宽高比 0.72）
-          SliverToBoxAdapter(
-            child: LayoutBuilder(builder: (_, c) {
-              final cardW = (c.maxWidth - 18) / 4;
-              final cardH = cardW / 0.72;
-              return Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
-              );
-            }),
           ),
         ]));
   }
