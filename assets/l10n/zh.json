@@ -1626,5 +1626,6 @@
   "legal.disclaimer_body": "1. 我们将尽力保证游戏运行的稳定，但不对因不可抗力、网络故障或第三方原因导致的服务中断承担责任。\n2. 本声明内容可能更新，请以最新版本为准。\n3. 如您对本游戏有任何疑问，请联系客服。",
   "home.login_first_support": "请先登录后再联系客服",
   "home.login_first_transactions": "请先登录后查看交易记录",
-  "home.login_first_skin": "请先登录后使用皮肤功能"
+  "home.login_first_skin": "请先登录后使用皮肤功能",
+  "difficulty.select": "选择难度"
 }

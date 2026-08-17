@@ -1626,5 +1626,6 @@
   "legal.disclaimer_body": "1. Wir bemühen uns um einen stabilen Betrieb des Spiels, haften jedoch nicht für Unterbrechungen durch höhere Gewalt, Netzwerkausfälle oder Dritte.\n2. Diese Erklärung kann aktualisiert werden; die neueste Version gilt.\n3. Bei Fragen zum Spiel wenden Sie sich bitte an den Kundensupport.",
   "home.login_first_support": "Bitte melden Sie sich zuerst an, um den Kundensupport zu kontaktieren",
   "home.login_first_transactions": "Bitte melden Sie sich zuerst an, um Transaktionen einzusehen",
-  "home.login_first_skin": "Bitte melden Sie sich zuerst an, um die Skin-Funktion zu nutzen"
+  "home.login_first_skin": "Bitte melden Sie sich zuerst an, um die Skin-Funktion zu nutzen",
+  "difficulty.select": "Schwierigkeit wählen"
 }

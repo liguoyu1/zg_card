@@ -1626,5 +1626,6 @@
   "legal.disclaimer_body": "1. Kami berusaha memastikan operasi permainan stabil, tetapi tidak bertanggungjawab atas gangguan yang disebabkan oleh force majeure, kegagalan rangkaian atau sebab pihak ketiga.\n2. Penyata ini mungkin dikemas kini; versi terkini mengatasi.\n3. Jika anda mempunyai sebarang soalan tentang permainan ini, sila hubungi sokongan.",
   "home.login_first_support": "Sila log masuk dahulu untuk menghubungi sokongan",
   "home.login_first_transactions": "Sila log masuk dahulu untuk melihat transaksi",
-  "home.login_first_skin": "Sila log masuk dahulu untuk menggunakan fungsi skin"
+  "home.login_first_skin": "Sila log masuk dahulu untuk menggunakan fungsi skin",
+  "difficulty.select": "Pilih Kesukaran"
 }

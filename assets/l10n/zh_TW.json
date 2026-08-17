@@ -1626,5 +1626,6 @@
   "legal.disclaimer_body": "1. 我們將盡力保證遊戲運行的穩定，但不對因不可抗力、網絡故障或第三方原因導致的服務中斷承擔責任。\n2. 本聲明內容可能更新，請以最新版本為準。\n3. 如您對本遊戲有任何疑問，請聯繫客服。",
   "home.login_first_support": "請先登入後再聯絡客服",
   "home.login_first_transactions": "請先登入後查看交易記錄",
-  "home.login_first_skin": "請先登入後使用皮膚功能"
+  "home.login_first_skin": "請先登入後使用皮膚功能",
+  "difficulty.select": "選擇難度"
 }

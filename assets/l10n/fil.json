@@ -1626,5 +1626,6 @@
   "legal.disclaimer_body": "1. Nagsusumikap kaming tiyakin ang matatag na operasyon ng laro, ngunit hindi kami mananagot sa mga pagkaantala dulot ng force majeure, network failures o third-party reasons.\n2. Maaaring ma-update ang pahayag na ito; ang pinakabagong bersyon ang masusunod.\n3. Kung may mga tanong ka tungkol sa laro, mangyaring makipag-ugnayan sa suporta.",
   "home.login_first_support": "Mangyaring mag-log in muna para makontak ang suporta",
   "home.login_first_transactions": "Mangyaring mag-log in muna para makita ang mga transaksyon",
-  "home.login_first_skin": "Mangyaring mag-log in muna para magamit ang skin feature"
+  "home.login_first_skin": "Mangyaring mag-log in muna para magamit ang skin feature",
+  "difficulty.select": "Pumili ng Hirap"
 }

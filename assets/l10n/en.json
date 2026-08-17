@@ -1626,5 +1626,6 @@
   "legal.disclaimer_body": "1. We strive to ensure stable operation of the game, but are not liable for interruptions caused by force majeure, network failures or third-party reasons.\n2. This statement may be updated; the latest version prevails.\n3. If you have any questions, please contact support.",
   "home.login_first_support": "Please log in first to contact support",
   "home.login_first_transactions": "Please log in first to view transactions",
-  "home.login_first_skin": "Please log in first to use the skin feature"
+  "home.login_first_skin": "Please log in first to use the skin feature",
+  "difficulty.select": "Select Difficulty"
 }

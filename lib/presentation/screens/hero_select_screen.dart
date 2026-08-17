@@ -196,15 +196,46 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.agedWood,
-        title: Text(hero.lname, style: const TextStyle(color: AppTheme.parchment)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+          side: const BorderSide(color: AppTheme.borderLight, width: 1),
+        ),
+        title: Column(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.emoji_events_outlined, color: AppTheme.goldAccent, size: 22),
+          const SizedBox(height: 8),
+          Text(hero.lname, style: const TextStyle(color: AppTheme.parchment, fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(LocaleService.I.t('difficulty.select', fallback: '选择难度'),
+              style: TextStyle(color: AppTheme.textMuted, fontSize: 12, letterSpacing: 2)),
+        ]),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          _DifficultyButton(label: LocaleService.I.t('difficulty.easy'), color: Colors.green, onTap: () => _startGame(ctx, hero, AIDifficulty.simple)),
-          const SizedBox(height: 6),
-          _DifficultyButton(label: LocaleService.I.t('difficulty.normal'), color: Colors.blue, onTap: () => _startGame(ctx, hero, AIDifficulty.normal)),
-          const SizedBox(height: 6),
-          _DifficultyButton(label: LocaleService.I.t('difficulty.hard'), color: Colors.orange, onTap: () => _startGame(ctx, hero, AIDifficulty.hard)),
-          const SizedBox(height: 6),
-          _DifficultyButton(label: LocaleService.I.t('difficulty.extreme'), color: Colors.red, onTap: () => _startGame(ctx, hero, AIDifficulty.abyss)),
+          _DifficultyButton(
+            label: LocaleService.I.t('difficulty.easy'),
+            color: AppTheme.healGreen,
+            icon: Icons.shield_outlined,
+            onTap: () => _startGame(ctx, hero, AIDifficulty.simple),
+          ),
+          const SizedBox(height: 8),
+          _DifficultyButton(
+            label: LocaleService.I.t('difficulty.normal'),
+            color: AppTheme.manaBlue,
+            icon: Icons.sports_martial_arts,
+            onTap: () => _startGame(ctx, hero, AIDifficulty.normal),
+          ),
+          const SizedBox(height: 8),
+          _DifficultyButton(
+            label: LocaleService.I.t('difficulty.hard'),
+            color: AppTheme.damageOrange,
+            icon: Icons.local_fire_department_outlined,
+            onTap: () => _startGame(ctx, hero, AIDifficulty.hard),
+          ),
+          const SizedBox(height: 8),
+          _DifficultyButton(
+            label: LocaleService.I.t('difficulty.extreme'),
+            color: AppTheme.healthRed,
+            icon: Icons.bolt,
+            onTap: () => _startGame(ctx, hero, AIDifficulty.abyss),
+          ),
         ]),
       ),
     );
@@ -305,15 +336,62 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _DifficultyButton extends StatelessWidget {
-  const _DifficultyButton({required this.label, required this.color, required this.onTap});
-  final String label; final Color color; final VoidCallback onTap;
+  const _DifficultyButton({required this.label, required this.color, required this.icon, required this.onTap});
+  final String label; final Color color; final IconData icon; final VoidCallback onTap;
   @override
   Widget build(BuildContext context) {
-    return SizedBox(width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(backgroundColor: color, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 10)),
-        child: Text(label),
+    return SizedBox(
+      width: double.infinity,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+          child: Ink(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  color.withAlpha(36),
+                  AppTheme.bgMedium.withAlpha(220),
+                  color.withAlpha(22),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+              border: Border.all(color: color.withAlpha(110), width: 1.4),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withAlpha(16),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+                BoxShadow(
+                  color: Colors.black.withAlpha(50),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, color: color, size: 18),
+                  const SizedBox(width: 10),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: AppTheme.fontSizeMd,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

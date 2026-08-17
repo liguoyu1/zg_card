@@ -1626,5 +1626,6 @@
   "legal.disclaimer_body": "1. Nous nous efforçons d'assurer un fonctionnement stable du jeu, mais ne sommes pas responsables des interruptions causées par des cas de force majeure, des pannes de réseau ou des tiers.\n2. Cette déclaration peut être mise à jour ; la version la plus récente prévaut.\n3. Si vous avez des questions sur le jeu, veuillez contacter le support.",
   "home.login_first_support": "Veuillez d'abord vous connecter pour contacter le support",
   "home.login_first_transactions": "Veuillez d'abord vous connecter pour voir les transactions",
-  "home.login_first_skin": "Veuillez d'abord vous connecter pour utiliser la fonction de skin"
+  "home.login_first_skin": "Veuillez d'abord vous connecter pour utiliser la fonction de skin",
+  "difficulty.select": "Choisir la difficulté"
 }
