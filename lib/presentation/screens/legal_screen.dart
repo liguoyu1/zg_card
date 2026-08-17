@@ -87,7 +87,7 @@ class LegalScreen extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 16),
               child: SizedBox(
-                  height: 120, width: double.infinity, child: AdBannerSlot()),
+                  width: double.infinity, child: AdBannerSlot()),
             ),
             _section(context, Icons.assignment_outlined,
                 LocaleService.I.t('legal.agreement'),

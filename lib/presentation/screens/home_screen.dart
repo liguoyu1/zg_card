@@ -191,11 +191,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             label: LocaleService.I.t('home.btn_adventure'),
                             color: AppTheme.damageOrange,
                             onTap: () => context.push('/shop/adventure')),
-                        // 游戏选择菜单下方：广告横幅（真实 Adsterra 横幅）
+                        // 游戏选择菜单下方：广告横幅（真实 Adsterra 横幅，高度自适应素材）
                         const Padding(
                           padding: EdgeInsets.fromLTRB(24, 20, 24, 4),
                           child: SizedBox(
-                              height: 250,
                               width: double.infinity,
                               child: AdBannerSlot()),
                         ),

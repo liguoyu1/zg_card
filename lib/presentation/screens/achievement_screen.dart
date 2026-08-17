@@ -149,7 +149,7 @@ class _AchievementScreenState extends State<AchievementScreen>
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-            child: SizedBox(height: 120, width: double.infinity, child: const AdBannerSlot()),
+            child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
           ),
         ),
       ])),
@@ -239,7 +239,7 @@ class _AchievementScreenState extends State<AchievementScreen>
         ],
         const SizedBox(height: 16),
         // 统计页末尾：广告横幅
-        const SizedBox(height: 120, width: double.infinity, child: AdBannerSlot()),
+        const SizedBox(width: double.infinity, child: AdBannerSlot()),
         const SizedBox(height: 16),
       ],
     ));

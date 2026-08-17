@@ -113,7 +113,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: SizedBox(
-                              height: 120, child: const AdBannerSlot()),
+                              child: const AdBannerSlot()),
                         );
                       }
                       final t = _txns[i - 1];

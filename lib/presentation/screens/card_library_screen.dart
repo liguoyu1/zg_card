@@ -321,7 +321,7 @@ class _CardGridViewState extends State<_CardGridView> {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 10),
-                      child: SizedBox(width: double.infinity, height: 120, child: const AdBannerSlot()),
+                      child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
                     ),
                   ),
                 SliverGrid(
@@ -487,7 +487,7 @@ class _WishlistView extends StatelessWidget {
         // 广告置顶：全宽横幅
         Padding(
           padding: const EdgeInsets.all(8),
-          child: SizedBox(width: double.infinity, height: 120, child: const AdBannerSlot()),
+          child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.25,
             child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -505,7 +505,7 @@ class _WishlistView extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: SizedBox(width: double.infinity, height: 120, child: const AdBannerSlot()),
+              child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
             ),
           ),
           SliverGrid(
