@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_web_plugins/url_strategy.dart' show usePathUrlStrategy;
 
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,7 +11,6 @@ import 'core/theme/app_theme.dart';
 import 'data/persistence/save_manager.dart';
 import 'domain/services/battle_pass_service.dart';
 import 'domain/services/balance_sync_service.dart';
-import 'domain/services/card_pool.dart';
 import 'domain/services/purchase_service.dart';
 import 'domain/services/quest_manager.dart';
 import 'l10n/locale_service.dart';
@@ -18,6 +18,10 @@ import 'routing/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 使用 path 策略（而非默认 hash 策略），使 /collection 等深层链接
+  // 直接被 go_router 识别，否则 /collection 会被当作根路径 / 处理。
+  usePathUrlStrategy();
 
   await SaveManager.init();
   SaveManager.onPlayerDataSaved = (_) => BalanceSyncService.schedule();
@@ -30,7 +34,8 @@ void main() async {
   runApp(const ProviderScope(child: WarringStatesApp()));
 
   // ── 后台异步初始化（不阻塞首帧） ──
-  CardPool.seedStarterCards();
+  // 注意：新手 20 张赠送与本周试用已移至 HomeScreen._init，
+  // 仅在「注册登录用户」首次进入时触发；游客不送卡、不弹试用。
 
   if (!kIsWeb) {
     try {

@@ -9,6 +9,7 @@ import '../../domain/models/card.dart' as cm;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/card_pool.dart';
+import '../../shared/widgets/ad_banner_slot.dart';
 import '../../shared/widgets/queued_asset_image.dart';
 
 /// 卡牌库 — 全部卡牌按学派筛选，已拥有标记
@@ -95,8 +96,8 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
         ),
       ),
       body: TabBarView(controller: _tc, children: [
-        _CardGridView(allCards: _all, owned: _owned, trial: _trial, fav: _fav, onRefresh: _load),
-        _CardGridView(allCards: _all.where((c) => _owned.contains(c.id) || _trial.contains(c.id)).toList(), owned: _owned, trial: _trial, ownedOrdered: _ownedOrdered, fav: _fav, onRefresh: _load),
+        _CardGridView(allCards: _all, owned: _owned, trial: _trial, fav: _fav, onRefresh: _load, showBanner: true),
+        _CardGridView(allCards: _all.where((c) => _owned.contains(c.id) || _trial.contains(c.id)).toList(), owned: _owned, trial: _trial, ownedOrdered: _ownedOrdered, fav: _fav, onRefresh: _load, showBanner: true),
         _WishlistView(cards: _all.where((c) => _fav.contains(c.id)).toList(), fav: _fav, onRefresh: _load),
       ]),
     );
@@ -105,9 +106,10 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
 
 // ============ 卡牌网格（全部/已有共用） ============
 class _CardGridView extends StatefulWidget {
-  const _CardGridView({required this.allCards, required this.owned, required this.trial, this.ownedOrdered = const [], required this.fav, required this.onRefresh});
+  const _CardGridView({required this.allCards, required this.owned, required this.trial, this.ownedOrdered = const [], required this.fav, required this.onRefresh, this.showBanner = false});
   final List<cm.Card> allCards; final Set<String> owned; final Set<String> trial;
   final List<String> ownedOrdered; final List<String> fav; final VoidCallback onRefresh;
+  final bool showBanner; // 列表末尾追加 3:1 广告横幅（仅"全部卡牌"页）
   @override
   State<_CardGridView> createState() => _CardGridViewState();
 }
@@ -310,15 +312,31 @@ class _CardGridViewState extends State<_CardGridView> {
                 _ownChip('all', LocaleService.I.t('card_library.all')), _ownChip('owned', LocaleService.I.t('card_library.owned')),
                 _ownChip('trial', LocaleService.I.t('card_library.trial')), _ownChip('unowned', LocaleService.I.t('card_library.unowned')),
               ]))),
-      Expanded(child: cards.isEmpty
+      Expanded(child: cards.isEmpty && !widget.showBanner
           ? Center(child: Text(LocaleService.I.t('card_library.no_cards'), style: TextStyle(color: AppTheme.parchment.withAlpha(128))))
           : Padding(padding: const EdgeInsets.all(8),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),
-                itemCount: cards.length,
-                itemBuilder: (_, i) => _cardItem(cards[i]),
-              ))),
+              child: CustomScrollView(slivers: [
+                SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),
+                  delegate: SliverChildBuilderDelegate(
+                    (_, i) => _cardItem(cards[i]),
+                    childCount: cards.length,
+                  ),
+                ),
+                if (widget.showBanner)
+                  // 所有卡牌之后：广告与单张卡牌同尺寸（宽高比 0.72 一致）
+                  SliverToBoxAdapter(
+                    child: LayoutBuilder(builder: (_, c) {
+                      final cardW = (c.maxWidth - 18) / 4; // 单卡宽度
+                      final cardH = cardW / 0.72; // 单卡高度（与网格 childAspectRatio 一致）
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
+                      );
+                    }),
+                  ),
+              ]))),
     ]);
   }
 
@@ -469,35 +487,59 @@ class _WishlistView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (cards.isEmpty) {
-      return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Icon(Icons.favorite_border, size: 64, color: AppTheme.parchment.withAlpha(128)),
-      const SizedBox(height: 16),
-      Text(LocaleService.I.t('card_library.wishlist_empty'), style: const TextStyle(color: AppTheme.parchment, fontSize: 16)),
-      const SizedBox(height: 8),
-      Text(LocaleService.I.t('card_library.wishlist_hint'), style: TextStyle(color: AppTheme.parchment.withAlpha(100), fontSize: 12)),
-    ]));
+      return ListView(children: [
+        SizedBox(height: MediaQuery.of(context).size.height * 0.25,
+            child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.favorite_border, size: 64, color: AppTheme.parchment.withAlpha(128)),
+          const SizedBox(height: 16),
+          Text(LocaleService.I.t('card_library.wishlist_empty'), style: const TextStyle(color: AppTheme.parchment, fontSize: 16)),
+          const SizedBox(height: 8),
+          Text(LocaleService.I.t('card_library.wishlist_hint'), style: TextStyle(color: AppTheme.parchment.withAlpha(100), fontSize: 12)),
+        ]))),
+        // 空愿望单也展示广告（与单张卡牌同尺寸，宽高比 0.72）
+        LayoutBuilder(builder: (_, c) {
+          final cardW = (c.maxWidth - 18) / 4;
+          final cardH = cardW / 0.72;
+          return Padding(
+            padding: const EdgeInsets.all(8),
+            child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
+          );
+        }),
+      ]);
     }
     return Padding(padding: const EdgeInsets.all(8),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),
-          itemCount: cards.length,
-          itemBuilder: (_, i) => Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: Colors.redAccent.withAlpha(76))),
-            child: ClipRRect(borderRadius: BorderRadius.circular(5),
-                child: Stack(fit: StackFit.expand, children: [
-                  Container(color: Colors.grey[700]),
-                  Positioned(left: 2, top: 2, child: Container(width: 22, height: 22,
-                      decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
-                      child: Center(child: Text('${cards[i].cost}',
-                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold))))),
-                  Positioned(left: 2, right: 2, top: 24, child: Text(cards[i].name,
-                      style: const TextStyle(fontSize: 8, color: Colors.white,
-                          fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 2, color: Colors.black87)]),
-                      maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),
-                ])),
+        child: CustomScrollView(slivers: [
+          SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),
+            delegate: SliverChildBuilderDelegate((_, i) => Container(
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.redAccent.withAlpha(76))),
+              child: ClipRRect(borderRadius: BorderRadius.circular(5),
+                  child: Stack(fit: StackFit.expand, children: [
+                    Container(color: Colors.grey[700]),
+                    Positioned(left: 2, top: 2, child: Container(width: 22, height: 22,
+                        decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+                        child: Center(child: Text('${cards[i].cost}',
+                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold))))),
+                    Positioned(left: 2, right: 2, top: 24, child: Text(cards[i].name,
+                        style: const TextStyle(fontSize: 8, color: Colors.white,
+                            fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 2, color: Colors.black87)]),
+                        maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),
+                  ])),
+            ), childCount: cards.length),
           ),
-        ));
+          // 愿望单末尾：广告与单张卡牌同尺寸（宽高比 0.72）
+          SliverToBoxAdapter(
+            child: LayoutBuilder(builder: (_, c) {
+              final cardW = (c.maxWidth - 18) / 4;
+              final cardH = cardW / 0.72;
+              return Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
+              );
+            }),
+          ),
+        ]));
   }
 }

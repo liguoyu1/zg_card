@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import '../core/api_config.dart';
+
 /// 联机对战服务
 class OnlineGameService {
-  static const String _baseUrl = 'https://app-server-production-39d1.up.railway.app';
-  // static const String _baseUrl = 'http://localhost:3000';
+  static const String _baseUrl = ApiConfig.baseUrl;
   
   String? _authToken;
   String? _odID;

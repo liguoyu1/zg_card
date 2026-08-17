@@ -180,15 +180,77 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 
   // ===== 单卡直购（服务端事务：扣款+入档，返回权威状态） =====
   void _buySingleCard(cm.Card card) async {
-    final price = _cardPrice(card);
-    final res = await _purchase('card', card.id, price);
+    final gold = _cardPrice(card);
+    final gem = _gemPrice(gold);
+    final cur = await _chooseCurrency(card.name, gold, gem);
+    if (cur == null || !mounted) return;
+    final price = cur == 'gem' ? gem : gold;
+    final res = await _purchase('card', card.id, price, cur);
     if (res == null) return;
     await SaveManager.addEvent({
       'type': 'card_purchase',
-      'data': {'cardId': card.id, 'cost': price, 'currency': 'gold'},
+      'data': {'cardId': card.id, 'cost': price, 'currency': cur},
     });
     _snack(res.error ?? LocaleService.I.t('shop.purchase_success_name', args: {'name': card.lname}));
     await _refresh();
+  }
+
+  /// 钻石直购价：金币价 ÷ 50，向上取整（50金币=1钻石）
+  static int _gemPrice(int goldPrice) => (goldPrice + 49) ~/ 50;
+
+  /// 选择支付方式弹窗；返回 'gold'/'gem'，取消返回 null
+  /// 金币/钻石两个选项横向并排（等宽），避免纵向排列
+  Future<String?> _chooseCurrency(String name, int goldPrice, int gemPrice) {
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.agedWood,
+        title: Text(name, style: const TextStyle(color: AppTheme.parchment, fontSize: 17)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(LocaleService.I.t('shop.choose_payment'),
+                style: const TextStyle(color: AppTheme.textSecondary)),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(ctx, 'gold'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.goldAccent,
+                      foregroundColor: AppTheme.agedWood,
+                    ),
+                    child: Text(LocaleService.I.t('shop.pay_gold', args: {'price': '$goldPrice'}),
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(ctx, 'gem'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.manaBlue,
+                      foregroundColor: AppTheme.parchment,
+                    ),
+                    child: Text(LocaleService.I.t('shop.pay_gem', args: {'price': '$gemPrice'}),
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, null),
+            child: Text(LocaleService.I.t('common.cancel'),
+                style: const TextStyle(color: AppTheme.textMuted)),
+          ),
+        ],
+      ),
+    );
   }
 
   int _cardPrice(cm.Card c) {
@@ -202,7 +264,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     if (c.isMinion && c.attack >= 5) base += 200;
     if (c.isMinion && c.health >= 6) base += 200;
     if (c.keywords.isNotEmpty) base += (c.keywords.length * 150);
-    return base;
+    // 卡牌价格以原金币价上调 50%
+    return (base * 1.5).round();
   }
 
   StreamSubscription<PurchaseResult>? _restoreSub;
@@ -425,30 +488,37 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     _snack(LocaleService.I.t('shop.exchange_success', args: {'gold': '$goldReward'}));
   }
 
-  void _buyHero(String hid, int cost) async {
+  void _buyHero(String hid, String name) async {
     if (_data!.unlockedHeroes.contains(hid)) return;
-    final res = await _purchase('hero', hid, cost);
+    final gold = _heroPrice(hid);
+    final gem = _gemPrice(gold);
+    final cur = await _chooseCurrency(name, gold, gem);
+    if (cur == null || !mounted) return;
+    final price = cur == 'gem' ? gem : gold;
+    final res = await _purchase('hero', hid, price, cur);
     if (res == null) return;
     await SaveManager.addEvent({
       'type': 'hero_purchase',
-      'data': {'heroId': hid, 'cost': cost, 'currency': 'gold'},
+      'data': {'heroId': hid, 'cost': price, 'currency': cur},
     });
     _snack(res.error ?? LocaleService.I.t('shop.buy_success'));
     await _refresh();
   }
 
   /// 统一购买入口：服务端事务处理当前这笔购买，成功后用返回的权威状态落存本地
-  Future<({String? error})?> _purchase(String kind, String assetId, int cost) async {
+  /// currency: 'gold' 扣金币；'gem' 扣钻石
+  Future<({String? error})?> _purchase(String kind, String assetId, int cost, String currency) async {
     if (!await _requireLogin()) return (error: null);
     final auth = ref.read(authProvider);
     if (auth == null) return (error: null);
-    if (_data == null || _data!.gold < cost) {
-      _snack(LocaleService.I.t('shop.gold_insufficient_short'));
+    final isGem = currency == 'gem';
+    if (_data == null || (isGem ? _data!.gems < cost : _data!.gold < cost)) {
+      _snack(isGem ? LocaleService.I.t('shop.gems_insufficient_short') : LocaleService.I.t('shop.gold_insufficient_short'));
       return (error: null);
     }
     final res = await BalanceService.purchasePlayerAsset(
       auth.playerId, auth.token,
-      kind: kind, assetId: assetId, cost: cost,
+      kind: kind, assetId: assetId, cost: cost, currency: currency,
     );
     if (res == null) { _snack(LocaleService.I.t('shop.op_failed')); return (error: null); }
     if (!res.ok) {
@@ -458,6 +528,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     // 服务端返回的余额与解锁列表为权威状态
     await SaveManager.savePlayerData(_data!.copyWith(
       gold: res.gold,
+      gems: res.gems,
       unlockedCards: kind == 'card' ? res.unlockedCards : _data!.unlockedCards,
       unlockedHeroes: kind == 'hero' ? res.unlockedHeroes : _data!.unlockedHeroes,
     ));
@@ -466,13 +537,13 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 
   int _heroPrice(String hid) {
-    // 英雄远贵于卡牌（卡牌最贵传说2000，英雄基础3000起）
+    // 英雄远贵于卡牌（卡牌最贵传说2000，英雄基础3000起）；价格以原金币价上调1倍（×2）
     const p = {'H_B001': 8000, 'H_B002': 12000, 'H_B003': 20000, 'H_F001': 10000,
       'H_F002': 12000, 'H_F003': 18000, 'H_R001': 8000, 'H_R002': 12000, 'H_R003': 20000,
       'H_D001': 8000, 'H_D002': 12000, 'H_D003': 18000, 'H_M001': 10000, 'H_M002': 12000,
       'H_M003': 18000, 'H_Y001': 12000, 'H_Y002': 18000, 'H_Y003': 20000,
       'H_Z001': 10000, 'H_Z002': 12000, 'H_Z003': 25000};
-    return p[hid] ?? 12000;
+    return (p[hid] ?? 12000) * 2;
   }
 
 
@@ -517,11 +588,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           // === 金币 ===
           _foldable(LocaleService.I.t('shop.gold_title'), _goldExpanded, (v) => setState(() => _goldExpanded = v), LocaleService.I.t('shop.gold_exchange')),
           if (_goldExpanded) ...[
-            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '1000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '100'}), const Text('100💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(100, 1000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '1000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '20'}), const Text('20💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(20, 1000)),
             const SizedBox(height: 4),
-            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '5000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '500'}), const Text('500💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(500, 5000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '5000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '100'}), const Text('100💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(100, 5000)),
             const SizedBox(height: 4),
-            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '10000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '1000'}), const Text('1000💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(1000, 10000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '10000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '200'}), const Text('200💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(200, 10000)),
           ],
           const SizedBox(height: 16),
 
@@ -590,7 +661,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     final pool = all.where((c) => c.rarity != cm.Rarity.common).toList()..shuffle(rng);
     if (pool.isEmpty) return [Padding(padding: const EdgeInsets.all(8), child: Text(LocaleService.I.t('shop.no_recommend'), style: const TextStyle(color: AppTheme.textMuted)))];
     return pool.take(6).map((c) {
-      final price = _cardPrice(c);
+      final gold = _cardPrice(c);
+      final gem = _gemPrice(gold);
       final imgPath = CardImageService.getImageByType(c.id, _typeEng(c));
       final isOwned = owned.contains(c.id);
       final borderColor = _rc(c.rarity);
@@ -625,7 +697,10 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
               if (isOwned)
                 Text(LocaleService.I.t('shop.owned_tag'), style: const TextStyle(color: AppTheme.textMuted, fontSize: 11))
               else
-                Text('$price💰', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                  Text('$gold💰', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+                  Text('$gem💎', style: const TextStyle(color: AppTheme.manaBlue, fontSize: 11)),
+                ]),
             ]),
           ),
         ),
@@ -644,6 +719,17 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     cm.CardOwner.zonghengjia => LocaleService.I.t('owner.zonghengjia'), cm.CardOwner.neutral => LocaleService.I.t('owner.neutral'),
   };
 
+  String _heroClassName(String c) => switch (c) {
+        'bingjia' => LocaleService.I.t('owner.bingjia'),
+        'fajia' => LocaleService.I.t('owner.fajia'),
+        'rujia' => LocaleService.I.t('owner.rujia'),
+        'daojia' => LocaleService.I.t('owner.daojia'),
+        'mojia' => LocaleService.I.t('owner.mojia'),
+        'yinyangjia' => LocaleService.I.t('owner.yinyangjia'),
+        'zonghengjia' => LocaleService.I.t('owner.zonghengjia'),
+        _ => c,
+      };
+
   // ===== 英雄商店：每8h刷新 =====
   List<Widget> _heroShop() {
     final all = HeroDataProvider.getAllHeroes();
@@ -652,11 +738,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     final pool = all.toList()..shuffle(rng); // 不再过滤已拥有，保留展示
     if (pool.isEmpty) return [Padding(padding: const EdgeInsets.all(8), child: Text(LocaleService.I.t('shop.all_unlocked'), style: const TextStyle(color: AppTheme.textMuted)))];
     return pool.take(4).map((h) {
-      final p = _heroPrice(h.id);
+      final gold = _heroPrice(h.id);
+      final gem = _gemPrice(gold);
       final heroImg = CardImageService.getHeroImageAsset(h.id);
       final isOwned = owned.contains(h.id);
       return GestureDetector(
-        onTap: isOwned ? null : () => _buyHero(h.id, p),
+        onTap: isOwned ? null : () => _buyHero(h.id, h.name),
         child: Opacity(
           opacity: isOwned ? 0.5 : 1.0,
           child: Container(padding: const EdgeInsets.all(11), margin: const EdgeInsets.only(bottom: 4),
@@ -679,12 +766,15 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                 const SizedBox(width: 10),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(h.name, style: TextStyle(color: isOwned ? AppTheme.textMuted : AppTheme.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
-                  Text('${h.className} · ${h.kingdom}', style: const TextStyle(color: AppTheme.textMuted, fontSize: 10)),
+                  Text('${_heroClassName(h.className)} · ${h.lkingdom}', style: const TextStyle(color: AppTheme.textMuted, fontSize: 10)),
                 ])),
                 if (isOwned)
                   Text(LocaleService.I.t('shop.owned_tag'), style: const TextStyle(color: AppTheme.textMuted, fontSize: 11))
                 else
-                  Text('$p💰', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                    Text('$gold💰', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+                    Text('$gem💎', style: const TextStyle(color: AppTheme.manaBlue, fontSize: 11)),
+                  ]),
               ])),
         ),
       );

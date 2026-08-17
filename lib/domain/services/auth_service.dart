@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/api_config.dart';
+
 /// 登录状态
 class AuthState {
   final String token;
@@ -27,8 +29,7 @@ class AuthService {
   static const String _playerNameKey = 'auth_player_name';
   static const String _avatarKey = 'auth_avatar';
   static const String _emailKey = 'auth_email';
-  static const String _baseUrl =
-      'https://app-server-production-39d1.up.railway.app';
+  static const String _baseUrl = ApiConfig.baseUrl;
 
   AuthState? _state;
   AuthState? get state => _state;

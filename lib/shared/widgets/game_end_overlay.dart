@@ -1,21 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:warring_states_card/l10n/locale_service.dart';
 
+import '../../domain/models/card.dart' as domain;
+import '../../l10n/locale_service.dart';
+
+const _parchment = Color(0xFFE8D5B7);
+const _goldAccent = Color(0xFFB8860B);
+const _bgDark = Color(0xFF2C1810);
+const _agedWood = Color(0xFF3D2B1F);
+const _cardBack = Color(0xFF4A3728);
+
+/// 稀有度 → 着色
+Color _rarityColor(domain.Rarity r) => switch (r) {
+  domain.Rarity.common => _parchment,
+  domain.Rarity.rare => const Color(0xFF4FC3F7),
+  domain.Rarity.epic => const Color(0xFFBA68C8),
+  domain.Rarity.legendary => _goldAccent,
+};
+
+/// 结算弹窗 — 胜利时展示奖励与「看广告双倍」按钮。
 class GameEndOverlay extends StatefulWidget {
-
   const GameEndOverlay({
     super.key,
     required this.winnerId,
     required this.isPlayerWinner,
     required this.onReturnToMenu,
-    this.onRevive,
-    this.onDoubleGold,
+    this.onDoubleReward,
+    this.rewardCardName,
+    this.rewardCardRarity,
+    this.rewardGold = 0,
   });
   final String winnerId;
   final bool isPlayerWinner;
   final VoidCallback onReturnToMenu;
-  final VoidCallback? onRevive;
-  final VoidCallback? onDoubleGold;
+  final VoidCallback? onDoubleReward;
+  final String? rewardCardName;
+  final domain.Rarity? rewardCardRarity;
+  final int rewardGold;
 
   @override
   State<GameEndOverlay> createState() => _GameEndOverlayState();
@@ -23,16 +43,10 @@ class GameEndOverlay extends StatefulWidget {
 
 class _GameEndOverlayState extends State<GameEndOverlay>
     with SingleTickerProviderStateMixin {
-  bool _doubleGoldClaimed = false;
+  bool _doubleRewardClaimed = false;
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-
-  static const _bgDark = Color(0xFF2C1810);
-  static const _goldAccent = Color(0xFFB8860B);
-  static const _parchment = Color(0xFFE8D5B7);
-  static const _agedWood = Color(0xFF3D2B1F);
-  static const _cardBack = Color(0xFF4A3728);
 
   @override
   void initState() {
@@ -114,14 +128,14 @@ class _GameEndOverlayState extends State<GameEndOverlay>
             _buildResultTitle(),
             const SizedBox(height: 16),
             _buildResultDescription(),
-            const SizedBox(height: 48),
-            if (!widget.isPlayerWinner && widget.onRevive != null)
-              _buildReviveButton(),
-            if (!widget.isPlayerWinner && widget.onRevive != null)
-              const SizedBox(height: 16),
-            if (widget.isPlayerWinner && widget.onDoubleGold != null)
-              _buildDoubleGoldButton(),
-            if (widget.isPlayerWinner && widget.onDoubleGold != null)
+            if (widget.isPlayerWinner) ...[
+              const SizedBox(height: 24),
+              _buildRewardSummary(),
+            ],
+            const SizedBox(height: 40),
+            if (widget.isPlayerWinner && !_doubleRewardClaimed && widget.onDoubleReward != null)
+              _buildDoubleRewardButton(),
+            if (widget.isPlayerWinner && !_doubleRewardClaimed && widget.onDoubleReward != null)
               const SizedBox(height: 16),
             _buildReturnButton(),
           ],
@@ -148,7 +162,9 @@ class _GameEndOverlayState extends State<GameEndOverlay>
       ),
       child: Center(
         child: Text(
-          widget.isPlayerWinner ? LocaleService.I.t('game.victory_char') : LocaleService.I.t('game.defeat_char'),
+          widget.isPlayerWinner
+              ? LocaleService.I.t('game.victory_char')
+              : LocaleService.I.t('game.defeat_char'),
           style: TextStyle(
             fontSize: 96,
             fontWeight: FontWeight.bold,
@@ -164,7 +180,9 @@ class _GameEndOverlayState extends State<GameEndOverlay>
 
   Widget _buildResultTitle() {
     return Text(
-      widget.isPlayerWinner ? LocaleService.I.t('game.victory') : LocaleService.I.t('game.defeat'),
+      widget.isPlayerWinner
+          ? LocaleService.I.t('game.victory')
+          : LocaleService.I.t('game.defeat'),
       style: TextStyle(
         fontSize: 42,
         fontWeight: FontWeight.bold,
@@ -184,37 +202,56 @@ class _GameEndOverlayState extends State<GameEndOverlay>
     );
   }
 
-  Widget _buildReviveButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: widget.onRevive,
-        icon: const Icon(Icons.play_circle_outline),
-        label: Text(LocaleService.I.t('game.ad_revive')),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF4CAF50),
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  Widget _buildRewardSummary() {
+    final gold = widget.rewardGold;
+    final cardName = widget.rewardCardName;
+    final rarity = widget.rewardCardRarity;
+    final hasReward = gold > 0 || cardName != null;
+
+    if (!hasReward) {
+      return Text(
+        LocaleService.I.t('game.no_reward'),
+        style: TextStyle(fontSize: 16, color: _parchment.withAlpha(153)),
+      );
+    }
+
+    return Column(
+      children: [
+        Text(
+          LocaleService.I.t('game.reward_title'),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _goldAccent),
         ),
-      ),
+        const SizedBox(height: 8),
+        if (gold > 0)
+          Text(
+            '💰 +$gold ${LocaleService.I.t('common.gold')}',
+            style: const TextStyle(fontSize: 16, color: _parchment),
+          ),
+        if (cardName != null && rarity != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              '+ $cardName',
+              style: TextStyle(fontSize: 16, color: _rarityColor(rarity)),
+            ),
+          ),
+      ],
     );
   }
 
-  Widget _buildDoubleGoldButton() {
+  Widget _buildDoubleRewardButton() {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: _doubleGoldClaimed ? null : () {
-          widget.onDoubleGold?.call();
-          setState(() => _doubleGoldClaimed = true);
+        onPressed: () {
+          widget.onDoubleReward?.call();
+          setState(() => _doubleRewardClaimed = true);
         },
         icon: const Icon(Icons.play_circle_outline),
-        label: Text(LocaleService.I.t('game.double_gold')),
+        label: Text(LocaleService.I.t('game.ad_double_reward')),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.orange[700],
           foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.grey[400],
           padding: const EdgeInsets.symmetric(vertical: 14),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
@@ -248,9 +285,7 @@ class _GameEndOverlayState extends State<GameEndOverlay>
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: Text(
-          widget.isPlayerWinner
-              ? LocaleService.I.t('game.btn_return')
-              : LocaleService.I.t('game.btn_return'),
+          LocaleService.I.t('game.btn_return'),
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _parchment, letterSpacing: 2),
         ),
       ),

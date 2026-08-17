@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/audio/audio.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/card_image_service.dart';
+import '../../l10n/locale_service.dart';
 import '../../shared/widgets/queued_asset_image.dart';
 import 'home_screen.dart';
 
@@ -187,7 +188,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     return Column(
       children: [
         Text(
-          '战国卡牌',
+          LocaleService.I.t('splash.title'),
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
@@ -243,7 +244,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             builder: (_, v, __) {
               final pct = (v * 100).clamp(0, 100).toStringAsFixed(0);
               return Text(
-                '素材加载 $pct%',
+                LocaleService.I.t('splash.loading', args: {'pct': pct}),
                 style: TextStyle(
                   fontSize: 12,
                   color: AppTheme.parchment.withAlpha(153),

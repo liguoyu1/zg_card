@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,7 +9,10 @@ import '../../domain/models/card.dart' as domain;
 import '../../domain/models/player.dart';
 import '../../domain/models/game_state.dart';
 import '../../domain/services/services.dart';
+import '../../domain/services/ad_service.dart';
+import '../../domain/services/ad_service_factory.dart';
 import '../../shared/widgets/queued_asset_image.dart';
+import '../../shared/widgets/interstitial_ad_overlay.dart';
 import '../../domain/services/achievement_service.dart';
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/models/quest.dart';
@@ -19,7 +23,6 @@ import '../../domain/models/mission_context.dart';
 import '../../domain/models/roguelite_run.dart';
 import '../../l10n/locale_service.dart';
 import '../../data/persistence/save_manager.dart';
-import '../../data/card_image_service.dart';
 import '../../data/card_image_service.dart';
 
 import '../../core/theme/app_theme.dart';
@@ -80,6 +83,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   final DateTime _gameStartTime = DateTime.now();
   int _totalDamageDealt = 0;
   bool _gameEndProcessed = false; // 防止重复处理
+  /// 插屏广告全局冷却（避免每局频繁弹出）。iOS 原生通过 NoOp 自动跳过。
+  static DateTime? _lastInterstitialAt;
+  static const Duration _interstitialCooldown = Duration(minutes: 1);
   String? _rewardCardName; // 战后奖励卡牌名称
   domain.Rarity? _rewardCardRarity;
   int _rewardGold = 0;
@@ -346,6 +352,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     });
     if (!_gameEndProcessed) {
       _gameEndProcessed = true;
+      // 结算弹窗前触发插屏广告（带全局频控，避免频繁打扰）。
+      _maybeShowInterstitialAd();
       if (isPlayerWinner) _generateReward();
 
       if (widget.missionContext != null) {
@@ -443,6 +451,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   void _claimDoubleReward() async {
     if (!mounted) return;
 
+    // 先展示激励广告（Web: Adsterra 智能链接；iOS: NoOp 直接通过）。
+    // 仅在广告「观看完成」后才发放双倍奖励。
+    final adService = getAdService();
+    final rewarded = await adService.showRewardedAd(
+      placementId: AdPlacement.goldBonus,
+    );
+    if (!mounted) return;
+    if (!rewarded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(LocaleService.I.t('game.ad_failed', fallback: 'Ad not completed'))),
+      );
+      return;
+    }
+
     final pd = await SaveManager.loadPlayerData();
     if (pd == null) return;
     // 双倍：额外奖励同稀有度卡牌 + 再给一份金币
@@ -459,6 +481,28 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         SnackBar(content: Text('${LocaleService.I.t('game.reward_doubled')} +$_rewardGold ${LocaleService.I.t('common.gold')}')),
       );
     }
+  }
+
+  /// 结算弹窗前触发插屏广告，带全局频控。
+  ///
+  /// 受控弹窗：应用内覆盖层 + 明确的关闭按钮（用户不点广告也可随时退出），
+  /// 绝不劫持页面任意点击。Web 端内嵌真实 Adsterra 广告；原生端零广告，不弹窗。
+  void _maybeShowInterstitialAd() {
+    final now = DateTime.now();
+    if (_lastInterstitialAt != null &&
+        now.difference(_lastInterstitialAt!) < _interstitialCooldown) {
+      return; // 冷却中，跳过
+    }
+    _lastInterstitialAt = now;
+    // 仅 Web 与 Android 投放受控插屏；iOS 零广告（native overlay 返回空，不弹窗）。
+    if (!kIsWeb && defaultTargetPlatform != TargetPlatform.android) return;
+    // 异步触发，不阻塞 UI
+    if (!mounted) return;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true, // 点击遮罩也可关闭，绝不强制
+      builder: (_) => const InterstitialAdOverlay(),
+    );
   }
 
   Widget _buildGameContent(GameState gameState) {
@@ -804,7 +848,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         AudioManager.I.attack();
         AudioManager.I.damage();
         _showDamage(card.id, attacker.attack, DamageIndicatorState.damage);
-        _log(LocaleService.I.t('game.log_attack', args: {'attacker': attacker.name, 'target': card.lname}));
+        _log(LocaleService.I.t('game.log_attack', args: {'attacker': attacker.lname, 'target': card.lname}));
         ref.read(aiGameProvider.notifier).minionAttack(
           widget.playerId,
           attacker,
@@ -1451,7 +1495,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       }
       AudioManager.I.attack();
       AudioManager.I.damage();
-      _log(LocaleService.I.t('game.log_ai_attack', args: {'attacker': attacker.name}));
+      _log(LocaleService.I.t('game.log_ai_attack', args: {'attacker': attacker.lname}));
       await Future.delayed(const Duration(milliseconds: 400));
       if (!mounted) return;
     }

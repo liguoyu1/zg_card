@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
+import '../core/api_config.dart';
 import '../l10n/locale_service.dart';
 
 /// 客服工单服务 — 用户反馈提交到服务端，客服在后台查看
@@ -14,8 +15,7 @@ class SupportService {
   SupportService._();
   static final SupportService I = SupportService._();
 
-  static const String _baseUrl =
-      'https://app-server-production-39d1.up.railway.app';
+  static const String _baseUrl = ApiConfig.baseUrl;
 
   static String get _platform => kIsWeb
       ? 'web'

@@ -7,6 +7,7 @@ import '../../domain/services/balance_sync_service.dart';
 import '../../domain/models/quest.dart';
 import '../../domain/services/achievement_service.dart';
 import '../../l10n/locale_service.dart';
+import '../../shared/widgets/ad_banner_slot.dart';
 
 enum _AchCategory { all, battle, collection, adventure, gold, streak, hero }
 
@@ -126,24 +127,32 @@ class _AchievementScreenState extends State<AchievementScreen>
                   style: const TextStyle(color: AppTheme.goldAccent, fontSize: 13, fontWeight: FontWeight.bold))),
             ])),
       // 列表
-      Expanded(child: ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: filtered.length,
-        itemBuilder: (_, i) {
-          final ach = filtered[i];
-          final unlocked = achieved.contains(ach.id);
-          final pi = AchievementService.progressInfo(ach.id);
-          var current = pi != null ? (stats[pi.statKey] ?? 0) : 0;
-          final maxVal = pi?.threshold ?? 100;
-          final isRate = pi?.isRate ?? false;
-          // 胜率成就：不足20场样本时 UI 显示 0% 避免假满条
-          if (isRate && (stats['totalMatches'] ?? 0) < 20) current = 0;
-          return _AchCard(
-            ach: ach, unlocked: unlocked,
-            current: current, maxVal: maxVal, isRate: isRate,
-          );
-        },
-      )),
+      Expanded(child: CustomScrollView(slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(12),
+          sliver: SliverList(delegate: SliverChildBuilderDelegate((_, i) {
+            final ach = filtered[i];
+            final unlocked = achieved.contains(ach.id);
+            final pi = AchievementService.progressInfo(ach.id);
+            var current = pi != null ? (stats[pi.statKey] ?? 0) : 0;
+            final maxVal = pi?.threshold ?? 100;
+            final isRate = pi?.isRate ?? false;
+            // 胜率成就：不足20场样本时 UI 显示 0% 避免假满条
+            if (isRate && (stats['totalMatches'] ?? 0) < 20) current = 0;
+            return _AchCard(
+              ach: ach, unlocked: unlocked,
+              current: current, maxVal: maxVal, isRate: isRate,
+            );
+          }, childCount: filtered.length)),
+        ),
+        // 列表末尾：广告横幅
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            child: SizedBox(height: 120, width: double.infinity, child: const AdBannerSlot()),
+          ),
+        ),
+      ])),
     ]);
   }
 
@@ -228,6 +237,10 @@ class _AchievementScreenState extends State<AchievementScreen>
             ]),
           )),
         ],
+        const SizedBox(height: 16),
+        // 统计页末尾：广告横幅
+        const SizedBox(height: 120, width: double.infinity, child: AdBannerSlot()),
+        const SizedBox(height: 16),
       ],
     ));
   }

@@ -440,10 +440,10 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
               ),
             ),
             // 描述
-            if (widget.card.flavor.isNotEmpty) ...[
+            if (widget.card.lflavor.isNotEmpty) ...[
               const SizedBox(height: 4),
               Text(
-                widget.card.flavor,
+                widget.card.lflavor,
                 style: const TextStyle(
                   color: Colors.white54,
                   fontSize: 9,

@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import '../core/api_config.dart';
+
 /// 联机对战余额服务 — 调用后端 API
 class BalanceService {
-  static const String _baseUrl =
-      'https://app-server-production-39d1.up.railway.app';
+  static const String _baseUrl = ApiConfig.baseUrl;
 
   /// 从服务端获取余额
   static Future<({int gems, int gold, int balanceVersion})?> getBalance(
@@ -256,10 +257,12 @@ class BalanceService {
   }
 
   /// 服务端购买卡/英雄（单事务扣款+入档），返回权威状态
-  static Future<({bool ok, int gold, List<String> unlockedCards,
+  /// currency: 'gold' 扣金币；'gem' 扣钻石
+  static Future<({bool ok, int gold, int gems, List<String> unlockedCards,
       List<String> unlockedHeroes, String? error})?>
       purchasePlayerAsset(String playerId, String token,
-          {required String kind, required String assetId, required int cost}) async {
+          {required String kind, required String assetId, required int cost,
+          String currency = 'gold'}) async {
     try {
       final resp = await http.post(
         Uri.parse('$_baseUrl/api/shop/buy-${kind == 'hero' ? 'hero' : 'card'}'),
@@ -267,13 +270,14 @@ class BalanceService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({'assetId': assetId, 'cost': cost}),
+        body: jsonEncode({'assetId': assetId, 'cost': cost, 'currency': currency}),
       );
       final body = jsonDecode(resp.body);
       if (resp.statusCode != 200 || body['success'] != true) {
         return (
           ok: false,
           gold: 0,
+          gems: 0,
           unlockedCards: const <String>[],
           unlockedHeroes: const <String>[],
           error: (body is Map && body['error'] is String)
@@ -284,6 +288,7 @@ class BalanceService {
       return (
         ok: true,
         gold: body['gold'] is int ? body['gold'] as int : int.tryParse(body['gold'].toString()) ?? 0,
+        gems: body['gems'] is int ? body['gems'] as int : int.tryParse(body['gems'].toString()) ?? 0,
         unlockedCards: List<String>.from(body['unlockedCards'] ?? const []),
         unlockedHeroes: List<String>.from(body['unlockedHeroes'] ?? const []),
         error: null,

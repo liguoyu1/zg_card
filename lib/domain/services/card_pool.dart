@@ -10,8 +10,10 @@ class CardPool {
   CardPool._();
 
   static const int trialCardCount = 8;
-  static const int starterCommon = 15;
-  static const int starterRare = 5;
+  // 新玩家初始卡牌 20 张：普通14 + 稀有4 + 史诗2（覆盖低中高稀有度，史诗体验高级卡）
+  static const int starterCommon = 14;
+  static const int starterRare = 4;
+  static const int starterEpic = 2;
 
   /// 加载自有卡牌，空时自动种子初始化
   static Future<Set<String>> loadOwnedIds() async {
@@ -24,7 +26,7 @@ class CardPool {
     return Set<String>.from(data.unlockedCards);
   }
 
-  /// 新玩家初始卡牌种子：15张随机普通 + 5张随机稀有
+  /// 新玩家初始卡牌种子：14张随机普通 + 4张随机稀有 + 2张随机史诗
   /// 新用户低价初始英雄池（金币 8000 档，价值最低的三位）
   static const List<String> starterHeroPool = ['H_B001', 'H_R001', 'H_D001'];
 
@@ -48,13 +50,17 @@ class CardPool {
       ..shuffle(rng);
     final rareIds = rare.take(starterRare).map((c) => c.id).toList();
 
+    final epic = allCards.where((c) => c.rarity == Rarity.epic).toList()
+      ..shuffle(rng);
+    final epicIds = epic.take(starterEpic).map((c) => c.id).toList();
+
     // 新用户：随机发放一名低价初始英雄（替代固定 H_B001）
     final starterHero = isNew
         ? starterHeroPool[rng.nextInt(starterHeroPool.length)]
         : null;
 
     final newData = data.copyWith(
-      unlockedCards: [...commonIds, ...rareIds],
+      unlockedCards: [...commonIds, ...rareIds, ...epicIds],
       unlockedHeroes: starterHero != null ? [starterHero] : data.unlockedHeroes,
     );
     await SaveManager.savePlayerData(newData);

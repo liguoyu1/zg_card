@@ -9,8 +9,9 @@ import '../screens/shop_screen.dart';
 
 /// 响应式外壳 — 4 Tab：主页/卡牌/进度/商店
 class ResponsiveShell extends StatefulWidget {
-  const ResponsiveShell({super.key, required this.child});
+  const ResponsiveShell({super.key, required this.child, this.initialPath = '/'});
   final Widget child;
+  final String initialPath;
   @override
   State<ResponsiveShell> createState() => _ResponsiveShellState();
 }
@@ -51,7 +52,9 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
 
   @override
   Widget build(BuildContext context) {
-    final path = GoRouterState.of(context).uri.path;
+    // ShellRoute 的 state.uri.path 才是当前子路由；GoRouterState.of(context)
+    // 会因 IndexedStack 内各子屏 context 而上报根路径(/)。
+    final path = widget.initialPath;
     if (_isSubRoute(path)) return widget.child;
 
     _currentIndex = _indexForPath(path);
@@ -71,8 +74,6 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
           selectedIndex: _currentIndex,
           onDestinationSelected: _onNav,
           labelType: NavigationRailLabelType.all,
-          leading: const Padding(padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('戰', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
           destinations: List.generate(4, (i) => NavigationRailDestination(
             icon: Icon(_tabIcons[i]), selectedIcon: Icon(_tabIconsActive[i]), label: Text(_tabLabels[i]),
           )),

@@ -201,7 +201,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
             Text(LocaleService.I.t('matchmaking.searching'),
                 style: const TextStyle(color: AppTheme.parchment, fontSize: 18)),
             const SizedBox(height: 8),
-            Text('${LocaleService.I.t('matchmaking.current_hero', args: {'name': widget.selectedHero.name})}',
+            Text('${LocaleService.I.t('matchmaking.current_hero', args: {'name': widget.selectedHero.lname})}',
                 style: const TextStyle(color: AppTheme.textSecondary)),
             const SizedBox(height: 8),
             Container(

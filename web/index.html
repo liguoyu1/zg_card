@@ -101,7 +101,32 @@
       width: 100vw;
       height: 100vh;
     }
+    /* Flutter 引擎宿主尺寸修复：flutter-view / flt-glass-pane 必须绝对定位撑满，
+       否则引擎初始化时视口为 0，整个 CanvasKit 画布不渲染。 */
+    flutter-view, flt-glass-pane {
+      position: absolute;
+      inset: 0;
+      display: block;
+    }
+    flt-glass-pane flt-scene-host,
+    flt-glass-pane flt-canvas-container {
+      position: absolute;
+      inset: 0;
+      display: block;
+    }
   </style>
+
+  <!-- ============================================================ -->
+  <!-- Adsterra 广告接入 (Web / H5 仅)                              -->
+  <!-- publisher: wscard.games                                       -->
+  <!-- 注意：以下脚本仅在 Web 构建生效；iOS/Android 原生构建不含此  -->
+  <!--       HTML，故原生端零广告。                                  -->
+  <!-- ============================================================ -->
+
+  <!-- Adsterra 全局脚本已移除：Popunder(pl30861313) 与 Social Bar(pl30861314)
+       会劫持页面任意点击弹出广告（点击跳转非游戏页）。仅在受控的
+       HtmlElementView iframe 内嵌 Native Banner，以及用户主动触发
+       的「翻倍金币」Smart Link 广告。 -->
 </head>
 <body>
   <div id="loading">
@@ -128,6 +153,69 @@
     });
   </script>
 
+  <!-- Social Bar 已移除：会劫持全局点击，改用 HtmlElementView 内的 Native Banner -->
+
+  <script>
+    // =====================================================================
+    // Flutter Web CanvasKit 宿主尺寸修复
+    // 某些环境（部分无头浏览器 / 网络受限容器）下，引擎注入的 shadow style
+    // 缺失 flt-scene-host / flt-canvas-container 的尺寸规则，导致 shadow DOM
+    // 内场景容器为 0x0，整个 CanvasKit 画布虽有尺寸却不渲染（页面空白）。
+    // 页面级 CSS 无法穿透 shadow DOM，必须在 flt-glass-pane 创建后立即
+    // 向它的 shadowRoot 注入尺寸规则 —— 且要在引擎 runApp 之前完成。
+    // =====================================================================
+    (function () {
+      'use strict';
+      var SHADOW_CSS = 'flt-scene-host, flt-canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }';
+      function patchShadow(gp) {
+        try {
+          var sr = gp.shadowRoot;
+          if (!sr) return;
+          var s = sr.querySelector('style');
+          if (!s) { s = document.createElement('style'); sr.appendChild(s); }
+          if (s.textContent.indexOf('flt-canvas-container') === -1) {
+            s.textContent += SHADOW_CSS;
+          }
+        } catch (e) { /* ignore */ }
+      }
+      var obs = new MutationObserver(function (muts) {
+        var gp = document.querySelector('flt-glass-pane');
+        if (gp) { patchShadow(gp); obs.disconnect(); }
+      });
+      obs.observe(document.documentElement, { childList: true, subtree: true });
+      // 页面已是就绪态也直接检查一次
+      var gp0 = document.querySelector('flt-glass-pane');
+      if (gp0) { patchShadow(gp0); obs.disconnect(); }
+    })();
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
+
+  <!-- Adsterra 全局钩子：供 Flutter (dart:js_interop) 调用 -->
+  <script>
+    (function () {
+      'use strict';
+      // 智能链接（zone 30760816）——「翻倍金币」点击后新开
+      var SMART_LINK = 'https://www.effectivecpmnetwork.com/qdzpxwfv03?key=cc95de1535368d9915ee72892dac5164';
+
+      // 打开智能链接（翻倍金币激励）。返回 true 表示已成功打开。
+      window.__adOpenSmartLink = function () {
+        try {
+          var w = window.open(SMART_LINK, '_blank', 'noopener,noreferrer');
+          return !!w;
+        } catch (e) {
+          // 弹窗被拦截时降级为同页跳转
+          try { window.location.href = SMART_LINK; } catch (_) {}
+          return true;
+        }
+      };
+
+      // 触发插屏（激励式）——Popunder 全局脚本已移除（不劫持点击），
+      // 此处受控打开 Smart Link 广告页，仅在游戏内主动调用时触发。
+      window.__adTriggerInterstitial = function () {
+        return window.__adOpenSmartLink();
+      };
+    })();
+  </script>
 </body>
 </html>

@@ -117,7 +117,9 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
   Widget _rewardChip(BPReward r, bool unlocked) {
     final label = r.type == 'gold' ? '💰${r.amount}'
         : r.type == 'pack' ? '📦x${r.amount}'
-        : r.name ?? r.type;
+        : r.name != null
+            ? LocaleService.I.t('battle_pass.reward.${r.level}_${r.isFree ? 'free' : 'premium'}.name', fallback: r.name)
+            : r.type;
     return Padding(
       padding: const EdgeInsets.only(right: 4),
       child: Chip(

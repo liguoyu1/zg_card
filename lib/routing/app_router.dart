@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/navigator_key.dart';
 import '../domain/models/hero.dart' as hero;
 import '../presentation/screens/achievement_screen.dart';
 import '../presentation/screens/adventure_screen.dart';
@@ -12,6 +13,7 @@ import '../presentation/screens/game_screen_args.dart';
 import '../presentation/screens/hero_select_screen.dart';
 import '../presentation/screens/home_screen.dart';
 import '../presentation/screens/leaderboard_screen.dart';
+import '../presentation/screens/legal_screen.dart';
 import '../presentation/screens/login_screen.dart';
 import '../presentation/screens/online_game_screen.dart';
 import '../presentation/screens/quest_screen.dart';
@@ -23,10 +25,11 @@ import '../presentation/widgets/responsive_layout.dart';
 class AppRouter {
   static GoRouter router({Listenable? refreshListenable}) => GoRouter(
     refreshListenable: refreshListenable,
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     routes: [
       ShellRoute(
-        builder: (context, state, child) => ResponsiveShell(child: child),
+        builder: (context, state, child) => ResponsiveShell(child: child, initialPath: state.uri.path),
         routes: [
           GoRoute(path: '/', builder: (_, __) => const HomeScreen()),
           GoRoute(path: '/battle/hero-select', builder: (_, state) => HeroSelectScreen(isPkMode: state.uri.queryParameters['mode'] == 'pk')),
@@ -40,6 +43,7 @@ class AppRouter {
           GoRoute(path: '/shop/adventure', builder: (_, __) => const AdventureScreen()),
           GoRoute(path: '/shop/shop', builder: (_, __) => const ShopScreen()),
           GoRoute(path: '/shop/transactions', builder: (_, __) => const TransactionsScreen()),
+          GoRoute(path: '/legal', builder: (_, __) => const LegalScreen()),
         ],
       ),
       // 对战页面在 ShellRoute 外，不显示底部导航栏

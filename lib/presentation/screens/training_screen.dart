@@ -50,8 +50,8 @@ class TrainingScreenState extends State<TrainingScreen> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           child: ListTile(
             leading: _getMedalIcon(progress.medal?.level),
-            title: Text(LocaleService.I.t('adventure.mission.${t.id}.name'), overflow: TextOverflow.ellipsis, maxLines: 1),
-            subtitle: Text(t.description, overflow: TextOverflow.ellipsis, maxLines: 1),
+            title: Text(LocaleService.I.t('training.${t.id}.name'), overflow: TextOverflow.ellipsis, maxLines: 1),
+            subtitle: Text(LocaleService.I.t('training.${t.id}.description'), overflow: TextOverflow.ellipsis, maxLines: 1),
             trailing: _buildStatusBadge(progress.status),
             onTap: () => _startTraining(context, t),
           ),
@@ -158,16 +158,16 @@ class TrainingDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(training.name)),
+      appBar: AppBar(title: Text(LocaleService.I.t('training.${training.id}.name'))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(training.description, style: const TextStyle(fontSize: 16)),
+            Text(LocaleService.I.t('training.${training.id}.description'), style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 16),
             Text(LocaleService.I.t('training.rewards_label'), style: const TextStyle(fontWeight: FontWeight.bold)),
-            ...training.rewards.map((r) => Text('• $r')),
+            ...training.rewards.asMap().entries.map((e) => Text('• ${LocaleService.I.t('training.${training.id}.reward_${e.key}')}')),
             const Spacer(),
             SizedBox(
               width: double.infinity,
@@ -213,7 +213,7 @@ class TrainingAdventureScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.all(16),
       child: ExpansionTile(
-        title: Text(chapter.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        title: Text(LocaleService.I.t('adventure.${chapter.id}.name'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         subtitle: Text(LocaleService.I.t('training.adventure_progress', args: {'cleared': '${chapter.clearedCount}', 'total': '${chapter.totalMissions}'})),
         children: chapter.missions.map((m) => _buildMissionTile(context, m)).toList(),
       ),
@@ -243,7 +243,7 @@ class TrainingAdventureScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
-          mission.difficulty.name.toUpperCase(),
+          LocaleService.I.t('difficulty.${mission.difficulty.name}').toUpperCase(),
           style: TextStyle(color: difficultyColor, fontSize: 10, fontWeight: FontWeight.bold),
         ),
       ),
