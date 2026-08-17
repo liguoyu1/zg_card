@@ -195,7 +195,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const Padding(
                           padding: EdgeInsets.fromLTRB(24, 20, 24, 4),
                           child: SizedBox(
-                              height: 120,
+                              height: 250,
                               width: double.infinity,
                               child: AdBannerSlot()),
                         ),

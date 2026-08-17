@@ -212,7 +212,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
       // 章节概览底部、开始征途按钮上方：广告横幅
       const Padding(
         padding: EdgeInsets.fromLTRB(24, 0, 24, 12),
-        child: SizedBox(height: 250, width: double.infinity, child: AdBannerSlot()),
+        child: SizedBox(height: 120, width: double.infinity, child: AdBannerSlot()),
       ),
       Padding(
         padding: const EdgeInsets.all(24),

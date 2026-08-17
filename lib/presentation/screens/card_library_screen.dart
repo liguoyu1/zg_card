@@ -317,16 +317,12 @@ class _CardGridViewState extends State<_CardGridView> {
           : Padding(padding: const EdgeInsets.all(8),
               child: CustomScrollView(slivers: [
                 if (widget.showBanner)
-                  // 所有卡牌之前：广告与单张卡牌同尺寸（宽高比 0.72 一致）
+                  // 所有卡牌之前：全宽横幅（Adsterra 横幅素材按自身宽高比完整显示）
                   SliverToBoxAdapter(
-                    child: LayoutBuilder(builder: (_, c) {
-                      final cardW = (c.maxWidth - 18) / 4; // 单卡宽度
-                      final cardH = cardW / 0.72; // 单卡高度（与网格 childAspectRatio 一致）
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
-                      );
-                    }),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: SizedBox(width: double.infinity, height: 120, child: const AdBannerSlot()),
+                    ),
                   ),
                 SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -488,15 +484,11 @@ class _WishlistView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (cards.isEmpty) {
       return ListView(children: [
-        // 广告置顶（与单张卡牌同尺寸，宽高比 0.72）
-        LayoutBuilder(builder: (_, c) {
-          final cardW = (c.maxWidth - 18) / 4;
-          final cardH = cardW / 0.72;
-          return Padding(
-            padding: const EdgeInsets.all(8),
-            child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
-          );
-        }),
+        // 广告置顶：全宽横幅
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: SizedBox(width: double.infinity, height: 120, child: const AdBannerSlot()),
+        ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.25,
             child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.favorite_border, size: 64, color: AppTheme.parchment.withAlpha(128)),
@@ -509,16 +501,12 @@ class _WishlistView extends StatelessWidget {
     }
     return Padding(padding: const EdgeInsets.all(8),
         child: CustomScrollView(slivers: [
-          // 愿望单最前：广告与单张卡牌同尺寸（宽高比 0.72）
+          // 愿望单最前：全宽横幅
           SliverToBoxAdapter(
-            child: LayoutBuilder(builder: (_, c) {
-              final cardW = (c.maxWidth - 18) / 4;
-              final cardH = cardW / 0.72;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: SizedBox(width: cardW, height: cardH, child: const AdBannerSlot()),
-              );
-            }),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: SizedBox(width: double.infinity, height: 120, child: const AdBannerSlot()),
+            ),
           ),
           SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

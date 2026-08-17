@@ -37,7 +37,8 @@ void _ensureRegistered() {
       final container = web.HTMLDivElement()
         ..id = _nativeBannerContainerId
         ..style.width = '100%'
-        ..style.height = '100%';
+        ..style.height = '100%'
+        ..style.margin = '0 auto';
       wrapper.append(container);
       // 注入 Adsterra 原生横幅脚本（每次新视图都会重新拉取并渲染）。
       final script = web.HTMLScriptElement()
