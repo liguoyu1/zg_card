@@ -16,6 +16,7 @@ import 'package:warring_states_card/domain/services/services.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
 import 'package:warring_states_card/shared/widgets/queued_asset_image.dart';
 
+import '../providers/auth_provider.dart';
 import 'game_screen_args.dart';
 
 class HeroSelectScreen extends ConsumerStatefulWidget {
@@ -44,8 +45,18 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
     super.dispose();
   }
 
+  /// 游客固定解锁的默认英雄（孙膑，兵家）。游客无收藏/进度概念，固定这套即可开玩。
+  static const String _guestHeroId = 'H_B001';
+
   Future<void> _load({bool syncFirst = false}) async {
     if (syncFirst) await BalanceSyncService.refreshNow();
+    // 游客：固定开放默认英雄，不写入账号、不参与首抽，纯本地临时可玩。
+    final auth = ref.read(authProvider);
+    final isGuest = auth?.email == null;
+    if (isGuest) {
+      if (mounted) setState(() { _unlockedHeroes = {_guestHeroId}; _loading = false; });
+      return;
+    }
     final pd = await SaveManager.loadPlayerData();
     if (pd == null) { if (mounted) setState(() => _loading = false); return; }
     var ids = Set<String>.from(pd.unlockedHeroes);
@@ -98,6 +109,13 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
                   hero: hero,
                   unlocked: unlocked,
                   onTap: unlocked ? () {
+                    // 在线匹配（PK）仅注册登录用户可用；游客固定单机体验
+                    // （固定英雄+预设卡组，不记档不同步服务端）。
+                    final isGuest = ref.read(authProvider)?.email == null;
+                    if (widget.isPkMode && isGuest) {
+                      _showGuestPkLock(context);
+                      return;
+                    }
                     if (widget.isPkMode) {
                       context.push('/battle/online-match', extra: hero);
                     } else {
@@ -139,6 +157,36 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  /// 游客点击在线匹配（PK）时的提示：需注册登录后可用。
+  void _showGuestPkLock(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.agedWood,
+        title: Text(LocaleService.I.t('matchmaking.need_login_title', fallback: '在线匹配需登录'),
+            style: const TextStyle(color: AppTheme.parchment, fontSize: 16)),
+        content: Text(LocaleService.I.t('matchmaking.need_login', fallback: '游客模式暂不支持在线匹配。注册登录后可与其他玩家对战，并保存进度。'),
+            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(LocaleService.I.t('common.cancel', fallback: '取消'),
+                style: const TextStyle(color: AppTheme.textSecondary)),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.push('/auth/login');
+            },
+            style: FilledButton.styleFrom(backgroundColor: AppTheme.goldAccent, foregroundColor: Colors.black),
+            child: Text(LocaleService.I.t('home.guest_register'),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
       ),
     );
   }
