@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../core/asset_style.dart';
 import '../../core/audio/audio_manager.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/persistence/save_manager.dart';
@@ -13,6 +12,7 @@ import '../../data/card_image_service.dart';
 import '../../data/xsolla_payment_service.dart';
 import '../../data/support_service.dart';
 import '../../shared/widgets/queued_asset_image.dart';
+import '../../shared/widgets/ad_banner_slot.dart';
 import '../../domain/models/card.dart' as domain;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
@@ -191,6 +191,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             label: LocaleService.I.t('home.btn_adventure'),
                             color: AppTheme.damageOrange,
                             onTap: () => context.push('/shop/adventure')),
+                        // 游戏选择菜单下方：广告横幅（真实 Adsterra 横幅）
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(24, 20, 24, 4),
+                          child: SizedBox(
+                              height: 120,
+                              width: double.infinity,
+                              child: AdBannerSlot()),
+                        ),
                         const SizedBox(height: 24),
                         // 下载 Android/iOS 的页面按钮仅 Web 端展示（Android/iOS 原生不提供）
                         if (kIsWeb) ...[
@@ -270,7 +278,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildUserMenu(bool loggedIn, AuthState? auth) {
-    final isChibi = AssetStyle.current == AssetStyle.chibiCute;
     return PopupMenuButton<String>(
       offset: const Offset(0, 44),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -278,12 +285,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         switch (v) {
           case 'login':
             context.push('/auth/login');
-            break;
-          case 'style':
-            setState(() {
-              AssetStyle.current =
-                  isChibi ? AssetStyle.fantasyRpg : AssetStyle.chibiCute;
-            });
             break;
           case 'sound':
             AudioManager.I.toggleMute();
@@ -414,21 +415,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ])),
             const PopupMenuDivider(),
           ],
-          PopupMenuItem(
-              value: 'style',
-              child: ListTile(
-                leading: Icon(
-                    isChibi ? Icons.auto_awesome : Icons.auto_fix_high,
-                    color: AppTheme.parchment,
-                    size: 20),
-                title: Text(
-                    LocaleService.I.t(isChibi
-                        ? 'home.style_toggle_real'
-                        : 'home.style_toggle_q'),
-                    style: TextStyle(color: AppTheme.parchment)),
-                contentPadding: EdgeInsets.zero,
-                visualDensity: VisualDensity.compact,
-              )),
           PopupMenuItem(
               value: 'sound',
               child: ListTile(
@@ -561,52 +547,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: AppTheme.goldAccent))),
-    );
-  }
-
-  Widget _buildStyleToggle() {
-    final isChibi = AssetStyle.current == AssetStyle.chibiCute;
-    return GestureDetector(
-      // Q 版资源尚未上架：点击提示，避免切换到空卡牌
-      onTap: () async {
-        if (isChibi) return; // 已是 Q 版（不应出现），直接返回
-        if (!context.mounted) return;
-        await showDialog<void>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            backgroundColor: AppTheme.agedWood,
-            title: Text(LocaleService.I.t('home.style_toggle_q'),
-                style: const TextStyle(color: AppTheme.parchment)),
-            content: Text(LocaleService.I.t('home.style_coming_soon'),
-                style: const TextStyle(color: AppTheme.textSecondary)),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(LocaleService.I.t('ok'),
-                    style: const TextStyle(color: Colors.grey)),
-              ),
-            ],
-          ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-            color: AppTheme.bgMedium.withAlpha(150),
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(color: AppTheme.borderLight.withAlpha(80))),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(isChibi ? Icons.auto_awesome : Icons.auto_fix_high,
-              size: 16, color: AppTheme.goldAccent),
-          const SizedBox(width: 4),
-          Text(
-              isChibi
-                  ? LocaleService.I.t('home.style_toggle_q')
-                  : LocaleService.I.t('home.style_toggle_real'),
-              style:
-                  const TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
-        ]),
-      ),
     );
   }
 

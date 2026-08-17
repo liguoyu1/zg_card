@@ -1,12 +1,27 @@
 // 游戏法律法规与相关声明页（从「头像菜单 → 法律法规」进入）。
 // 内容含用户协议 / 隐私政策 / 内容合规 / 适龄提示 / 免责声明。
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../l10n/locale_service.dart';
+import '../../shared/widgets/ad_banner_slot.dart';
 
+/// 线上隐私政策页（应用商店申报 / 原生端固定地址）。
 const String kPrivacyPolicyUrl = 'https://wscard.games/privacy';
+
+/// 当前运行环境下的隐私政策页地址：
+/// - Web 端：使用当前站点同源 `/privacy`（本地预览跳本地、线上跳线上）；
+/// - 原生端（Android/iOS）：固定线上 `https://wscard.games/privacy`。
+String get privacyPolicyUrl {
+  if (kIsWeb) {
+    final base = Uri.base;
+    final origin = '${base.scheme}://${base.authority}';
+    return '$origin/privacy';
+  }
+  return kPrivacyPolicyUrl;
+}
 
 class LegalScreen extends StatelessWidget {
   const LegalScreen({super.key});
@@ -68,6 +83,12 @@ class LegalScreen extends StatelessWidget {
                 style: const TextStyle(
                     color: AppTheme.textMuted, fontSize: 13, height: 1.5)),
             const SizedBox(height: 16),
+            // 标题与正文之间：广告横幅（真实 Adsterra 横幅）
+            const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: SizedBox(
+                  height: 120, width: double.infinity, child: AdBannerSlot()),
+            ),
             _section(context, Icons.assignment_outlined,
                 LocaleService.I.t('legal.agreement'),
                 LocaleService.I.t('legal.agreement_body')),
@@ -78,7 +99,7 @@ class LegalScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 2, bottom: 12),
               child: OutlinedButton.icon(
-                onPressed: () => launchUrl(Uri.parse(kPrivacyPolicyUrl),
+                onPressed: () => launchUrl(Uri.parse(privacyPolicyUrl),
                     mode: LaunchMode.externalApplication),
                 icon: const Icon(Icons.open_in_new, size: 16),
                 label: const Text('查看完整隐私政策 · 用户协议（网页）',
