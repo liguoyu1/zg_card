@@ -527,19 +527,28 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   void _claimDoubleReward() async {
     if (!mounted) return;
 
-    // 先展示激励广告（Web: Adsterra 智能链接；iOS: NoOp 直接通过）。
-    // 仅在广告「观看完成」后才发放双倍奖励。
-    final adService = getAdService();
-    final rewarded = await adService.showRewardedAd(
-      placementId: AdPlacement.goldBonus,
-    );
-    if (!mounted) return;
-    if (!rewarded) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(LocaleService.I.t('game.ad_failed', fallback: 'Ad not completed'))),
+    // Web：展示站内插屏广告（iframe 覆盖层，右上角 DOM 关闭按钮）。
+    // 用户关闭覆盖层即视为已观看；原生端走激励视频广告。
+    if (kIsWeb) {
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => const InterstitialAdOverlay(),
       );
-      return;
+    } else {
+      final adService = getAdService();
+      final rewarded = await adService.showRewardedAd(
+        placementId: AdPlacement.goldBonus,
+      );
+      if (!mounted) return;
+      if (!rewarded) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(LocaleService.I.t('game.ad_failed', fallback: 'Ad not completed'))),
+        );
+        return;
+      }
     }
+    if (!mounted) return;
 
     final pd = await SaveManager.loadPlayerData();
     if (pd == null) return;

@@ -4,7 +4,6 @@ import '../../core/theme/app_theme.dart';
 import '../../data/balance_service.dart';
 import '../../data/persistence/save_manager.dart';
 import '../../l10n/locale_service.dart';
-import '../../shared/widgets/ad_banner_slot.dart';
 import '../providers/auth_provider.dart';
 
 /// 交易记录 — 服务端流水 + 本地事件流（钻石充值/购买卡牌武将/兑换）合并展示；
@@ -110,11 +109,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     itemBuilder: (_, i) {
                       if (i == 0) {
                         // 列表头部：广告横幅（与行高一致）
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: SizedBox(
-                              child: const AdBannerSlot()),
-                        );
                       }
                       final t = _txns[i - 1];
                       final amount = (t['amount'] as num?)?.toInt();
