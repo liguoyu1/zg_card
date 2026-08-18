@@ -10,6 +10,7 @@ import 'package:warring_states_card/l10n/locale_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/data_version.dart';
 import '../../data/persistence/save_manager.dart';
+import '../../shared/widgets/ad_banner_slot.dart';
 
 import '../widgets/path_map.dart';
 import '../widgets/reward_picker.dart';
@@ -208,7 +209,11 @@ class _AdventureScreenState extends State<AdventureScreen> {
       const SizedBox(height: 8),
       _buildChapterStat('roguelite.segments', '2', args: {'current': '…', 'total': '2'}),
       const Spacer(),
-      // 章节概览底部、开始征途按钮上方：广告横幅（全局横幅已由 ResponsiveShell 统一提供）
+      // 章节概览底部、开始征途按钮上方：广告横幅
+      const Padding(
+        padding: EdgeInsets.fromLTRB(24, 0, 24, 12),
+        child: SizedBox(width: double.infinity, child: AdBannerSlot()),
+      ),
       Padding(
         padding: const EdgeInsets.all(24),
         child: SizedBox(width: double.infinity, height: 56,

@@ -13,6 +13,8 @@ import 'dart:ui_web' as ui_web;
 import 'package:flutter/widgets.dart';
 import 'package:web/web.dart' as web;
 
+import 'ad_slot_scope.dart';
+
 const String _adBannerViewType = 'adsterra-banner-slot';
 
 // Adsterra 原生横幅（zone 30760823）的注入脚本与容器 id。
@@ -135,6 +137,12 @@ class _AdBannerSlotState extends State<AdBannerSlot> {
 
   @override
   Widget build(BuildContext context) {
+    // 同一时刻只让可见页面的插槽挂载广告 DOM：IndexedStack 同时挂载 4 个 Tab，
+    // 每页都创建同一 Adsterra 容器 id 会互抢同 zone，导致只有首页能加载出广告。
+    // 其余插槽渲染等尺寸占位，切换页面时自动重新挂载。
+    if (!adSlotVisible(context)) {
+      return const SizedBox(width: double.infinity, height: _defaultHeight);
+    }
     return SizedBox(
       width: double.infinity,
       height: _height,

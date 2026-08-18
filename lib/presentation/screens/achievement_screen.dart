@@ -7,6 +7,7 @@ import '../../domain/services/balance_sync_service.dart';
 import '../../domain/models/quest.dart';
 import '../../domain/services/achievement_service.dart';
 import '../../l10n/locale_service.dart';
+import '../../shared/widgets/ad_banner_slot.dart';
 
 enum _AchCategory { all, battle, collection, adventure, gold, streak, hero }
 
@@ -182,7 +183,14 @@ class _AchievementScreenState extends State<AchievementScreen>
             );
           }, childCount: filtered.length)),
         ),
-        // 列表末尾（原广告横幅——全局横幅已由 ResponsiveShell 统一提供）
+        // 列表末尾：广告横幅
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            child:
+                SizedBox(width: double.infinity, child: const AdBannerSlot()),
+          ),
+        ),
       ])),
     ]);
   }
@@ -324,6 +332,9 @@ class _AchievementScreenState extends State<AchievementScreen>
                         ]),
                   )),
             ],
+            const SizedBox(height: 16),
+            // 统计页末尾：广告横幅
+            const SizedBox(width: double.infinity, child: AdBannerSlot()),
             const SizedBox(height: 16),
           ],
         ));

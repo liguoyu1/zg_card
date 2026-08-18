@@ -12,6 +12,7 @@ import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/card_pool.dart';
 import '../../domain/services/hero_data_provider.dart';
 import '../../presentation/providers/auth_provider.dart';
+import '../../shared/widgets/ad_banner_slot.dart';
 import '../../shared/widgets/queued_asset_image.dart';
 
 /// 卡牌库 — 全部卡牌按学派筛选，已拥有标记
@@ -336,7 +337,14 @@ class _CardGridViewState extends State<_CardGridView> {
           ? Center(child: Text(LocaleService.I.t('card_library.no_cards'), style: TextStyle(color: AppTheme.parchment.withAlpha(128))))
           : Padding(padding: const EdgeInsets.all(8),
               child: CustomScrollView(slivers: [
-                // 所有卡牌列表（原横幅广告 — 全局由 ResponsiveShell 统一提供）
+                if (widget.showBanner)
+                  // 所有卡牌之前：全宽横幅（Adsterra 横幅素材按自身宽高比完整显示）
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
+                    ),
+                  ),
                 SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),
@@ -497,6 +505,11 @@ class _WishlistView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (cards.isEmpty) {
       return ListView(children: [
+        // 广告置顶：全宽横幅
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
+        ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.25,
             child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.favorite_border, size: 64, color: AppTheme.parchment.withAlpha(128)),
@@ -509,7 +522,13 @@ class _WishlistView extends StatelessWidget {
     }
     return Padding(padding: const EdgeInsets.all(8),
         child: CustomScrollView(slivers: [
-          // 愿望单（原横幅广告 — 全局由 ResponsiveShell 统一提供）
+          // 愿望单最前：全宽横幅
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
+            ),
+          ),
           SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),

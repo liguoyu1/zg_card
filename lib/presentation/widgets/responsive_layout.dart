@@ -2,18 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/locale_service.dart';
-import '../../shared/widgets/ad_banner_slot.dart';
+import '../../shared/widgets/ad_slot_scope.dart';
 import '../screens/achievement_screen.dart';
 import '../screens/card_library_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/shop_screen.dart';
 
 /// 响应式外壳 — 4 Tab：主页/卡牌/进度/商店
-///
-/// 广告横幅的唯一挂载点：IndexedStack 会同时挂载全部 4 个 Tab，
-/// 若各 Tab 内各自内嵌 AdBannerSlot，同一 Adsterra zone 会并发加载多份，
-/// 互相抢占导致除首页外全部加载失败。因此把横幅收敛到外壳层，全局仅此一份，
-/// 跨页面导航常驻不重建，加载一次后所有页面稳定显示。
 class ResponsiveShell extends StatefulWidget {
   const ResponsiveShell({super.key, required this.child, this.initialPath = '/'});
   final Widget child;
@@ -65,22 +60,23 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
     // 会因 IndexedStack 内各子屏 context 而上报根路径(/)。
     final path = widget.initialPath;
     if (_isSubRoute(path)) {
-      // 子路由：页面本身 + 全局唯一横幅（对局除外）
-      if (_isBattlePath(path)) return widget.child;
-      return Column(children: [
-        Expanded(child: widget.child),
-        const AdBannerSlot(),
-      ]);
+      return AdSlotScope(
+        isSubRoute: true,
+        activeIndex: _currentIndex,
+        canShow: !_isBattlePath(path),
+        child: widget.child,
+      );
     }
 
     _currentIndex = _indexForPath(path);
     final width = MediaQuery.sizeOf(context).width;
 
+    // 每个 Tab 注入自己的 AdSlotScope（仅影响广告何时加载，不改布局）。
     final screens = <Widget>[
-      const HomeScreen(),
-      const CardLibraryScreen(),
-      const AchievementScreen(),
-      const ShopScreen(),
+      AdSlotScope(isSubRoute: false, activeIndex: _currentIndex, tabIndex: 0, canShow: true, child: const HomeScreen()),
+      AdSlotScope(isSubRoute: false, activeIndex: _currentIndex, tabIndex: 1, canShow: true, child: const CardLibraryScreen()),
+      AdSlotScope(isSubRoute: false, activeIndex: _currentIndex, tabIndex: 2, canShow: true, child: const AchievementScreen()),
+      AdSlotScope(isSubRoute: false, activeIndex: _currentIndex, tabIndex: 3, canShow: true, child: const ShopScreen()),
     ];
 
     Widget body;
@@ -116,9 +112,6 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
         ),
       );
     }
-    return Column(children: [
-      Expanded(child: body),
-      const AdBannerSlot(),
-    ]);
+    return body;
   }
 }

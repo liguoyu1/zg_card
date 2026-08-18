@@ -12,6 +12,7 @@ import '../../data/card_image_service.dart';
 import '../../data/xsolla_payment_service.dart';
 import '../../data/support_service.dart';
 import '../../shared/widgets/queued_asset_image.dart';
+import '../../shared/widgets/ad_banner_slot.dart';
 import '../../domain/models/card.dart' as domain;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
@@ -190,6 +191,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             label: LocaleService.I.t('home.btn_adventure'),
                             color: AppTheme.damageOrange,
                             onTap: () => context.push('/shop/adventure')),
+                        // 游戏选择菜单下方：广告横幅（真实 Adsterra 横幅，高度自适应素材）
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(24, 20, 24, 4),
+                          child: SizedBox(
+                              width: double.infinity,
+                              child: AdBannerSlot()),
+                        ),
+                        const SizedBox(height: 24),
                         // 下载 Android/iOS 的页面按钮仅 Web 端展示（Android/iOS 原生不提供）
                         if (kIsWeb) ...[
                           _buildDownloadSection(),
