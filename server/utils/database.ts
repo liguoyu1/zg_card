@@ -830,9 +830,16 @@ export async function checkin(odID: string) {
 }
 
 // ── 系统公告 ────────────────────────────────────────────────────────────────
+// 生效周期：startsAt(null=立刻) / endsAt(null=长期)，当前时间落在 [startsAt, endsAt) 才返回
 export async function listAnnouncements() {
+  const now = new Date();
   return await prisma.announcement.findMany({
-    where: { active: true },
+    where: {
+      AND: [
+        { OR: [{ startsAt: null }, { startsAt: { lte: now } }] },
+        { OR: [{ endsAt: null }, { endsAt: { gt: now } }] },
+      ],
+    },
     orderBy: { sort: 'asc' },
     select: { id: true, title: true, content: true },
   });

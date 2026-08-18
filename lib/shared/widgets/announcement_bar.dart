@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../data/activity_service.dart';
+import 'ad_slot_scope.dart';
 
-/// 主页底部系统公告：数据库配置（有多条则按序循环滚动，无则不显示）
+/// 主页底部系统公告：服务器配置（多条按序循环滚动，无则不显示）
+/// 每次切回主页 tab 时重新拉取，获取最新生效周期内的公告。
 class AnnouncementBar extends StatefulWidget {
   const AnnouncementBar({super.key});
 
@@ -18,11 +20,28 @@ class _AnnouncementBarState extends State<AnnouncementBar> {
   bool _loaded = false;
   int _idx = 0;
   Timer? _timer;
+  int? _lastActiveIndex;
 
   @override
   void initState() {
     super.initState();
+    _lastActiveIndex = _readActiveIndex();
     _load();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 主页 tab 变为激活时刷新（公告生效周期可能变化）；首次由 initState 拉取
+    final idx = _readActiveIndex();
+    if (_loaded && idx == 0 && _lastActiveIndex != 0) _load();
+    _lastActiveIndex = idx;
+  }
+
+  /// 当前所在 tab（AdSlotScope 注入）；主页为 0
+  int? _readActiveIndex() {
+    final scope = context.dependOnInheritedWidgetOfExactType<AdSlotScope>();
+    return scope?.activeIndex;
   }
 
   Future<void> _load() async {
