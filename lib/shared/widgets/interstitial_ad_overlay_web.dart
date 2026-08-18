@@ -14,23 +14,17 @@ import 'dart:ui_web' as ui_web;
 import 'package:flutter/material.dart';
 import 'package:web/web.dart' as web;
 
-const String _adOverlayViewType = 'adsterra-interstitial-slot';
-// 平台线上：Adsterra 广告 UI 由原生 DOM 渲染，浮在 Flutter 画布之上。
-// Flutter 的 IconButton 画在画布，处于 iframe 之下 → 会被 iframe 挡住点不到。
-// 因此关闭按钮也必须用 DOM 元素（z-index 高于 iframe），并通过本回调回 Dart。
-VoidCallback? _adOverlayClose;
-
 // Adsterra Smart Link（zone 30760816）—— 受控打开，嵌入 iframe 展示广告本体。
 const String _smartLinkUrl =
     'https://www.effectivecpmnetwork.com/qdzpxwfv03?key=cc95de1535368d9915ee72892dac5164';
 
-bool _adOverlayRegistered = false;
+// 每个覆盖层实例注册独立的 viewType，把 DOM 关闭按钮绑定到本实例的 Navigator，
+// 避免全局共享回调在多插屏同时弹出时互相覆盖（关闭错弹/悬空引用）。
+int _overlayCount = 0;
 
-void _ensureAdOverlayRegistered() {
-  if (_adOverlayRegistered) return;
-  _adOverlayRegistered = true;
+void _registerOverlay(String viewType, VoidCallback onClose) {
   ui_web.platformViewRegistry.registerViewFactory(
-    _adOverlayViewType,
+    viewType,
     (int viewId) {
       final wrapper = web.HTMLDivElement()
         ..style.cssText = 'position:relative;width:100%;height:100%;'
@@ -40,7 +34,10 @@ void _ensureAdOverlayRegistered() {
         ..style.cssText =
             'position:absolute;inset:0;width:100%;height:100%;border:none;'
         ..allow = 'fullscreen; autoplay; encrypted-media'
-        ..setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-forms');
+        // 不加 allow-same-origin：第三方广告脚本保持独立 origin，避免被攻破后
+        // 获得主站同源权限（可读写宿主 DOM/Cookie）。Smart Link 通常无需同源。
+        ..setAttribute('sandbox',
+            'allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms');
       // 右上角关闭按钮：DOM 层，永远盖在 iframe 之上，可点。
       final close = web.HTMLDivElement()
         ..textContent = '✕'
@@ -50,7 +47,7 @@ void _ensureAdOverlayRegistered() {
             'font-size:24px;line-height:40px;text-align:center;'
             'cursor:pointer;z-index:99999;user-select:none;';
       close.addEventListener('click', ((web.Event _) {
-        _adOverlayClose?.call();
+        onClose();
       }).toJS);
       wrapper.append(frame);
       wrapper.append(close);
@@ -68,13 +65,20 @@ class InterstitialAdOverlay extends StatefulWidget {
 }
 
 class _InterstitialAdOverlayState extends State<InterstitialAdOverlay> {
+  late final String _viewType;
+
+  @override
+  void initState() {
+    super.initState();
+    // 每实例注册独立 factory：DOM 关闭按钮点击时只关本 Dialog。
+    _viewType = 'adsterra-interstitial-${_overlayCount++}';
+    _registerOverlay(_viewType, () {
+      if (mounted) Navigator.of(context).pop();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // DOM 关闭按钮通过此回调回到 Flutter，弹出 Dialog。
-    _ensureAdOverlayRegistered();
-    _adOverlayClose = () {
-      if (mounted) Navigator.of(context).pop();
-    };
     return Dialog(
       backgroundColor: const Color(0xFF1A1A2E),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -83,7 +87,7 @@ class _InterstitialAdOverlayState extends State<InterstitialAdOverlay> {
           maxWidth: MediaQuery.of(context).size.width * 0.9,
           maxHeight: MediaQuery.of(context).size.height * 0.8,
         ),
-        child: const HtmlElementView(viewType: _adOverlayViewType),
+        child: HtmlElementView(viewType: _viewType),
       ),
     );
   }

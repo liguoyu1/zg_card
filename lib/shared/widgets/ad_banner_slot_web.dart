@@ -116,17 +116,29 @@ class _AdBannerSlotState extends State<AdBannerSlot> {
   void initState() {
     super.initState();
     _ensureRegistered();
-    // 轮询全局中广告实际高度，自适应插槽高度（宽度始终填满父级）。
-    _timer = Timer.periodic(const Duration(milliseconds: 500), (_) {
-      final v =
-          globalContext.getProperty<JSNumber?>(_adHeightKey.toJS)?.toDartDouble;
-      if (v != null && v > 0) {
-        final h = v.toDouble();
-        if ((h - _height).abs() > 1) {
-          setState(() => _height = h);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 仅当本插槽可见（当前唯一挂载广告的页面）时才轮询高度；
+    // 隐藏占位时不轮询、不 setState，避免常驻计时器浪费。
+    final visible = adSlotVisible(context);
+    if (visible && _timer == null) {
+      _timer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+        final v =
+            globalContext.getProperty<JSNumber?>(_adHeightKey.toJS)?.toDartDouble;
+        if (v != null && v > 0) {
+          final h = v.toDouble();
+          if ((h - _height).abs() > 1) {
+            setState(() => _height = h);
+          }
         }
-      }
-    });
+      });
+    } else if (!visible && _timer != null) {
+      _timer?.cancel();
+      _timer = null;
+    }
   }
 
   @override
