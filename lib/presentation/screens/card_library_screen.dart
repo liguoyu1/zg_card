@@ -89,7 +89,7 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
           labelColor: AppTheme.goldAccent,
           unselectedLabelColor: AppTheme.parchment.withAlpha(153),
           tabs: [
-            Tab(text: LocaleService.I.t('card_library.all_cards')),
+            Tab(text: LocaleService.I.t('card_library.all_cards_count', args: {'count': '${_all.length}'})),
             Tab(text: LocaleService.I.t('card_library.owned_count', args: {'count': '${_owned.length}'})),
             Tab(text: LocaleService.I.t('card_library.wishlist_count', args: {'count': '${_fav.length}'})),
           ],
