@@ -10,6 +10,7 @@ import '../../domain/models/card.dart' as cm;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/card_pool.dart';
+import '../../domain/services/hero_data_provider.dart';
 import '../../presentation/providers/auth_provider.dart';
 import '../../shared/widgets/ad_banner_slot.dart';
 import '../../shared/widgets/queued_asset_image.dart';
@@ -58,11 +59,22 @@ class _CardLibraryScreenState extends ConsumerState<CardLibraryScreen>
     final pd = await SaveManager.loadPlayerData();
     final ownedIds = pd?.unlockedCards ?? [];
     final owned = Set<String>.from(ownedIds);
-    // 游客：全部卡牌均以「试用」标记展示；登录用户仅周试用卡牌为试用。
+    // 游客：仅试用默认英雄（孙膑·兵家）的卡牌，不足 20 张时补中立卡牌；
+    // 登录用户仅周试用卡牌为试用。
     final isGuest = ref.read(authProvider)?.email == null;
+    final allCards = CardDataProvider.getAllCards();
     Set<String> trial;
     if (isGuest) {
-      trial = CardDataProvider.getAllCards().map((c) => c.id).toSet();
+      // 游客固定英雄 H_B001（孙膑·兵家）
+      final trialHero = HeroDataProvider.getHeroById('H_B001');
+      final owner = trialHero?.owner ?? cm.CardOwner.bingjia;
+      final school = allCards.where((c) => c.owner == owner).map((c) => c.id).toList();
+      final neutral = allCards.where((c) => c.owner == cm.CardOwner.neutral).map((c) => c.id).toList();
+      // 不足 20 张时按序补充中立卡牌
+      if (school.length < 20) {
+        school.addAll(neutral.take(20 - school.length));
+      }
+      trial = school.toSet();
     } else {
       trial = await CardPool.getWeeklyTrials();
     }
