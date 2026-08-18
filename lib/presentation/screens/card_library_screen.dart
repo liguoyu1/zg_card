@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Card;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../data/card_image_service.dart';
@@ -9,17 +10,18 @@ import '../../domain/models/card.dart' as cm;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/card_pool.dart';
+import '../../presentation/providers/auth_provider.dart';
 import '../../shared/widgets/ad_banner_slot.dart';
 import '../../shared/widgets/queued_asset_image.dart';
 
 /// 卡牌库 — 全部卡牌按学派筛选，已拥有标记
-class CardLibraryScreen extends StatefulWidget {
+class CardLibraryScreen extends ConsumerStatefulWidget {
   const CardLibraryScreen({super.key});
   @override
-  State<CardLibraryScreen> createState() => _CardLibraryScreenState();
+  ConsumerState<CardLibraryScreen> createState() => _CardLibraryScreenState();
 }
 
-class _CardLibraryScreenState extends State<CardLibraryScreen>
+class _CardLibraryScreenState extends ConsumerState<CardLibraryScreen>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late TabController _tc;
   Set<String> _owned = {};
@@ -56,7 +58,14 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
     final pd = await SaveManager.loadPlayerData();
     final ownedIds = pd?.unlockedCards ?? [];
     final owned = Set<String>.from(ownedIds);
-    final trial = await CardPool.getWeeklyTrials();
+    // 游客：全部卡牌均以「试用」标记展示；登录用户仅周试用卡牌为试用。
+    final isGuest = ref.read(authProvider)?.email == null;
+    Set<String> trial;
+    if (isGuest) {
+      trial = CardDataProvider.getAllCards().map((c) => c.id).toSet();
+    } else {
+      trial = await CardPool.getWeeklyTrials();
+    }
     var col = await SaveManager.loadCollection();
     if (col == null) { col = Collection(); await SaveManager.saveCollection(col); }
     if (mounted) {
@@ -90,7 +99,7 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
           unselectedLabelColor: AppTheme.parchment.withAlpha(153),
           tabs: [
             Tab(text: LocaleService.I.t('card_library.all_cards_count', args: {'count': '${_all.length}'})),
-            Tab(text: LocaleService.I.t('card_library.owned_count', args: {'count': '${_owned.length}'})),
+            Tab(text: LocaleService.I.t('card_library.owned_count', args: {'count': '${_owned.length + _trial.length}'})),
             Tab(text: LocaleService.I.t('card_library.wishlist_count', args: {'count': '${_fav.length}'})),
           ],
         ),
