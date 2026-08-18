@@ -202,9 +202,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   /// 对比出牌/英雄技能前后的状态，可视化生命/护甲变化、随从死亡与召唤
-  void _visualizeStateChange(GameState? prev, GameState? next, {String? actionName}) {
+  void _visualizeStateChange(GameState? prev, GameState? next) {
     if (!mounted || prev == null || next == null) return;
-    if (actionName != null) _showFloatingText(actionName);
     final pid = widget.playerId;
     _diffPlayer(prev.getCurrentPlayer(pid), next.getCurrentPlayer(pid));
     final prevOpp = prev.player1.id == pid ? prev.player2 : prev.player1;
@@ -911,10 +910,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         return;
       }
       final prev = ref.read(aiGameProvider);
+      _showFloatingText(spell.lname);
       ref.read(aiGameProvider.notifier).playCard(widget.playerId, spell, targetId: card.id);
       AudioManager.I.playCard();
       _log(LocaleService.I.t('game.log_play_card', args: {'name': spell.lname, 'cost': '${spell.cost}'}));
-      _visualizeStateChange(prev, ref.read(aiGameProvider), actionName: spell.lname);
+      _visualizeStateChange(prev, ref.read(aiGameProvider));
       setState(() {
         _interactionMode = _InteractionMode.none;
         _pendingSpell = null;
@@ -1008,9 +1008,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     if ((skill is ControlPower || skill is DebuffPower) && !isOpponent) return;
 
     final hpPrev = ref.read(aiGameProvider);
+    _showFloatingText(player.hero.heroPowerName);
     ref.read(aiGameProvider.notifier).useHeroPower(widget.playerId, targetId: card.id);
     _flashCard(card.id);
-    _visualizeStateChange(hpPrev, ref.read(aiGameProvider), actionName: player.hero.heroPowerName);
+    _visualizeStateChange(hpPrev, ref.read(aiGameProvider));
     setState(() => _interactionMode = _InteractionMode.none);
   }
 
@@ -1030,8 +1031,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       if (skill is BuffPower) return; // Buff 不能对敌人用
 
       final heroLowPrev = ref.read(aiGameProvider);
+      _showFloatingText(player.hero.heroPowerName);
       ref.read(aiGameProvider.notifier).useHeroPower(widget.playerId, targetId: 'hero_${widget.playerId}');
-      _visualizeStateChange(heroLowPrev, ref.read(aiGameProvider), actionName: player.hero.heroPowerName);
+      _visualizeStateChange(heroLowPrev, ref.read(aiGameProvider));
       setState(() => _interactionMode = _InteractionMode.none);
       return;
     }
@@ -1064,10 +1066,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       final spell = _pendingSpell;
       if (spell != null && _isValidSpellTarget('hero_${widget.playerId}')) {
         final prev = ref.read(aiGameProvider);
+        _showFloatingText(spell.lname);
         ref.read(aiGameProvider.notifier).playCard(widget.playerId, spell, targetId: 'hero_${widget.playerId}');
         AudioManager.I.playCard();
         _log(LocaleService.I.t('game.log_play_card', args: {'name': spell.lname, 'cost': '${spell.cost}'}));
-        _visualizeStateChange(prev, ref.read(aiGameProvider), actionName: spell.lname);
+        _visualizeStateChange(prev, ref.read(aiGameProvider));
       }
       setState(() {
         _interactionMode = _InteractionMode.none;
@@ -1109,11 +1112,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     } else {
       // 直接释放
       final hpPrev = ref.read(aiGameProvider);
+      _showFloatingText(player.hero.heroPowerName);
       ref.read(aiGameProvider.notifier).useHeroPower(widget.playerId);
       AudioManager.I.buttonClick();
       _log(LocaleService.I.t('game.log_hero_power', args: {'skill': '${skill.runtimeType}'}));
       _flashCard('hero_${widget.playerId}');
-      _visualizeStateChange(hpPrev, ref.read(aiGameProvider), actionName: player.hero.heroPowerName);
+      _visualizeStateChange(hpPrev, ref.read(aiGameProvider));
       setState(() => _selectedMinion = null);
     }
   }
@@ -1250,11 +1254,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   void _castCard(domain.Card card) {
     final prev = ref.read(aiGameProvider);
+    if (card.isSpell || card.isWeapon) _showFloatingText(card.lname);
     ref.read(aiGameProvider.notifier).playCard(widget.playerId, card);
     AudioManager.I.playCard();
     _log(LocaleService.I.t('game.log_play_card', args: {'name': card.lname, 'cost': '${card.cost}'}));
-    _visualizeStateChange(prev, ref.read(aiGameProvider),
-        actionName: (card.isSpell || card.isWeapon) ? card.lname : null);
+    _visualizeStateChange(prev, ref.read(aiGameProvider));
   }
 
   /// 法术目标是否有效
@@ -1599,16 +1603,16 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       if (card.cost > state.activePlayer.mana) continue;
       final prev = state;
       if (card.isSpell) {
-        // 法术：条件不满足跳过；需选目标时自动选一个
         if (!SpellSystem.canPlay(state, state.activePlayer, card)) continue;
+        _showFloatingText(card.lname);
         notifier.playCard(aiId, card, targetId: SpellSystem.autoTarget(state, state.activePlayer, card));
       } else {
+        if (card.isWeapon) _showFloatingText(card.lname);
         notifier.playCard(aiId, card);
       }
       AudioManager.I.playCard();
       _log(LocaleService.I.t('game.log_play_card', args: {'name': card.lname, 'cost': '${card.cost}'}));
-      _visualizeStateChange(prev, ref.read(aiGameProvider),
-          actionName: (card.isSpell || card.isWeapon) ? card.lname : null);
+      _visualizeStateChange(prev, ref.read(aiGameProvider));
       await Future.delayed(const Duration(milliseconds: 300));
       if (!mounted) return;
     }
@@ -1618,6 +1622,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       final aiPlayer = state.activePlayer;
       final skill = HeroPowerFactory.create(aiPlayer.hero.skillType);
       final hpPrev = state;
+      _showFloatingText(aiPlayer.hero.heroPowerName);
       final needsTarget = aiPlayer.board.isNotEmpty && _heroPowerNeedsTarget(skill);
       if (needsTarget) {
         // 选第一个随从为目标
@@ -1625,7 +1630,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       } else {
         notifier.useHeroPower(aiId);
       }
-      _visualizeStateChange(hpPrev, ref.read(aiGameProvider), actionName: aiPlayer.hero.heroPowerName);
+      _visualizeStateChange(hpPrev, ref.read(aiGameProvider));
     }
   }
 
