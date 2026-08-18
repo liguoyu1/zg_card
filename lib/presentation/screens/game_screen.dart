@@ -81,6 +81,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   final List<_DamageEntry> _damageEntries = [];
   /// 战斗日志
   final List<String> _battleLog = [];
+  /// 施法/效果浮动文字（如 "空城计!"）
+  final List<String> _floatingTexts = [];
   /// AI 暂停标记
   bool _aiPaused = false;
   final DateTime _gameStartTime = DateTime.now();
@@ -190,6 +192,62 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     }
   }
 
+  /// 显示施法/效果浮动文字（飘升淡出）
+  void _showFloatingText(String text) {
+    if (!mounted) return;
+    setState(() => _floatingTexts.add(text));
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) setState(() => _floatingTexts.remove(text));
+    });
+  }
+
+  /// 对比出牌/英雄技能前后的状态，可视化生命/护甲变化、随从死亡与召唤
+  void _visualizeStateChange(GameState? prev, GameState? next, {String? actionName}) {
+    if (!mounted || prev == null || next == null) return;
+    if (actionName != null) _showFloatingText(actionName);
+    final pid = widget.playerId;
+    _diffPlayer(prev.getCurrentPlayer(pid), next.getCurrentPlayer(pid));
+    final prevOpp = prev.player1.id == pid ? prev.player2 : prev.player1;
+    final nextOpp = next.player1.id == pid ? next.player2 : next.player1;
+    _diffPlayer(prevOpp, nextOpp);
+  }
+
+  /// 对比单个玩家前后状态，输出伤害/治疗/护甲数字与死亡/召唤动画
+  void _diffPlayer(Player prevP, Player nextP) {
+    final heroId = 'hero_${prevP.id}';
+    if (prevP.health > nextP.health) {
+      _showDamage(heroId, prevP.health - nextP.health, DamageIndicatorState.damage);
+    } else if (prevP.health < nextP.health) {
+      _showDamage(heroId, nextP.health - prevP.health, DamageIndicatorState.heal);
+    }
+    if (prevP.armor != nextP.armor) {
+      _showDamage(heroId, (nextP.armor - prevP.armor).abs(), DamageIndicatorState.armor);
+    }
+    final prevMap = {for (final c in prevP.board) c.id: c};
+    final nextMap = {for (final c in nextP.board) c.id: c};
+    for (final e in nextMap.entries) {
+      final prevCard = prevMap[e.key];
+      if (prevCard == null) {
+        _flashCard(e.key); // 新召唤的随从
+      } else if (prevCard.health != e.value.health) {
+        _showDamage(e.key, (e.value.health - prevCard.health).abs(),
+            prevCard.health > e.value.health
+                ? DamageIndicatorState.damage
+                : DamageIndicatorState.heal);
+      }
+    }
+    for (final c in prevP.board) {
+      if (!nextMap.containsKey(c.id)) {
+        // 随从死亡：亡语音效 + 死亡动画
+        AudioManager.I.death();
+        setState(() => _dyingCards[c.id] = c);
+        Future.delayed(const Duration(milliseconds: 400), () {
+          if (mounted) setState(() => _dyingCards.remove(c.id));
+        });
+      }
+    }
+  }
+
   /// 记录战斗日志
   void _log(String msg) {
     if (!mounted) return;
@@ -276,6 +334,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         _buildGameContent(gameState),
         // 伤害数字覆盖层
         ..._buildDamageOverlays(),
+        // 施法浮动文字
+        ..._buildFloatingTextOverlays(),
         // 暂停遮罩
         if (_aiPaused)
           Positioned.fill(
@@ -313,6 +373,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             state: entry.type,
             startPosition: Offset.zero,
           ),
+        ),
+    ];
+  }
+
+  /// 施法/效果浮动文字覆盖层
+  List<Widget> _buildFloatingTextOverlays() {
+    if (_floatingTexts.isEmpty) return [];
+    final size = MediaQuery.of(context).size;
+    return [
+      for (var i = 0; i < _floatingTexts.length; i++)
+        Positioned(
+          left: size.width / 2 - 130,
+          top: size.height * 0.14 + i * 40.0,
+          child: _FloatingCastText(_floatingTexts[i]),
         ),
     ];
   }
@@ -836,9 +910,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         _showError(LocaleService.I.t('game.invalid_target'));
         return;
       }
+      final prev = ref.read(aiGameProvider);
       ref.read(aiGameProvider.notifier).playCard(widget.playerId, spell, targetId: card.id);
       AudioManager.I.playCard();
       _log(LocaleService.I.t('game.log_play_card', args: {'name': spell.lname, 'cost': '${spell.cost}'}));
+      _visualizeStateChange(prev, ref.read(aiGameProvider), actionName: spell.lname);
       setState(() {
         _interactionMode = _InteractionMode.none;
         _pendingSpell = null;
@@ -931,8 +1007,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     // ControlPower/DebuffPower 只能选敌方
     if ((skill is ControlPower || skill is DebuffPower) && !isOpponent) return;
 
+    final hpPrev = ref.read(aiGameProvider);
     ref.read(aiGameProvider.notifier).useHeroPower(widget.playerId, targetId: card.id);
     _flashCard(card.id);
+    _visualizeStateChange(hpPrev, ref.read(aiGameProvider), actionName: player.hero.heroPowerName);
     setState(() => _interactionMode = _InteractionMode.none);
   }
 
@@ -951,7 +1029,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       final skill = HeroPowerFactory.create(player.hero.skillType);
       if (skill is BuffPower) return; // Buff 不能对敌人用
 
+      final heroLowPrev = ref.read(aiGameProvider);
       ref.read(aiGameProvider.notifier).useHeroPower(widget.playerId, targetId: 'hero_${widget.playerId}');
+      _visualizeStateChange(heroLowPrev, ref.read(aiGameProvider), actionName: player.hero.heroPowerName);
       setState(() => _interactionMode = _InteractionMode.none);
       return;
     }
@@ -983,9 +1063,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     if (_interactionMode == _InteractionMode.spellTargeting) {
       final spell = _pendingSpell;
       if (spell != null && _isValidSpellTarget('hero_${widget.playerId}')) {
+        final prev = ref.read(aiGameProvider);
         ref.read(aiGameProvider.notifier).playCard(widget.playerId, spell, targetId: 'hero_${widget.playerId}');
         AudioManager.I.playCard();
         _log(LocaleService.I.t('game.log_play_card', args: {'name': spell.lname, 'cost': '${spell.cost}'}));
+        _visualizeStateChange(prev, ref.read(aiGameProvider), actionName: spell.lname);
       }
       setState(() {
         _interactionMode = _InteractionMode.none;
@@ -1026,10 +1108,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       });
     } else {
       // 直接释放
+      final hpPrev = ref.read(aiGameProvider);
       ref.read(aiGameProvider.notifier).useHeroPower(widget.playerId);
       AudioManager.I.buttonClick();
       _log(LocaleService.I.t('game.log_hero_power', args: {'skill': '${skill.runtimeType}'}));
       _flashCard('hero_${widget.playerId}');
+      _visualizeStateChange(hpPrev, ref.read(aiGameProvider), actionName: player.hero.heroPowerName);
       setState(() => _selectedMinion = null);
     }
   }
@@ -1165,9 +1249,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _castCard(domain.Card card) {
+    final prev = ref.read(aiGameProvider);
     ref.read(aiGameProvider.notifier).playCard(widget.playerId, card);
     AudioManager.I.playCard();
     _log(LocaleService.I.t('game.log_play_card', args: {'name': card.lname, 'cost': '${card.cost}'}));
+    _visualizeStateChange(prev, ref.read(aiGameProvider),
+        actionName: (card.isSpell || card.isWeapon) ? card.lname : null);
   }
 
   /// 法术目标是否有效
@@ -1465,7 +1552,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     await _checkPause();
     if (!mounted) return;
     setState(() => _aiPhaseText = LocaleService.I.t('game.ai_playing'));
-    _aiPlayCards();
+    await _aiPlayCards();
 
     await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted) return;
@@ -1492,7 +1579,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   /// AI出牌逻辑 — 每次操作重新读取最新 state
-  void _aiPlayCards() {
+  Future<void> _aiPlayCards() async {
     final notifier = ref.read(aiGameProvider.notifier);
     var state = ref.read(aiGameProvider);
     if (state == null) return;
@@ -1510,6 +1597,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       if (state == null) return;
       if (card.isMinion && state.activePlayer.boardCount >= 7) break;
       if (card.cost > state.activePlayer.mana) continue;
+      final prev = state;
       if (card.isSpell) {
         // 法术：条件不满足跳过；需选目标时自动选一个
         if (!SpellSystem.canPlay(state, state.activePlayer, card)) continue;
@@ -1517,12 +1605,19 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       } else {
         notifier.playCard(aiId, card);
       }
+      AudioManager.I.playCard();
+      _log(LocaleService.I.t('game.log_play_card', args: {'name': card.lname, 'cost': '${card.cost}'}));
+      _visualizeStateChange(prev, ref.read(aiGameProvider),
+          actionName: (card.isSpell || card.isWeapon) ? card.lname : null);
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (!mounted) return;
     }
     // AI 剩余费用 >= 2 且场上还有随从时用英雄技能
     state = ref.read(aiGameProvider);
     if (state != null && state.activePlayer.mana >= 2) {
       final aiPlayer = state.activePlayer;
       final skill = HeroPowerFactory.create(aiPlayer.hero.skillType);
+      final hpPrev = state;
       final needsTarget = aiPlayer.board.isNotEmpty && _heroPowerNeedsTarget(skill);
       if (needsTarget) {
         // 选第一个随从为目标
@@ -1530,6 +1625,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       } else {
         notifier.useHeroPower(aiId);
       }
+      _visualizeStateChange(hpPrev, ref.read(aiGameProvider), actionName: aiPlayer.hero.heroPowerName);
     }
   }
 
@@ -1611,5 +1707,77 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         });
       }
     });
+  }
+}
+
+/// 施法/效果浮动文字（飘升淡出）
+class _FloatingCastText extends StatefulWidget {
+  const _FloatingCastText(this.text);
+  final String text;
+
+  @override
+  State<_FloatingCastText> createState() => _FloatingCastTextState();
+}
+
+class _FloatingCastTextState extends State<_FloatingCastText>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c;
+  late final Animation<double> _opacity;
+  late final Animation<double> _dy;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100));
+    _opacity = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 8),
+    ]).animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut));
+    _dy = Tween(begin: 0.0, end: -46.0)
+        .animate(CurvedAnimation(parent: _c, curve: Curves.easeOut));
+    _c.forward();
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (_, __) => Transform.translate(
+          offset: Offset(0, _dy.value),
+          child: Opacity(
+            opacity: _opacity.value,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+              decoration: BoxDecoration(
+                color: AppTheme.bgMedium.withAlpha(220),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.goldBright, width: 1.5),
+                boxShadow: [
+                  BoxShadow(color: Colors.black54, blurRadius: 10, spreadRadius: 1),
+                ],
+              ),
+              child: Text(
+                widget.text,
+                style: const TextStyle(
+                  color: AppTheme.goldBright,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(color: Colors.black87, blurRadius: 3, offset: Offset(1, 1)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
