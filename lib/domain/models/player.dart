@@ -21,6 +21,8 @@ class Player extends Equatable {
     this.deck = const [],
     this.board = const [],
     this.weapon,
+    this.heroImmuneTurns = 0,
+    this.pendingDeathIds = const [],
   });
   final String id;
   final Hero hero;
@@ -34,6 +36,10 @@ class Player extends Equatable {
   final List<Card> deck;
   final List<Card> board; // 战场随从
   final Card? weapon;
+  /// 英雄免疫剩余回合数（空城计/挡矢之术）
+  final int heroImmuneTurns;
+  /// 下回合开始时死亡的随从id（破釜沉舟）
+  final List<String> pendingDeathIds;
   
   /// 是否有武器
   bool get hasWeapon => weapon != null;
@@ -66,6 +72,8 @@ class Player extends Equatable {
     List<Card>? deck,
     List<Card>? board,
     Object? weapon = _weaponSentinel,
+    int? heroImmuneTurns,
+    List<String>? pendingDeathIds,
   }) {
     return Player(
       id: id ?? this.id,
@@ -80,9 +88,11 @@ class Player extends Equatable {
       deck: deck ?? this.deck,
       board: board ?? this.board,
       weapon: identical(weapon, _weaponSentinel) ? this.weapon : weapon as Card?,
+      heroImmuneTurns: heroImmuneTurns ?? this.heroImmuneTurns,
+      pendingDeathIds: pendingDeathIds ?? this.pendingDeathIds,
     );
   }
   
   @override
-  List<Object?> get props => [id, hero, health, armor, mana, maxMana, spellPower, fatigueCounter, hand, deck, board, weapon];
+  List<Object?> get props => [id, hero, health, armor, mana, maxMana, spellPower, fatigueCounter, hand, deck, board, weapon, heroImmuneTurns, pendingDeathIds];
 }

@@ -4,6 +4,7 @@ import '../../data/card_image_service.dart';
 import '../models/models.dart';
 import 'combo_system.dart';
 import 'effect_executor.dart';
+import 'spell_system.dart';
 
 /// 游戏核心规则服务
 class GameRules {
@@ -106,6 +107,15 @@ class BattlefieldService {
       return state;
     }
 
+    // 法术：需满足条件且（需要目标时）目标有效
+    if (card.isSpell) {
+      if (!SpellSystem.canPlay(state, player, card)) return state;
+      final rule = SpellSystem.ruleFor(card.id);
+      if (rule != null && rule.needsTarget && !rule.validTarget(state, player, targetId)) {
+        return state;
+      }
+    }
+
     // 消耗法力
     final newMana = player.mana - card.cost;
 
@@ -123,6 +133,7 @@ class BattlefieldService {
           id: '${card.id}_${_nextSeq()}',
           imageAsset: card.imageAsset.isNotEmpty ? card.imageAsset : CardImageService.getImageAsset(card.id),
           isDormant: !card.hasCharge,
+          maxHealth: card.health,
         );
         newBoard = [...player.board, playedCard];
       }
@@ -133,7 +144,7 @@ class BattlefieldService {
         imageAsset: card.imageAsset.isNotEmpty ? card.imageAsset : CardImageService.getImageAsset(card.id),
       );
     }
-    // 法术：只在战场上生效（通过战吼执行），不占板位
+    // 法术：不占板位，效果在下方执行
 
     final updatedPlayer = player.copyWith(
       mana: newMana,
@@ -144,8 +155,12 @@ class BattlefieldService {
 
     var updatedState = state.updatePlayer(updatedPlayer);
 
-    // 执行战吼/法术效果
-    if (card.hasBattlecry) {
+    // 执行效果：法术 / 武器佩戴（含学派共振）/ 随从战吼
+    if (card.isSpell) {
+      updatedState = SpellSystem.executeSpell(updatedState, playerId, card, targetId);
+    } else if (card.isWeapon) {
+      updatedState = SpellSystem.executeWeaponEquip(updatedState, playerId, card);
+    } else if (card.hasBattlecry) {
       updatedState = _executor.executeBattlecry(updatedState, playerId, card, targetId);
     }
 
@@ -271,6 +286,8 @@ class BattlefieldService {
     final attacker = state.activePlayer;
 
     if (GameRules.mustAttackTaunt(opponent)) return state;
+    // 敌方英雄免疫时无法攻击
+    if (opponent.heroImmuneTurns > 0) return state;
 
     final weapon = attacker.weapon;
     if (weapon == null || weapon.attack == 0) return state;
@@ -294,7 +311,13 @@ class BattlefieldService {
         ? weapon.copyWith(health: newDurability, hasAttackedThisTurn: true)
         : null;
 
-    final newState = state.updatePlayer(opponent.copyWith(health: newHealth, armor: newArmor));
+    var newState = state.updatePlayer(opponent.copyWith(health: newHealth, armor: newArmor));
+
+    // 武器耐久归零：触发武器亡语（如越王剑）
+    if (newWeapon == null && weapon.hasDeathrattle) {
+      newState = _executor.executeDeathrattle(newState, attacker.id, weapon);
+    }
+
     return newState.updatePlayer(attacker.copyWith(weapon: newWeapon));
   }
   
@@ -305,6 +328,8 @@ class BattlefieldService {
 
     if (GameRules.mustAttackTaunt(opponent)) return state;
     if (!attacker.canAttack) return state;
+    // 敌方英雄免疫时无法攻击
+    if (opponent.heroImmuneTurns > 0) return state;
 
     final dmg = attacker.attack;
 
@@ -378,9 +403,15 @@ class TurnService {
     final player = state.getCurrentPlayer(playerId);
 
     // 重置所有随从的攻击状态（含风怒），并唤醒休眠随从
-    final resetBoard = player.board.map((card) =>
+    var resetBoard = player.board.map((card) =>
       card.copyWith(hasAttackedThisTurn: false, hasUsedFirstWindfuryAttack: false, isDormant: false)
     ).toList();
+
+    // 处理破釜沉舟：本回合所有友方随从死亡
+    if (player.pendingDeathIds.isNotEmpty) {
+      // ponytail: 破釜沉舟随从的亡语在该处不触发，仅移除
+      resetBoard = resetBoard.where((c) => !player.pendingDeathIds.contains(c.id)).toList();
+    }
 
     // 重置武器攻击状态（每回合可砍一次）
     final resetWeapon = player.weapon?.copyWith(hasAttackedThisTurn: false);
@@ -390,6 +421,9 @@ class TurnService {
     
     // 恢复法力
     final newMana = newMaxMana;
+
+    // 英雄免疫递减
+    final newHeroImmune = (player.heroImmuneTurns - 1).clamp(0, 10);
     
     // 抽牌
     List<Card> newHand = player.hand;
@@ -417,6 +451,8 @@ class TurnService {
         fatigueCounter: newFatigueCounter,
         board: resetBoard,
         weapon: resetWeapon,
+        heroImmuneTurns: newHeroImmune,
+        pendingDeathIds: const [],
       )).copyWith(activePlayerId: playerId);
     }
 
@@ -427,6 +463,8 @@ class TurnService {
       deck: newDeck,
       board: resetBoard,
       weapon: resetWeapon,
+      heroImmuneTurns: newHeroImmune,
+      pendingDeathIds: const [],
     )).copyWith(activePlayerId: playerId);
   }
   

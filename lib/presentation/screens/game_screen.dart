@@ -9,6 +9,7 @@ import '../../domain/models/card.dart' as domain;
 import '../../domain/models/player.dart';
 import '../../domain/models/game_state.dart';
 import '../../domain/services/services.dart';
+import '../../domain/services/spell_system.dart';
 import '../../domain/services/ad_service.dart';
 import '../../domain/services/ad_service_factory.dart';
 import '../../shared/widgets/queued_asset_image.dart';
@@ -29,7 +30,7 @@ import '../../core/theme/app_theme.dart';
 import '../widgets/theme_widgets.dart';
 
 /// 游戏主界面 - 战国卡牌游戏对战屏幕
-enum _InteractionMode { none, attackTargeting, heroPowerTargeting }
+enum _InteractionMode { none, attackTargeting, heroPowerTargeting, spellTargeting }
 
 /// 伤害数字条目
 class _DamageEntry {
@@ -69,6 +70,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   // 状态
   domain.Card? _selectedMinion;
   _InteractionMode _interactionMode = _InteractionMode.none;
+  domain.Card? _pendingSpell;
+  List<String> _spellTargetIds = const [];
   Map<String, int> _lastBoardHealths = {};
   bool _isPlayerTurn = true;
   int _turnTimeRemaining = 20;
@@ -771,7 +774,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                       final isSelected = _selectedMinion?.id == card.id;
                       // 确定选择状态
                       CardSelectionState selectionState = CardSelectionState.none;
-                      if (isOpponent) {
+                      if (_interactionMode == _InteractionMode.spellTargeting) {
+                        // 法术选目标：合法目标高亮，其余置灰
+                        if (_isValidSpellTarget(card.id)) {
+                          selectionState = CardSelectionState.targetable;
+                        }
+                      } else if (isOpponent) {
                         if (_selectedMinion != null) {
                           final opponent = gameState.player1.id == widget.playerId
                               ? gameState.player2
@@ -819,6 +827,25 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   /// 处理战场卡牌点击
   void _onBoardCardTap(domain.Card card, bool isOpponent, GameState gameState) {
     if (!_isPlayerTurn) return;
+
+    // 法术选目标模式
+    if (_interactionMode == _InteractionMode.spellTargeting) {
+      final spell = _pendingSpell;
+      if (spell == null) return;
+      if (!_isValidSpellTarget(card.id)) {
+        _showError(LocaleService.I.t('game.invalid_target'));
+        return;
+      }
+      ref.read(aiGameProvider.notifier).playCard(widget.playerId, spell, targetId: card.id);
+      AudioManager.I.playCard();
+      _log(LocaleService.I.t('game.log_play_card', args: {'name': spell.lname, 'cost': '${spell.cost}'}));
+      setState(() {
+        _interactionMode = _InteractionMode.none;
+        _pendingSpell = null;
+        _spellTargetIds = const [];
+      });
+      return;
+    }
 
     // 英雄技能选目标模式
     if (_interactionMode == _InteractionMode.heroPowerTargeting) {
@@ -913,6 +940,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   void _onOpponentHeroTap() {
     if (!_isPlayerTurn) return;
 
+    // 法术选目标模式 → 法术的目标均为随从/自身英雄，不能选敌方英雄
+    if (_interactionMode == _InteractionMode.spellTargeting) return;
+
     // 英雄技能选目标模式 → 对敌方英雄使用
     if (_interactionMode == _InteractionMode.heroPowerTargeting) {
       final gameState = ref.read(aiGameProvider);
@@ -949,6 +979,22 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   /// 点击自己英雄头像 — 使用英雄技能或取消技能目标选择
   void _onPlayerHeroTap() {
+    // 法术选目标模式：可对自身英雄施放，或再次点击取消
+    if (_interactionMode == _InteractionMode.spellTargeting) {
+      final spell = _pendingSpell;
+      if (spell != null && _isValidSpellTarget('hero_${widget.playerId}')) {
+        ref.read(aiGameProvider.notifier).playCard(widget.playerId, spell, targetId: 'hero_${widget.playerId}');
+        AudioManager.I.playCard();
+        _log(LocaleService.I.t('game.log_play_card', args: {'name': spell.lname, 'cost': '${spell.cost}'}));
+      }
+      setState(() {
+        _interactionMode = _InteractionMode.none;
+        _pendingSpell = null;
+        _spellTargetIds = const [];
+      });
+      return;
+    }
+
     if (_interactionMode == _InteractionMode.heroPowerTargeting) {
       setState(() => _interactionMode = _InteractionMode.none);
       return;
@@ -1097,10 +1143,35 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       return;
     }
 
+    // 法术：条件不满足或需选目标时进入目标选择
+    if (card.isSpell) {
+      if (!SpellSystem.canPlay(gameState, player, card)) {
+        _showError(LocaleService.I.t('game.spell_condition_failed'));
+        return;
+      }
+      final targets = SpellSystem.validTargets(gameState, player, card);
+      if (targets.isNotEmpty) {
+        setState(() {
+          _interactionMode = _InteractionMode.spellTargeting;
+          _pendingSpell = card;
+          _spellTargetIds = targets;
+          _selectedMinion = null;
+        });
+        return;
+      }
+    }
+
+    _castCard(card);
+  }
+
+  void _castCard(domain.Card card) {
     ref.read(aiGameProvider.notifier).playCard(widget.playerId, card);
     AudioManager.I.playCard();
     _log(LocaleService.I.t('game.log_play_card', args: {'name': card.lname, 'cost': '${card.cost}'}));
   }
+
+  /// 法术目标是否有效
+  bool _isValidSpellTarget(String id) => _spellTargetIds.contains(id);
 
   Widget _confirmExitButton() {
     return GestureDetector(
@@ -1439,7 +1510,13 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       if (state == null) return;
       if (card.isMinion && state.activePlayer.boardCount >= 7) break;
       if (card.cost > state.activePlayer.mana) continue;
-      notifier.playCard(aiId, card);
+      if (card.isSpell) {
+        // 法术：条件不满足跳过；需选目标时自动选一个
+        if (!SpellSystem.canPlay(state, state.activePlayer, card)) continue;
+        notifier.playCard(aiId, card, targetId: SpellSystem.autoTarget(state, state.activePlayer, card));
+      } else {
+        notifier.playCard(aiId, card);
+      }
     }
     // AI 剩余费用 >= 2 且场上还有随从时用英雄技能
     state = ref.read(aiGameProvider);

@@ -61,18 +61,18 @@ void main() {
       );
     });
     
-    test('executeBattlecry for B001 (魏武卒)', () {
+    test('executeBattlecry for N011 (方士) damages enemy hero when board empty', () {
       final executor = EffectExecutor();
       const card = Card(
-        id: 'B001',
-        name: '魏武卒',
+        id: 'N011',
+        name: '方士',
         type: CardType.minion,
         cost: 3,
-        attack: 3,
-        health: 4,
+        attack: 2,
+        health: 3,
         description: '战吼：造成1点伤害',
         keywords: [Keyword.battlecry],
-        owner: CardOwner.bingjia,
+        owner: CardOwner.neutral,
         rarity: Rarity.rare,
       );
       
@@ -81,45 +81,44 @@ void main() {
       expect(newState.player2.health, 29); // 受到1点伤害
     });
     
-    test('executeDeathrattle for N001 (民兵)', () {
+    test('executeDeathrattle for B004 (燕死士) damages enemy hero 2', () {
       final executor = EffectExecutor();
       const card = Card(
-        id: 'N001',
-        name: '民兵',
+        id: 'B004',
+        name: '燕死士',
         type: CardType.minion,
         cost: 1,
-        attack: 1,
+        attack: 2,
         health: 1,
-        description: '亡语：召唤一个1/1民兵',
+        description: '亡语：对敌方英雄造成2点伤害',
         keywords: [Keyword.deathrattle],
-        owner: CardOwner.neutral,
+        owner: CardOwner.bingjia,
         rarity: Rarity.common,
       );
       
       final newState = executor.executeDeathrattle(initialState, 'p1', card);
       
-      // 亡语召唤民兵
-      expect(newState.player1.board.any((c) => c.name == '民兵'), true);
+      expect(newState.player2.health, 28); // 敌方英雄受到2点伤害
     });
     
     test('handleDeath processes deathrattle', () {
       final executor = EffectExecutor();
       const deadCard = Card(
-        id: 'N001',
-        name: '民兵',
+        id: 'B004',
+        name: '燕死士',
         type: CardType.minion,
         cost: 1,
-        attack: 1,
+        attack: 2,
         health: 1,
-        description: '亡语：召唤一个1/1民兵',
+        description: '亡语：对敌方英雄造成2点伤害',
         keywords: [Keyword.deathrattle],
-        owner: CardOwner.neutral,
+        owner: CardOwner.bingjia,
         rarity: Rarity.common,
       );
       
       final newState = executor.handleDeath(initialState, 'p1', deadCard);
       
-      expect(newState.player1.board.isNotEmpty, true);
+      expect(newState.player2.health, 28);
     });
   });
   
