@@ -111,20 +111,38 @@ class AdBannerSlot extends StatefulWidget {
 class _AdBannerSlotState extends State<AdBannerSlot> {
   double _height = _defaultHeight;
   Timer? _timer;
+  int? _seq;
+
+  // 全局：当前正处于「可见」的插槽序号集合；下标最小的拥有真实广告 DOM。
+  // 解决同页多插槽（或跨 Tab 同时可见）仍只有一个容器 id 的问题。
+  static final List<int> _visibleSeq = [];
+  static int _nextSeq = 0;
+
+  bool _ownsAd() => switch (_visibleSeq) {
+        [] => false,
+        [final s, ...] => s == _seq,
+      };
 
   @override
   void initState() {
     super.initState();
+    _seq = _nextSeq++;
     _ensureRegistered();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // 仅当本插槽可见（当前唯一挂载广告的页面）时才轮询高度；
-    // 隐藏占位时不轮询、不 setState，避免常驻计时器浪费。
     final visible = adSlotVisible(context);
-    if (visible && _timer == null) {
+    final has = _visibleSeq.contains(_seq!);
+    if (visible && !has) {
+      _visibleSeq.add(_seq!);
+      _visibleSeq.sort();
+    } else if (!visible && has) {
+      _visibleSeq.remove(_seq!);
+    }
+    // 仅当本插槽可见且拥有广告时才轮询高度。
+    if (visible && _ownsAd() && _timer == null) {
       _timer = Timer.periodic(const Duration(milliseconds: 500), (_) {
         final v =
             globalContext.getProperty<JSNumber?>(_adHeightKey.toJS)?.toDartDouble;
@@ -135,7 +153,7 @@ class _AdBannerSlotState extends State<AdBannerSlot> {
           }
         }
       });
-    } else if (!visible && _timer != null) {
+    } else if (!(visible && _ownsAd()) && _timer != null) {
       _timer?.cancel();
       _timer = null;
     }
@@ -143,16 +161,17 @@ class _AdBannerSlotState extends State<AdBannerSlot> {
 
   @override
   void dispose() {
+    _visibleSeq.remove(_seq!);
     _timer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // 同一时刻只让可见页面的插槽挂载广告 DOM：IndexedStack 同时挂载 4 个 Tab，
+    // 同一时刻只让一个插槽挂载真实广告 DOM：IndexedStack 同时挂载 4 个 Tab，
     // 每页都创建同一 Adsterra 容器 id 会互抢同 zone，导致只有首页能加载出广告。
-    // 其余插槽渲染等尺寸占位，切换页面时自动重新挂载。
-    if (!adSlotVisible(context)) {
+    // 其余插槽渲染等尺寸占位，切换页面时下标最小的可见插槽获得广告 DOM。
+    if (!adSlotVisible(context) || !_ownsAd()) {
       return const SizedBox(width: double.infinity, height: _defaultHeight);
     }
     return SizedBox(

@@ -529,10 +529,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     // Web：展示站内插屏广告（iframe 覆盖层，右上角 DOM 关闭按钮）。
     // 用户关闭覆盖层即视为已观看；原生端走激励视频广告。
+    // barrierDismissible: false —— 关闭只走覆盖层右上角按钮，防止点遮罩
+    // 就触发「已观看」白拿双倍奖励（广告未实际展示）。
     if (kIsWeb) {
       await showDialog<void>(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: false,
         builder: (_) => const InterstitialAdOverlay(),
       );
     } else {
