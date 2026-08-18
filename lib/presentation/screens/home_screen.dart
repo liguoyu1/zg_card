@@ -13,6 +13,8 @@ import '../../data/xsolla_payment_service.dart';
 import '../../data/support_service.dart';
 import '../../shared/widgets/queued_asset_image.dart';
 import '../../shared/widgets/ad_banner_slot.dart';
+import '../../shared/widgets/announcement_bar.dart';
+import '../../data/activity_service.dart';
 import '../../domain/models/card.dart' as domain;
 import '../../domain/services/card_data_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
@@ -175,6 +177,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         if (ref.watch(authProvider)?.email == null)
                           _buildGuestHint(),
+                        if (ref.watch(authProvider)?.email != null)
+                          _buildCheckinBar(),
                         _buildMenuButton(
                             icon: Icons.shield_outlined,
                             label: LocaleService.I.t('home.btn_battle'),
@@ -210,6 +214,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ),
+              // 底部系统公告（有则显示、多条循环、无则不显示）
+              const AnnouncementBar(),
             ],
           ),
         ),
@@ -245,6 +251,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ]),
     );
+  }
+
+  /// 登录用户每日打卡（连续打卡第 8 天起额外 +2000）
+  Widget _buildCheckinBar() {
+    final auth = ref.watch(authProvider);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.goldAccent.withAlpha(20),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppTheme.goldAccent.withAlpha(90), width: 1),
+      ),
+      child: Row(children: [
+        const Icon(Icons.event_available_outlined,
+            color: AppTheme.goldAccent, size: 20),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(LocaleService.I.t('home.checkin_tip'),
+              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 12)),
+        ),
+        OutlinedButton(
+          onPressed: () => _doCheckin(auth?.token),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppTheme.goldAccent,
+            side: BorderSide(color: AppTheme.goldAccent.withAlpha(120)),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          ),
+          child: Text(LocaleService.I.t('home.btn_checkin'),
+              style: const TextStyle(fontSize: 12)),
+        ),
+      ]),
+    );
+  }
+
+  /// 登录用户每日打卡（连续打卡第 8 天起额外 +2000）
+  Future<void> _doCheckin(String? token) async {
+    if (token == null) return;
+    final msg = ScaffoldMessenger.of(context);
+    final result = await ActivityService.I.checkin(token);
+    if (!mounted) return;
+    await BalanceSyncService.refreshNow();
+    if (mounted) setState(() {});
+    if (result == null) {
+      msg.showSnackBar(SnackBar(content: Text(LocaleService.I.t('home.checkin_failed'))));
+    } else if (result.already) {
+      msg.showSnackBar(SnackBar(content: Text(LocaleService.I.t('home.checkin_done', args: {'streak': '${result.streak}'}))));
+    } else {
+      final text = result.bonus > 0
+          ? LocaleService.I.t('home.checkin_bonus',
+              args: {'streak': '${result.streak}', 'gold': '${result.goldTotal}'})
+          : LocaleService.I.t('home.checkin_ok', args: {'gold': '${result.gold}'});
+      msg.showSnackBar(SnackBar(content: Text(text)));
+    }
   }
 
   Widget _buildHeader() {

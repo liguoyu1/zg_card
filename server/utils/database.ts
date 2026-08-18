@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import { verifyAppleReceipt, IAP_GEM_MAP } from './apple_iap';
+import { verifyAppleReceipt, IAP_GEM_MAP } from './apple_iap.ts';
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 
 // 环境变量
@@ -8,6 +8,18 @@ const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:***@loca
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 const JWT_SECRET = process.env.JWT_SECRET || 'warring-states-secret-key-change-in-production';
 const ELO_K_FACTOR = 32;
+
+// ── 运营配置（环境变量可覆盖）───────────────────────────────────────────────
+const NEW_USER_BONUS_DIAMONDS = Number(process.env.NEW_USER_BONUS_DIAMONDS || 100);
+// 新用户活动结束时间（ISO）。缺省 = 服务启动 +30 天（"持续一个月"）。
+const NEW_USER_BONUS_UNTIL = process.env.NEW_USER_BONUS_UNTIL
+  ? new Date(process.env.NEW_USER_BONUS_UNTIL).getTime()
+  : (Date.now() + 30 * 86400_000);
+const REFERRAL_BONUS_DIAMONDS = Number(process.env.REFERRAL_BONUS_DIAMONDS || 50);
+const CHECKIN_GOLD = Number(process.env.CHECKIN_GOLD || 500);
+const CHECKIN_BONUS_GOLD = Number(process.env.CHECKIN_BONUS_GOLD || 2000);
+const CHECKIN_BONUS_STREAK = Number(process.env.CHECKIN_BONUS_STREAK || 8);
+const CHECKIN_TZ_OFFSET_H = Number(process.env.CHECKIN_TZ_OFFSET_HOURS || 8);
 
 // Prisma 连接池配置
 export const prisma = new PrismaClient({
@@ -196,17 +208,43 @@ export async function guestLogin(name: string) {
   return { token, player: { id: player.id, name: player.name, rank: player.rank } };
 }
 
-export async function register(email: string, password: string, name: string) {
+export async function register(email: string, password: string, name: string, referrerId?: string) {
   const existing = await prisma.player.findUnique({ where: { email } });
   if (existing) return { error: '邮箱已注册' };
   const guestToken = crypto.randomUUID();
   const passwordHash = hashPassword(password);
+  // 邀请人必须是注册用户（有邮箱）且不能是自己
+  let referrer = null;
+  if (referrerId) {
+    referrer = await prisma.player.findUnique({ where: { id: referrerId } });
+    if (referrer && !referrer.email) referrer = null; // 必须注册用户
+  }
   const player = await prisma.player.create({
-    data: { guestToken, email, passwordHash, name: name || email.split('@')[0] },
+    data: {
+      guestToken, email, passwordHash,
+      name: name || email.split('@')[0],
+      referrerId: referrer?.id ?? null,
+    },
   });
   await prisma.collection.create({ data: { playerId: player.id, cards: [] } });
+  // 新用户活动期间赠送钻石（失败不阻止注册）
+  if (Date.now() < NEW_USER_BONUS_UNTIL) {
+    await addGems(player.id, NEW_USER_BONUS_DIAMONDS, '新用户注册奖励').catch(() => {});
+  }
+  // 邀请奖励：给邀请人发放钻石
+  if (referrer) {
+    await addGems(referrer.id, REFERRAL_BONUS_DIAMONDS, `邀请新用户奖励`).catch(() => {});
+  }
+  // 重新读取最新余额（含赠钻）
+  const updated = await prisma.player.findUnique({ where: { id: player.id } });
   const token = createToken({ playerId: player.id, guestToken });
-  return { token, player: { id: player.id, name: player.name, rank: player.rank, email: player.email } };
+  return {
+    token,
+    player: {
+      id: player.id, name: player.name, rank: player.rank, email: player.email,
+      gems: updated?.gems ?? 0, gold: updated?.gold ?? 100,
+    },
+  };
 }
 
 export async function login(email: string, password: string) {
@@ -589,43 +627,49 @@ export async function syncBalance(odID: string, gems: number, gold: number) {
   }
 }
 
-/** 购买卡牌/英雄：服务端事务处理（扣款+入档），返回权威状态供客户端落存 */
+/** 购买卡牌/英雄：服务端事务处理（扣款+入档），返回权威状态供客户端落存
+ * currency: 'gold' 扣金币；'gem' 扣钻石 */
 export async function purchasePlayerAsset(
   odID: string,
   kind: 'card' | 'hero',
   assetId: string,
   cost: number,
+  currency: 'gold' | 'gem' = 'gold',
 ) {
   try {
     const player = await prisma.player.findUnique({ where: { id: odID } });
     if (!player) return { error: 'player not found' };
     const price = Math.max(0, Math.floor(Number(cost) || 0));
-    if (player.gold < price) return { error: 'insufficient gold', gold: player.gold };
+    const isGem = currency === 'gem';
+    if (isGem ? player.gems < price : player.gold < price) {
+      return { error: isGem ? 'insufficient gems' : 'insufficient gold', gold: player.gold, gems: player.gems };
+    }
 
     const save = await prisma.playerSave.findUnique({ where: { playerId: odID } });
     const data = (save?.data as any) || {};
     const pd = data.playerData && typeof data.playerData === 'object' ? { ...data.playerData } : {};
     const key = kind === 'card' ? 'unlockedCards' : 'unlockedHeroes';
     const list: string[] = Array.isArray(pd[key]) ? [...(pd[key] as string[])] : [];
-    if (list.includes(assetId)) return { error: 'already owned', gold: player.gold };
+    if (list.includes(assetId)) return { error: 'already owned', gold: player.gold, gems: player.gems };
     list.push(assetId);
     pd[key] = list;
     const newSave = { ...data, playerData: pd };
 
-    const newGold = player.gold - price;
+    const newGold = isGem ? player.gold : player.gold - price;
+    const newGems = isGem ? player.gems - price : player.gems;
     await prisma.$transaction([
       prisma.player.update({
         where: { id: odID, balanceVersion: player.balanceVersion },
-        data: { gold: newGold, balanceVersion: { increment: 1 } },
+        data: { gold: newGold, gems: newGems, balanceVersion: { increment: 1 } },
       }),
       prisma.transaction.create({
         data: {
           playerId: odID,
-          type: 'spend_gold',
-          currency: 'gold',
+          type: isGem ? 'spend_gems' : 'spend_gold',
+          currency: isGem ? 'gem' : 'gold',
           amount: -price,
-          balanceAfter: newGold,
-          detail: kind === 'card' ? `购买卡牌 ${assetId}` : `购买英雄 ${assetId}`,
+          balanceAfter: isGem ? newGems : newGold,
+          detail: `${kind === 'card' ? '购买卡牌' : '购买英雄'} ${assetId}${isGem ? '（钻石）' : ''}`,
           platform: 'web',
         },
       }),
@@ -638,6 +682,7 @@ export async function purchasePlayerAsset(
     return {
       success: true,
       gold: newGold,
+      gems: newGems,
       balanceVersion: player.balanceVersion + 1,
       unlockedCards: (pd.unlockedCards as string[]) ?? [],
       unlockedHeroes: (pd.unlockedHeroes as string[]) ?? [],
@@ -737,6 +782,60 @@ export async function addGold(odID: string, amount: number, detail: string = '')
   } catch (e: any) {
     return { error: e.message || 'add gold failed' };
   }
+}
+
+// ── 每日打卡 ────────────────────────────────────────────────────────────────
+function serDay(d: Date): string {
+  const off = CHECKIN_TZ_OFFSET_H * 3600_000;
+  return new Date(d.getTime() + off).toISOString().slice(0, 10);
+}
+
+export async function checkin(odID: string) {
+  try {
+    const player = await prisma.player.findUnique({ where: { id: odID } });
+    if (!player) return { error: 'player not found' };
+    const now = new Date();
+    const today = serDay(now);
+    const existing = await prisma.checkin.findUnique({
+      where: { playerId_date: { playerId: odID, date: today } },
+    });
+    if (existing) {
+      return { success: true, already: true, date: today, streak: existing.streak, gold: 0, bonus: 0 };
+    }
+    const yesterday = serDay(new Date(now.getTime() - 86400_000));
+    const last = await prisma.checkin.findFirst({ where: { playerId: odID }, orderBy: { date: 'desc' } });
+    const streak = (last && last.date === yesterday) ? last.streak + 1 : 1;
+    const gold = CHECKIN_GOLD;
+    const bonus = streak >= CHECKIN_BONUS_STREAK ? CHECKIN_BONUS_GOLD : 0;
+    const newGold = player.gold + gold + bonus;
+    await prisma.$transaction([
+      prisma.checkin.create({ data: { playerId: odID, date: today, streak, bonus } }),
+      prisma.player.update({
+        where: { id: odID, balanceVersion: player.balanceVersion },
+        data: { gold: newGold, balanceVersion: { increment: 1 } },
+      }),
+      prisma.transaction.create({
+        data: {
+          playerId: odID, type: 'earn_gold', currency: 'gold',
+          amount: gold + bonus, balanceAfter: newGold,
+          detail: bonus ? `每日打卡+连续${streak}天额外奖励` : '每日打卡',
+          platform: 'web',
+        },
+      }),
+    ]);
+    return { success: true, already: false, date: today, streak, gold, bonus, goldTotal: newGold };
+  } catch (e: any) {
+    return { error: e.message || 'checkin failed' };
+  }
+}
+
+// ── 系统公告 ────────────────────────────────────────────────────────────────
+export async function listAnnouncements() {
+  return await prisma.announcement.findMany({
+    where: { active: true },
+    orderBy: { sort: 'asc' },
+    select: { id: true, title: true, content: true },
+  });
 }
 
 export async function spendGold(odID: string, amount: number, detail: string = '') {

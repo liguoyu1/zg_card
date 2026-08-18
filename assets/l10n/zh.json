@@ -1629,5 +1629,11 @@
   "home.login_first_support": "请先登录后再联系客服",
   "home.login_first_transactions": "请先登录后查看交易记录",
   "home.login_first_skin": "请先登录后使用皮肤功能",
-  "difficulty.select": "选择难度"
+  "difficulty.select": "选择难度",
+  "home.btn_checkin": "每日签到",
+  "home.checkin_tip": "每天签到领金币，连续7天以上有额外奖励！",
+  "home.checkin_ok": "签到成功！+{gold} 金币",
+  "home.checkin_done": "今日已签到，连续 {streak} 天",
+  "home.checkin_bonus": "连续 {streak} 天！+{gold} 金币（含额外奖励）",
+  "home.checkin_failed": "签到失败，请稍后重试"
 }

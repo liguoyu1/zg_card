@@ -94,10 +94,23 @@ class AuthService {
   /// 邮箱注册
   Future<String?> register(String email, String password, String name) async {
     try {
+      // 分享链接邀请：读取 URL 上的 ?ref=<playerId>，随注册上报服务端
+      String? referrerId;
+      if (kIsWeb) {
+        try {
+          referrerId = Uri.base.queryParameters['ref'];
+        } catch (_) {}
+      }
       final uri = Uri.parse('$_baseUrl/api/auth/register');
       final resp = await http.post(uri,
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'email': email, 'password': password, 'name': name}));
+          body: jsonEncode({
+            'email': email,
+            'password': password,
+            'name': name,
+            if (referrerId != null && referrerId.isNotEmpty)
+              'referrerId': referrerId,
+          }));
       if (resp.statusCode != 200) return '网络错误';
       final body = jsonDecode(resp.body);
       if (body['error'] != null) return body['error'] as String;

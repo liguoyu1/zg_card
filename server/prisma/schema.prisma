@@ -25,6 +25,7 @@ model Player {
   gems          Int      @default(0)
   gold          Int      @default(100)
   balanceVersion Int    @default(0)
+  referrerId    String?  @map("referrer_id") // 邀请人(分享链接来源)玩家，新用户注册时记录
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -32,9 +33,10 @@ model Player {
   decks         Deck[]
   quests        Quest[]
   dailyRewards  DailyReward[]
-  transactions  Transaction[]
+  checkins      Checkin[]
+  transactions   Transaction[]
   supportTickets SupportTicket[]
-  save         PlayerSave?
+  save           PlayerSave?
 
   @@map("players")
 }
@@ -191,4 +193,34 @@ model Leaderboard {
   @@unique([season, rank])
   @@map("leaderboard")
   @@index([season, elo])
+}
+
+// 每日打卡（每天 +金币，连续多天额外奖励）
+model Checkin {
+  id        String   @id @default(cuid())
+  playerId  String   @map("player_id")
+  date      String               // YYYY-MM-DD（服务端时区）
+  streak    Int      @default(1) // 连续打卡天数
+  bonus     Int      @default(0) // 本次额外奖励金币（连续≥第8天时 +2000）
+  createdAt DateTime @default(now()) @map("created_at")
+
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, date])
+  @@map("checkins")
+  @@index([playerId])
+}
+
+// 系统公告（主页底部滚动展示；数据库配置：有则显示、多条循环、无则不显示）
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  active    Boolean  @default(true)   // 是否启用
+  sort      Int      @default(0)      // 排序（小在前）
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("announcements")
+  @@index([active, sort])
 }

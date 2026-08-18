@@ -1,4 +1,4 @@
-import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency } from '../../utils/database';
+import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency, checkin, listAnnouncements } from '../../utils/database';
 import { joinMatchQueue, leaveMatchQueue, checkMatchStatus, submitGameAction, pollGameActions } from '../../utils/database';
 import { createSupportTicket, listSupportTickets, closeSupportTicket, prisma } from '../../utils/database';
 import { createPaymentToken, verifyWebhookSignature, handleUserValidation, resolveXsollaAmount, GEM_SKU_MAP } from '../../utils/xsolla';
@@ -33,11 +33,11 @@ export default defineEventHandler(async (event) => {
     }
 
     if (path === '/api/auth/register' && method === 'POST') {
-      const { email, password, name } = await readBody(event);
+      const { email, password, name, referrerId } = await readBody(event);
       if (!email || !password) return { error: '邮箱和密码不能为空' };
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: '邮箱格式不正确' };
       if (password.length < 6) return { error: '密码至少6位' };
-      return await register(email, password, name || email.split('@')[0]);
+      return await register(email, password, name || email.split('@')[0], referrerId);
     }
 
     if (path === '/api/auth/login' && method === 'POST') {
@@ -145,9 +145,9 @@ export default defineEventHandler(async (event) => {
       if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };
       const token = verifyToken(auth.slice(7));
       if (!token) return { error: 'Invalid token' };
-      const { assetId, cost } = await readBody(event);
+      const { assetId, cost, currency } = await readBody(event);
       if (!assetId || typeof assetId !== 'string') return { error: 'assetId required' };
-      return await purchasePlayerAsset(token.playerId, path.endsWith('/buy-hero') ? 'hero' : 'card', assetId, Number(cost) || 0);
+      return await purchasePlayerAsset(token.playerId, path.endsWith('/buy-hero') ? 'hero' : 'card', assetId, Number(cost) || 0, currency === 'gem' ? 'gem' : 'gold');
     }
 
     if (method === 'GET' && path === '/api/save/version') {
@@ -321,6 +321,19 @@ export default defineEventHandler(async (event) => {
       // Xsolla 推荐立即返回 204
       setResponseStatus(event, 204);
       return;
+    }
+
+    // ── 每日打卡（需登录） ──
+    if (path === '/api/checkin' && method === 'POST') {
+      const auth = getRequestHeader(event, 'authorization');
+      if (!auth || !auth.startsWith('Bearer ')) return { error: 'Unauthorized' };
+      const token = verifyToken(auth.slice(7));
+      return await checkin(token.playerId);
+    }
+
+    // ── 系统公告（公开） ──
+    if (path === '/api/announcements' && method === 'GET') {
+      return await listAnnouncements();
     }
 
     if (path === '/api/health' && method === 'GET') {

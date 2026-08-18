@@ -1629,5 +1629,11 @@
   "home.login_first_support": "Please log in first to contact support",
   "home.login_first_transactions": "Please log in first to view transactions",
   "home.login_first_skin": "Please log in first to use the skin feature",
-  "difficulty.select": "Select Difficulty"
+  "difficulty.select": "Select Difficulty",
+  "home.btn_checkin": "Check-in",
+  "home.checkin_tip": "Daily check-in earns gold; extra bonus after 7 consecutive days!",
+  "home.checkin_ok": "Checked in! +{gold} Gold",
+  "home.checkin_done": "Already checked in today. Streak: {streak} days",
+  "home.checkin_bonus": "Streak {streak} days! +{gold} Gold (incl. bonus)",
+  "home.checkin_failed": "Check-in failed, please try again."
 }

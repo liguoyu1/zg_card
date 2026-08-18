@@ -1629,5 +1629,11 @@
   "home.login_first_skin": "請先登入後使用皮膚功能",
   "difficulty.select": "選擇難度",
   "game.invalid_target": "所選目標無效",
-  "game.spell_condition_failed": "條件不滿足，無法打出該法術"
+  "game.spell_condition_failed": "條件不滿足，無法打出該法術",
+  "home.btn_checkin": "每日簽到",
+  "home.checkin_tip": "每天簽到領金幣，連續7天以上有額外獎勵！",
+  "home.checkin_ok": "簽到成功！+{gold} 金幣",
+  "home.checkin_done": "今日已簽到，連續 {streak} 天",
+  "home.checkin_bonus": "連續 {streak} 天！+{gold} 金幣（含額外獎勵）",
+  "home.checkin_failed": "簽到失敗，請稍後重試"
 }
