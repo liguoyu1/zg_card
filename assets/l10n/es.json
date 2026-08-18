@@ -1627,5 +1627,7 @@
   "home.login_first_support": "Por favor, inicie sesión primero para contactar con el soporte",
   "home.login_first_transactions": "Por favor, inicie sesión primero para ver las transacciones",
   "home.login_first_skin": "Por favor, inicie sesión primero para usar la función de piel",
-  "difficulty.select": "Seleccionar dificultad"
+  "difficulty.select": "Seleccionar dificultad",
+  "game.invalid_target": "Objetivo no válido",
+  "game.spell_condition_failed": "No se cumplen las condiciones: no se puede lanzar el hechizo"
 }

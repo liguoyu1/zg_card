@@ -1627,5 +1627,7 @@
   "home.login_first_support": "請先登入後再聯絡客服",
   "home.login_first_transactions": "請先登入後查看交易記錄",
   "home.login_first_skin": "請先登入後使用皮膚功能",
-  "difficulty.select": "選擇難度"
+  "difficulty.select": "選擇難度",
+  "game.invalid_target": "所選目標無效",
+  "game.spell_condition_failed": "條件不滿足，無法打出該法術"
 }

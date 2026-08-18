@@ -1627,5 +1627,7 @@
   "home.login_first_support": "กรุณาเข้าสู่ระบบก่อนติดต่อฝ่ายสนับสนุน",
   "home.login_first_transactions": "กรุณาเข้าสู่ระบบก่อนดูรายการธุรกรรม",
   "home.login_first_skin": "กรุณาเข้าสู่ระบบก่อนใช้ฟีเจอร์สกิน",
-  "difficulty.select": "เลือกความยาก"
+  "difficulty.select": "เลือกความยาก",
+  "game.invalid_target": "เป้าหมายไม่ถูกต้อง",
+  "game.spell_condition_failed": "ไม่เป็นไปตามเงื่อนไข ไม่สามารถใช้เวทมนตร์ได้"
 }

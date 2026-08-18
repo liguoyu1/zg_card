@@ -1627,5 +1627,7 @@
   "home.login_first_support": "Mangyaring mag-log in muna para makontak ang suporta",
   "home.login_first_transactions": "Mangyaring mag-log in muna para makita ang mga transaksyon",
   "home.login_first_skin": "Mangyaring mag-log in muna para magamit ang skin feature",
-  "difficulty.select": "Pumili ng Hirap"
+  "difficulty.select": "Pumili ng Hirap",
+  "game.invalid_target": "Hindi wastong target",
+  "game.spell_condition_failed": "Hindi natugunan ang kundisyon, hindi maaaring gamitin ang spell"
 }

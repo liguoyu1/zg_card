@@ -1627,5 +1627,7 @@
   "home.login_first_support": "Veuillez d'abord vous connecter pour contacter le support",
   "home.login_first_transactions": "Veuillez d'abord vous connecter pour voir les transactions",
   "home.login_first_skin": "Veuillez d'abord vous connecter pour utiliser la fonction de skin",
-  "difficulty.select": "Choisir la difficulté"
+  "difficulty.select": "Choisir la difficulté",
+  "game.invalid_target": "Cible invalide",
+  "game.spell_condition_failed": "Condition non remplie : sort incastrable"
 }

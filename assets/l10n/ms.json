@@ -1627,5 +1627,7 @@
   "home.login_first_support": "Sila log masuk dahulu untuk menghubungi sokongan",
   "home.login_first_transactions": "Sila log masuk dahulu untuk melihat transaksi",
   "home.login_first_skin": "Sila log masuk dahulu untuk menggunakan fungsi skin",
-  "difficulty.select": "Pilih Kesukaran"
+  "difficulty.select": "Pilih Kesukaran",
+  "game.invalid_target": "Sasaran tidak sah",
+  "game.spell_condition_failed": "Syarat tidak dipenuhi, mantera tidak boleh dimainkan"
 }

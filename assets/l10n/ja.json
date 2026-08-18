@@ -1627,5 +1627,7 @@
   "home.login_first_support": "サポートに連絡するにはログインしてください",
   "home.login_first_transactions": "取引履歴を確認するにはログインしてください",
   "home.login_first_skin": "スキン機能を使用するにはログインしてください",
-  "difficulty.select": "難易度を選択"
+  "difficulty.select": "難易度を選択",
+  "game.invalid_target": "無効な対象",
+  "game.spell_condition_failed": "条件を満たしていないため呪文を唱えられません"
 }
