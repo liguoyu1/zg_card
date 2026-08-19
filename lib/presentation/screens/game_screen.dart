@@ -604,10 +604,15 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         ? gameState.player2
         : gameState.player1;
 
-    // 响应式尺寸 — 原图 1:1.5，战场卡用 1:1.45 接近原图，防止两侧过度裁剪
-    final screenWidth = MediaQuery.of(context).size.width;
-    final boardCardWidth = min(96.0, screenWidth * 0.13);
-    final boardCardHeight = boardCardWidth * 1.45;
+    // 响应式尺寸 — 竖屏高度驱动（手机战场卡偏小），横屏宽度驱动，避免上限锁死
+    final screenSize = MediaQuery.of(context).size;
+    final screenWidth = screenSize.width;
+    final screenHeight = screenSize.height;
+    final isPortrait = screenWidth < screenHeight;
+    final boardCardHeight = isPortrait
+        ? min(130.0, screenHeight * 0.12)
+        : min(130.0, screenWidth * 0.09);
+    final boardCardWidth = boardCardHeight / 1.45;
     final handCardWidth = min(88.0, screenWidth * 0.15);
 
     return Scaffold(
