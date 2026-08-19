@@ -94,7 +94,7 @@ class AuthService {
   /// 邮箱注册
   Future<String?> register(String email, String password, String name) async {
     try {
-      // 邀请人：URL ?ref= 优先，否则用本地持久化的邀请人（30 天有效期内）
+      // 邀请人：URL ?ref= 优先，否则用本地持久化的邀请人（3 天有效期内）
       String? referrerId;
       final prefs = await SharedPreferences.getInstance();
       if (kIsWeb) {
@@ -104,7 +104,7 @@ class AuthService {
       }
       if (referrerId == null || referrerId.isEmpty) {
         final savedAt = prefs.getInt('invite_referrer_at') ?? 0;
-        if (DateTime.now().millisecondsSinceEpoch - savedAt <= 30 * 86400000) {
+        if (DateTime.now().millisecondsSinceEpoch - savedAt <= 3 * 86400000) {
           referrerId = prefs.getString('invite_referrer_id');
         }
       }

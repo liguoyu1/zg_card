@@ -28,7 +28,7 @@ void main() async {
   SaveManager.onCollectionSaved = (_) => BalanceSyncService.schedule();
   final prefs = await SharedPreferences.getInstance();
   // 分享链接：点击带 ?ref= 的链接即持久化邀请人，避免随后从主页
-  // 直接注册时丢参导致邀请关系断裂（30 天有效期窗口）。
+  // 直接注册时丢参导致邀请关系断裂（3 天有效期窗口）。
   if (kIsWeb) {
     try {
       final ref = Uri.base.queryParameters['ref'];
