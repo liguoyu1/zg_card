@@ -206,7 +206,6 @@ class AuthService {
     } catch (_) {}
     final jwt = await xsollaSilentJwt(
       projectId: kXsollaProjectId,
-      clientId: kXsollaClientId,
       redirectUri: redirectUri,
     );
     if (jwt == null) return null;

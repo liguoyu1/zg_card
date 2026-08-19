@@ -7,20 +7,20 @@ import 'dart:html';
 /// 返回 null = 无有效 Xsolla 会话（用户未在 Xsolla 登录过 / cookie 过期）。
 Future<String?> xsollaSilentJwt({
   required String projectId,
-  required String clientId,
   String redirectUri = '',
 }) async {
   try {
+    // 对齐 @xsolla/login-sdk checkUserAuthSSO 参数集：
+    // hn = ["projectId","fullLocale","callbackUrl","payload","with_logout"]；
+    // wn() 将 callbackUrl 映射为 query 参数 login_url
     final params = <String, String>{
-      'client_id': clientId,
       'projectId': projectId,
-      'scope': 'offline',
     };
-    if (redirectUri.isNotEmpty) params['redirect_uri'] = redirectUri;
+    if (redirectUri.isNotEmpty) params['login_url'] = redirectUri;
     final query = params.entries
         .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
         .join('&');
-    final url = 'https://login.xsolla.com/api/oauth2/jwt/sso?$query';
+    final url = 'https://login.xsolla.com/api/jwt/sso?$query';
     final req = await HttpRequest.request(
       url,
       withCredentials: true,
