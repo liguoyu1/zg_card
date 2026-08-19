@@ -14,6 +14,7 @@ import 'domain/services/balance_sync_service.dart';
 import 'domain/services/purchase_service.dart';
 import 'domain/services/quest_manager.dart';
 import 'l10n/locale_service.dart';
+import 'presentation/providers/auth_provider.dart';
 import 'routing/app_router.dart';
 
 void main() async {
@@ -64,20 +65,22 @@ void main() async {
   }
 }
 
-class WarringStatesApp extends StatefulWidget {
+class WarringStatesApp extends ConsumerStatefulWidget {
   const WarringStatesApp({super.key});
 
   @override
-  State<WarringStatesApp> createState() => _WarringStatesAppState();
+  ConsumerState<WarringStatesApp> createState() => _WarringStatesAppState();
 }
 
-class _WarringStatesAppState extends State<WarringStatesApp>
+class _WarringStatesAppState extends ConsumerState<WarringStatesApp>
     with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     LocaleService.I.localeVersion.addListener(_onLocaleChanged);
+    // 启动时恢复登录态（含 Xsolla 静默无感登录）
+    ref.read(authProvider.notifier).loadSession();
   }
 
   @override

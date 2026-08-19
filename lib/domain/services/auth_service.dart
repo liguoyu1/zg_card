@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/api_config.dart';
+import 'xsolla_silent_io.dart'
+    if (dart.library.js_interop) 'xsolla_silent_web.dart';
 
 /// 登录状态
 class AuthState {
@@ -22,7 +24,7 @@ class AuthState {
   });
 }
 
-/// 认证服务 — 邮箱密码登录/注册 + 游客登录 + 持久化
+/// 认证服务 — 邮箱密码登录/注册 + 游客登录 + 持久化 + Xsolla 静默登录
 class AuthService {
   static const String _tokenKey = 'auth_token';
   static const String _playerIdKey = 'auth_player_id';
@@ -30,6 +32,10 @@ class AuthService {
   static const String _avatarKey = 'auth_avatar';
   static const String _emailKey = 'auth_email';
   static const String _baseUrl = ApiConfig.baseUrl;
+
+  /// Xsolla Login 构建时注入（dart-define）；缺省则静默+按钮均隐藏
+  static const String kXsollaClientId = String.fromEnvironment('XSOLLA_CLIENT_ID');
+  static const String kXsollaProjectId = String.fromEnvironment('XSOLLA_PROJECT_ID');
 
   AuthState? _state;
   AuthState? get state => _state;
@@ -188,6 +194,24 @@ class AuthService {
       debugPrint('AuthService xsollaLogin error: $e');
       return '网络连接失败';
     }
+  }
+
+  /// Xsolla 静默无感登录：浏览器已有 Xs 会话 → 直接取 JWT → 服务端合并
+  Future<String?> trySilentXsollaLogin() async {
+    if (_state != null) return null;
+    if (kXsollaClientId.isEmpty || kXsollaProjectId.isEmpty) return null;
+    String redirectUri = '';
+    try {
+      redirectUri = '${Uri.base.scheme}://${Uri.base.authority}/auth/xsolla';
+    } catch (_) {}
+    final jwt = await xsollaSilentJwt(
+      projectId: kXsollaProjectId,
+      clientId: kXsollaClientId,
+      redirectUri: redirectUri,
+    );
+    if (jwt == null) return null;
+    debugPrint('AuthService: Xsolla 静默 JWT 获取成功，开始合并登录');
+    return await xsollaLogin(jwt);
   }
 
   /// 登出

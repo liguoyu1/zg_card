@@ -11,10 +11,23 @@ class AuthNotifier extends StateNotifier<AuthState?> {
 
   AuthNotifier() : super(null);
 
-  /// 应用启动时从本地恢复登录态
+  /// 应用启动时从本地恢复登录态；本地无会话则尝试 Xsolla 静默无感登录
+  bool _loaded = false;
+
   Future<void> loadSession() async {
+    if (_loaded) return;
+    _loaded = true;
     state = await _service.loadSession();
-    _bindBalanceSync();
+    if (state == null) {
+      // 浏览器已有 Xsolla 会话 → 静默合并登录
+      final err = await _service.trySilentXsollaLogin();
+      if (err == null && _service.state != null) {
+        state = _service.state;
+        _bindBalanceSync();
+      }
+    } else {
+      _bindBalanceSync();
+    }
   }
 
   bool get isLoggedIn => state != null;

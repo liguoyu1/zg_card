@@ -3,11 +3,9 @@ import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
+import '../../domain/services/auth_service.dart' show AuthService;
 import '../../l10n/locale_service.dart';
 import '../providers/auth_provider.dart';
-
-/// Xsolla Login OAuth Client ID（构建时注入；未配置则不显示入口）
-const String _kXsollaClientId = String.fromEnvironment('XSOLLA_CLIENT_ID');
 
 /// 登录注册页 — 邮箱+密码注册/登录 + 游客快捷登录 + Xsolla 平台登录
 class LoginScreen extends ConsumerStatefulWidget {
@@ -82,13 +80,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _xsollaLogin() async {
-    if (!kIsWeb || _kXsollaClientId.isEmpty) return;
+    if (!kIsWeb || AuthService.kXsollaClientId.isEmpty) return;
     final origin = '${Uri.base.scheme}://${Uri.base.authority}';
     final redirectUri = '$origin/auth/xsolla';
     final state = DateTime.now().millisecondsSinceEpoch.toString();
     final url = 'https://login.xsolla.com/api/oauth2/login'
         '?response_type=token'
-        '&client_id=$_kXsollaClientId'
+        '&client_id=$AuthService.kXsollaClientId'
         '&redirect_uri=${Uri.encodeComponent(redirectUri)}'
         '&scope=offline'
         '&state=$state';
@@ -159,7 +157,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           const SizedBox(height: 16),
 
           // Xsolla 平台登录（Web 构建配置了 XSOLLA_CLIENT_ID 时显示）
-          if (kIsWeb && _kXsollaClientId.isNotEmpty) ...[
+          if (kIsWeb && AuthService.kXsollaClientId.isNotEmpty) ...[
             SizedBox(
               width: double.infinity, height: 44,
               child: OutlinedButton.icon(
