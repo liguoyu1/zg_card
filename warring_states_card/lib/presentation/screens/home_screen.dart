@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/asset_style.dart';
 import '../../core/audio/audio_manager.dart';
@@ -143,15 +144,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             setState(() {});
             break;
           case 'lang_zh':
-            LocaleService.I.init(localeCode: 'zh');
+            await LocaleService.I.init(localeCode: 'zh');
+            await SharedPreferences.getInstance().then((p) => p.setString('locale_code', 'zh'));
             setState(() {});
             break;
           case 'lang_en':
-            LocaleService.I.init(localeCode: 'en');
+            await LocaleService.I.init(localeCode: 'en');
+            await SharedPreferences.getInstance().then((p) => p.setString('locale_code', 'en'));
             setState(() {});
             break;
           case 'lang_zh_TW':
-            LocaleService.I.init(localeCode: 'zh_TW');
+            await LocaleService.I.init(localeCode: 'zh_TW');
+            await SharedPreferences.getInstance().then((p) => p.setString('locale_code', 'zh_TW'));
             setState(() {});
             break;
           case 'logout':
@@ -315,7 +319,7 @@ class _WeeklyTrialDialog extends StatelessWidget {
             child: Column(children: [
               Text(c.name, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
               const SizedBox(height: 4),
-              Text('${_rl[c.rarity]} · ${c.cost}费', style: TextStyle(color: rc, fontSize: 9)),
+              Text(LocaleService.I.t('home.trial_cost', args: {'rarity': _rl[c.rarity] ?? '', 'cost': '${c.cost}'}), style: TextStyle(color: rc, fontSize: 9)),
               const SizedBox(height: 2),
               Text(_typeName(c.type), style: TextStyle(color: Colors.white.withAlpha(150), fontSize: 8)),
             ]),

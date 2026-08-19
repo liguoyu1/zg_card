@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 /// 购买结果 — 携带收据数据供后端验证
@@ -44,6 +44,7 @@ class PurchaseService {
     if (_initialized || kIsWeb) return false;
     try {
       _initialized = await _iap.isAvailable();
+      debugPrint('🔵 IAP isAvailable: $_initialized');
       if (!_initialized) return false;
       _sub = _iap.purchaseStream.listen((events) {
         for (final e in events) {
@@ -88,11 +89,14 @@ class PurchaseService {
     try {
       const ids = <String>{'gem_60', 'gem_300', 'gem_600', 'gem_1500', 'gem_3000'};
       final resp = await _iap.queryProductDetails(ids);
+      debugPrint('🔵 IAP queryProductDetails: got ${resp.productDetails.length}/${ids.length}');
+      debugPrint('🔵 IAP error: ${resp.error}');
       _products
         ..clear()
         ..addAll(resp.productDetails);
       return resp.productDetails;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('🔴 IAP loadProducts exception: $e');
       return [];
     }
   }

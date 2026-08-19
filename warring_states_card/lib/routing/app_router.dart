@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
 import '../domain/models/hero.dart' as hero;
@@ -19,7 +20,8 @@ import '../presentation/screens/training_screen.dart';
 import '../presentation/widgets/responsive_layout.dart';
 
 class AppRouter {
-  static final GoRouter router = GoRouter(
+  static GoRouter router({Listenable? refreshListenable}) => GoRouter(
+    refreshListenable: refreshListenable,
     initialLocation: '/',
     routes: [
       ShellRoute(

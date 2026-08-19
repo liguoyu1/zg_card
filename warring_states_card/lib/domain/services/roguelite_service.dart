@@ -19,7 +19,10 @@ class RogueliteService {
     if (chapter == null) return [];
 
     final startIdx = segment == 0 ? 0 : 5;
-    final missions = chapter.missions.sublist(startIdx, startIdx + 6); // 5 normal + Boss
+    final missions = chapter.missions.sublist(
+      startIdx,
+      startIdx + 6 > chapter.missions.length ? chapter.missions.length : startIdx + 6,
+    ); // 5 普通 + 该段 Boss
 
     final layers = <List<RogueliteNode>>[];
     var nodeId = 0;
@@ -80,9 +83,10 @@ class RogueliteService {
   }
 
   /// 开始新的征途
-  RogueliteRun startRun(String heroId, String chapterId, int segment) {
+  RogueliteRun? startRun(String heroId, String chapterId, int segment) {
     final layers = generatePath(chapterId, segment);
     final allNodes = layers.expand((l) => l).toList();
+    if (allNodes.isEmpty) return null;
 
     return RogueliteRun(
       heroId: heroId,

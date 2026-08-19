@@ -10,7 +10,7 @@ import 'package:warring_states_card/l10n/locale_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/data_version.dart';
 import '../../data/persistence/save_manager.dart';
-import '../../main.dart' show adService;
+
 import '../widgets/path_map.dart';
 import '../widgets/reward_picker.dart';
 import 'game_screen.dart';
@@ -415,18 +415,15 @@ class _AdventureScreenState extends State<AdventureScreen> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              final rewarded = await adService.showRewardedAd(placementId: 'roguelite_revive');
-              if (rewarded) {
-                run.failCount = 0;
-                run.applyBattleResult(run.currentHp, 0);
-                _saveRun();
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+              run.failCount = 0;
+              run.applyBattleResult(run.currentHp, 0);
+              _saveRun();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(LocaleService.I.t('adventure.revival_success'))),
                 );
-                }
-                setState(() {});
               }
+              setState(() {});
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.goldAccent),
             child: Text(LocaleService.I.t('adventure.revive'), style: const TextStyle(color: Colors.white)),

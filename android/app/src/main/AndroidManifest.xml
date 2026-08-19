@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 广告加载（Smart Link / WebView）与游戏资源下载需要网络 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="战国卡牌"
         android:name="${applicationName}"

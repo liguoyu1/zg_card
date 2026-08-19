@@ -2,5 +2,9 @@
   "buildCommand": "flutter build web --release",
   "outputDirectory": "build/web",
   "framework": "flutter",
-  "installCommand": "flutter pub get"
+  "installCommand": "flutter pub get",
+  "rewrites": [
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/privacy/", "destination": "/privacy.html" }
+  ]
 }

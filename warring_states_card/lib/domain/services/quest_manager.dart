@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../l10n/locale_service.dart';
 import '../../data/persistence/save_manager.dart';
 import '../models/quest.dart';
 
@@ -66,12 +67,12 @@ class QuestManager {
   }
 
   List<DailyQuest> _allQuestTemplates() => [
-    DailyQuest(id: 'q_win_3', type: QuestType.winMatches, title: '战无不克', description: '赢得3场对战', target: 3, goldReward: 30),
-    DailyQuest(id: 'q_school_10', type: QuestType.playSchoolCards, title: '学派精通', description: '打出10张兵家卡牌', target: 10, dustReward: 5),
-    DailyQuest(id: 'q_damage_50', type: QuestType.dealDamage, title: '武力展示', description: '造成50点伤害', target: 50, goldReward: 25),
-    DailyQuest(id: 'q_hero_5', type: QuestType.useHeroPower, title: '英雄之威', description: '使用5次英雄技能', target: 5),
-    DailyQuest(id: 'q_boss_1', type: QuestType.bossKill, title: '破阵', description: '击败1个冒险Boss', target: 1, goldReward: 40),
-    DailyQuest(id: 'q_draw_20', type: QuestType.drawCards, title: '谋略', description: '抽20张牌', target: 20, goldReward: 15),
+    DailyQuest(id: 'q_win_3', type: QuestType.winMatches, title: LocaleService.I.t('quest.q_win_3.title'), description: LocaleService.I.t('quest.q_win_3.desc'), target: 3, goldReward: 30),
+    DailyQuest(id: 'q_school_10', type: QuestType.playSchoolCards, title: LocaleService.I.t('quest.q_school_10.title'), description: LocaleService.I.t('quest.q_school_10.desc'), target: 10, dustReward: 5),
+    DailyQuest(id: 'q_damage_50', type: QuestType.dealDamage, title: LocaleService.I.t('quest.q_damage_50.title'), description: LocaleService.I.t('quest.q_damage_50.desc'), target: 50, goldReward: 25),
+    DailyQuest(id: 'q_hero_5', type: QuestType.useHeroPower, title: LocaleService.I.t('quest.q_hero_5.title'), description: LocaleService.I.t('quest.q_hero_5.desc'), target: 5),
+    DailyQuest(id: 'q_boss_1', type: QuestType.bossKill, title: LocaleService.I.t('quest.q_boss_1.title'), description: LocaleService.I.t('quest.q_boss_1.desc'), target: 1, goldReward: 40),
+    DailyQuest(id: 'q_draw_20', type: QuestType.drawCards, title: LocaleService.I.t('quest.q_draw_20.title'), description: LocaleService.I.t('quest.q_draw_20.desc'), target: 20, goldReward: 15),
   ];
 
   /// 上报事件 → 更新任务进度

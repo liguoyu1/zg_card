@@ -18,7 +18,7 @@ import '../../domain/models/mission_context.dart';
 import '../../domain/models/roguelite_run.dart';
 import '../../l10n/locale_service.dart';
 import '../../data/persistence/save_manager.dart';
-import '../../main.dart' show adService;
+
 import '../../core/theme/app_theme.dart';
 import '../widgets/theme_widgets.dart';
 
@@ -423,8 +423,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _claimDoubleReward() async {
-    final rewarded = await adService.showRewardedAd(placementId: 'double_reward');
-    if (!rewarded || !mounted) return;
+    if (!mounted) return;
 
     final pd = await SaveManager.loadPlayerData();
     if (pd == null) return;

@@ -26,12 +26,16 @@ assert.deepEqual(
 assert.equal((await handleUserValidation({ user: { id: 'ghost' } }, findUser)).status, 404, 'unknown user should return 404');
 assert.equal((await handleUserValidation({}, findUser)).status, 400, 'missing user id should return 400');
 
-assert.equal(resolveXsollaAmount({ items: [{ sku: 'gem_300', quantity: 300 }] }), 350, 'gem_300 = 套餐300 + 活动赠送50');
-assert.equal(resolveXsollaAmount({ purchase: { virtual_currency: { sku: 'gem_300', quantity: 300 } } }), 350, 'sku wins over package quantity');
+assert.equal(resolveXsollaAmount({ items: [{ sku: 'gem_300', quantity: 300 }] }), 420, 'gem_300 = 套餐300 + 20%活动 = 350 × 1.2 = 420');
+assert.equal(resolveXsollaAmount({ purchase: { virtual_currency: { sku: 'gem_300', quantity: 300 } } }), 420, 'sku wins over package quantity');
 assert.equal(resolveXsollaAmount({ items: [{ sku: 'gem', type: 'virtual_currency', quantity: 300 }] }), 300, 'generic currency sku: grant by quantity');
 assert.equal(resolveXsollaAmount({ purchase: { virtual_currency: { quantity: 300 } } }), 300, 'quantity-only: grant by quantity');
 assert.equal(resolveXsollaAmount({}), 0, 'no purchase info should grant 0');
-assert.equal(resolveXsollaAmount({}), 0, 'no purchase info should grant 0');
 
-assert.deepEqual(GEM_SKU_MAP, IAP_GEM_MAP, 'Xsolla SKU map must match iOS IAP map');
+// Xsolla 渠道有意在 iOS 基准档位上新增 20% 活动钻（见 GEM_SKU_MAP 注释），
+// 因此两表不应强相等；改为校验 Xsolla = round(iOS × 1.2) 的映射关系。
+for (const [sku, iapValue] of Object.entries(IAP_GEM_MAP)) {
+  assert.equal(GEM_SKU_MAP[sku], Math.round(iapValue * 1.2),
+    `Xsolla ${sku} should be 120% of iOS ${sku} (${iapValue} -> ${Math.round(iapValue * 1.2)})`);
+}
 console.log('ALL_XSOLLA_TESTS_PASS');

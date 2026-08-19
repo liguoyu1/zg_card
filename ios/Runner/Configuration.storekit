@@ -1,39 +1,57 @@
 {
-  "identifier" : "C830B044-1B87-4C9F-B8EF-55A7BC496FCA",
-  "nonRenewingSubscriptions" : [
-
-  ],
-  "products" : [
+  "identifier": "C830B044-1B87-4C9F-B8EF-55A7BC496FCA",
+  "nonRenewingSubscriptions": [],
+  "products": [
     {
-      "displayPrice" : "$0.99",
-      "familyShareable" : false,
-      "groupNumber" : 1,
-      "id" : "gem_100",
-      "internalDescription" : "100钻石",
-      "referenceName" : "100钻石",
-      "subscription" : false,
-      "type" : "consumable"
+      "displayPrice": "$0.99",
+      "familyShareable": false,
+      "groupNumber": 1,
+      "id": "gem_60",
+      "internalDescription": "60钻石",
+      "referenceName": "60 Gems",
+      "subscription": false,
+      "type": "consumable"
     },
     {
-      "displayPrice" : "$4.99",
-      "familyShareable" : false,
-      "groupNumber" : 1,
-      "id" : "gem_500",
-      "internalDescription" : "500钻石",
-      "referenceName" : "500钻石",
-      "subscription" : false,
-      "type" : "consumable"
+      "displayPrice": "$4.99",
+      "familyShareable": false,
+      "groupNumber": 1,
+      "id": "gem_300",
+      "internalDescription": "300+50钻石",
+      "referenceName": "300+50 Gems",
+      "subscription": false,
+      "type": "consumable"
     },
     {
-      "displayPrice" : "$9.99",
-      "familyShareable" : false,
-      "groupNumber" : 1,
-      "id" : "gem_1300",
-      "internalDescription" : "1200+100钻石",
-      "referenceName" : "1200+100钻石",
-      "subscription" : false,
-      "type" : "consumable"
+      "displayPrice": "$9.99",
+      "familyShareable": false,
+      "groupNumber": 1,
+      "id": "gem_600",
+      "internalDescription": "600+150钻石",
+      "referenceName": "600+150 Gems",
+      "subscription": false,
+      "type": "consumable"
+    },
+    {
+      "displayPrice": "$19.99",
+      "familyShareable": false,
+      "groupNumber": 1,
+      "id": "gem_1500",
+      "internalDescription": "1500+500钻石",
+      "referenceName": "1500+500 Gems",
+      "subscription": false,
+      "type": "consumable"
+    },
+    {
+      "displayPrice": "$29.99",
+      "familyShareable": false,
+      "groupNumber": 1,
+      "id": "gem_3000",
+      "internalDescription": "3000+1500钻石",
+      "referenceName": "3000+1500 Gems",
+      "subscription": false,
+      "type": "consumable"
     }
   ],
-  "version" : 1
+  "version": 1
 }

@@ -10,9 +10,10 @@ API: OpenAI-compatible (https://api.qianmian.ai/v1, model=gemini-2.5-flash-image
   python3 tool/batch_gen_cards.py --no-resume             # 重新生成已有的
 """
 
-import json, os, sys, time, argparse, base64
+import json, os, sys, time, argparse
 from pathlib import Path
 from openai import OpenAI
+from retry import gen_with_retry
 
 # ===== 配置 =====
 API_KEY = os.environ.get("QIANMIAN_API_KEY", "sk-qmcloud-ToKNdw_t5sMPy2hZG40DhiqX6l3mKf5PI2sWjtA_fs8")
@@ -46,42 +47,15 @@ def gen_one(client, prompt, dest_path, ctype=""):
 
     print(f"    generating...", end=" ", flush=True)
     try:
-        resp = client.images.generate(
-            model=MODEL,
-            prompt=full_prompt,
-            n=1,
-            size=size,
-            response_format="b64_json",
-        )
+        ok = gen_with_retry(client, model=MODEL, prompt=full_prompt, size=size, dest=dest_path)
     except Exception as e:
         print(f"FAIL ({e})")
         return False
-
-    # 取结果
-    img_data = resp.data[0]
-    if img_data.b64_json:
-        raw = base64.b64decode(img_data.b64_json)
-        with open(dest_path, "wb") as f:
-            f.write(raw)
-        kb = len(raw) // 1024
-        print(f"OK ({kb}KB)")
-        return True
-    elif img_data.url:
-        import httpx
-        try:
-            r = httpx.get(img_data.url, timeout=30)
-            if r.status_code == 200:
-                with open(dest_path, "wb") as f:
-                    f.write(r.content)
-                kb = len(r.content) // 1024
-                print(f"OK (url, {kb}KB)")
-                return True
-        except Exception as e:
-            print(f"FAIL (url download: {e})")
-            return False
-    else:
-        print("FAIL (no image data)")
+    if not ok:
         return False
+    kb = dest_path.stat().st_size // 1024
+    print(f"OK ({kb}KB)")
+    return True
 
 
 def process_style(style_name, prompt_file, card_types=None, resume=True):

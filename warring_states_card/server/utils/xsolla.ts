@@ -69,8 +69,10 @@ export async function createPaymentToken(
 export function verifyWebhookSignature(rawBody: string, signatureHeader: string): boolean {
   if (!WEBHOOK_SECRET) return false;
 
-  // header 格式: "Signature <value>"
-  const received = signatureHeader.replace(/^Signature\s+/i, '').trim();
+  // header 格式必须为 "Signature <value>"，缺失前缀直接拒绝
+  const match = /^Signature\s+(.+)$/i.exec(signatureHeader.trim());
+  if (!match) return false;
+  const received = match[1].trim();
   if (!received) return false;
 
   const computed = createHash('sha1')

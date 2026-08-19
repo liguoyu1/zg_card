@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
   intl: any
   
   # State Management
@@ -36,6 +38,8 @@ dependencies:
   path_provider: ^2.1.0
   # Payment
   url_launcher: ^6.3.0
+  # Android 插屏广告（Adsterra Popunder 通过 WebView 加载）
+  webview_flutter: ^4.7.0
   # In-App Purchase (Apple StoreKit / Google Play Billing) — iOS 走 Apple IAP
   in_app_purchase: ^3.2.0
   go_router: ^17.3.0
@@ -79,3 +83,4 @@ flutter:
     - assets/fantasy_rpg/minions/
     - assets/fantasy_rpg/spells/
     - assets/fantasy_rpg/weapons/
+    - assets/ad/

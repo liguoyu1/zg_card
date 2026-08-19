@@ -26,7 +26,19 @@ void main() {
 
     setUp(() {
       gn = GameStateNotifier();
-      gn.initGame(player1Id: 'p1', player2Id: 'p2', player1Hero: testHero, player2Hero: opponentHero);
+      // Use deterministic decks of 30 distinct, cheap, no-battlecry/no-combo
+      // minions so play/board/hand assertions are stable regardless of shuffle
+      // (playCard removes by unique id).
+      List<Card> deck() => List.generate(30, (i) => Card(
+            id: 'C$i', name: 'vanilla$i', type: CardType.minion,
+            cost: 1, attack: 1, health: 1, description: '',
+            owner: CardOwner.neutral, rarity: Rarity.common,
+          ));
+      gn.initGame(
+        player1Id: 'p1', player2Id: 'p2',
+        player1Hero: testHero, player2Hero: opponentHero,
+        player1Deck: deck(), player2Deck: deck(),
+      );
     });
 
     test('1.1 初始状态正确', () {

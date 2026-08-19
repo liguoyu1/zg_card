@@ -5,9 +5,13 @@ import 'package:http/http.dart' as http;
 
 /// 联机对战服务
 class OnlineGameService {
+  OnlineGameService({http.Client? client}) : _client = client ?? http.Client();
+
   static const String _baseUrl = 'https://app-server-production-39d1.up.railway.app';
   // static const String _baseUrl = 'http://localhost:3000';
-  
+
+  final http.Client _client;
+
   String? _authToken;
   String? _odID;
   String? get myId => _odID;
@@ -169,7 +173,7 @@ class OnlineGameService {
 
   Future<Map<String, dynamic>> _get(String path) async {
     final uri = Uri.parse('$_baseUrl$path');
-    final response = await http.get(uri, headers: _headers);
+    final response = await _client.get(uri, headers: _headers);
     if (response.statusCode >= 400) {
       throw Exception('HTTP ${response.statusCode}: ${response.body}');
     }
@@ -178,7 +182,7 @@ class OnlineGameService {
 
   Future<List<Map<String, dynamic>>> _getList(String path) async {
     final uri = Uri.parse('$_baseUrl$path');
-    final response = await http.get(uri, headers: _headers);
+    final response = await _client.get(uri, headers: _headers);
     if (response.statusCode >= 400) {
       throw Exception('HTTP ${response.statusCode}: ${response.body}');
     }
@@ -187,7 +191,7 @@ class OnlineGameService {
 
   Future<Map<String, dynamic>> _post(String path, Map<String, dynamic> body) async {
     final uri = Uri.parse('$_baseUrl$path');
-    final response = await http.post(
+    final response = await _client.post(
       uri,
       headers: _headers,
       body: jsonEncode(body),

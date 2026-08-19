@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-import json, os, sys, base64, time
+import json, os, sys, time
 from pathlib import Path
 from openai import OpenAI
+from retry import gen_with_retry
 
 API_KEY = os.environ.get("QIANMIAN_API_KEY",
     "sk-qmcloud-ToKNdw_t5sMPy2hZG40DhiqX6l3mKf5PI2sWjtA_fs8")
@@ -54,29 +55,13 @@ def gen_one(client, card, dest):
 
     print(f"  gen {card['name']} ({card['type']})...", end=" ", flush=True)
     try:
-        resp = client.images.generate(
-            model=MODEL, prompt=fp, n=1, size=SIZE,
-            response_format="b64_json",
-        )
-    except Exception as e:
-        print(f"ERR: {e}")
-        return False
-
-    img = resp.data[0]
-    if img.b64_json:
-        raw = base64.b64decode(img.b64_json)
+        raw = gen_with_retry(client, model=MODEL, prompt=fp, size=SIZE)
         dest.write_bytes(raw)
         print(f"OK ({len(raw)//1024}KB)")
         return True
-    elif img.url:
-        import httpx
-        r = httpx.get(img.url, timeout=30)
-        if r.status_code == 200:
-            dest.write_bytes(r.content)
-            print(f"OK (url, {len(r.content)//1024}KB)")
-            return True
-    print("NOIMG")
-    return False
+    except Exception as e:
+        print(f"ERR: {e}")
+        return False
 
 def main():
     with open(Path(__file__).resolve().parent.parent / "assets" / "prompts_fantasy_rpg.json") as f:

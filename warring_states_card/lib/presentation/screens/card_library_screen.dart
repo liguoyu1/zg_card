@@ -32,7 +32,13 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
     _tc = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addObserver(this);
     dataVersionNotifier.addListener(_load);
+    // 跟随语言切换刷新文案（Tab 标题、筛选器等）
+    LocaleService.I.localeVersion.addListener(_onLocaleChange);
     _load();
+  }
+
+  void _onLocaleChange() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -45,6 +51,7 @@ class _CardLibraryScreenState extends State<CardLibraryScreen>
     _tc.dispose();
     WidgetsBinding.instance.removeObserver(this);
     dataVersionNotifier.removeListener(_load);
+    LocaleService.I.localeVersion.removeListener(_onLocaleChange);
     super.dispose();
   }
 

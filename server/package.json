@@ -10,7 +10,9 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "node --test --experimental-strip-types --test-reporter=spec test/*.test.ts",
+    "test:e2e": "DATABASE_URL=postgresql://postgres@localhost:5433/warring_states_test REDIS_URL=redis://localhost:6380 node --test --experimental-strip-types --test-reporter=spec test/e2e/*.test.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -19,7 +21,9 @@
     "redis": "^4.6.12"
   },
   "devDependencies": {
+    "@prisma/adapter-pg": "^5.22.0",
     "@types/jsonwebtoken": "^9.0.5",
+    "pg": "^8.13.1",
     "prisma": "^5.22.0",
     "typescript": "^5.3.3"
   },

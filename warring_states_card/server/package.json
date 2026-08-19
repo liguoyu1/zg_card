@@ -10,6 +10,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",
+    "test": "node --import ./test/setup-env.mjs --test --experimental-strip-types test/**/*.test.ts test/iap-mapping-check.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

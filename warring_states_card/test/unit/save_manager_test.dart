@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:warring_states_card/data/persistence/save_manager.dart';
 
 /// Helper to run SaveManager tests in a temp directory to avoid side effects.
@@ -19,11 +20,15 @@ Future<T> withTempDir<T>(Future<T> Function(String dir) fn) async {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
+
   group('SaveManager - lifecycle', () {
-    test('init creates saves directory', () async {
+    test('init is idempotent and does not throw', () async {
+      // SaveManager stores data via SharedPreferences (no filesystem side effects).
       await withTempDir((dir) async {
-        final saveDir = Directory('$dir/saves');
-        expect(await saveDir.exists(), isTrue);
+        await SaveManager.init();
+        await SaveManager.init();
       });
     });
   });
