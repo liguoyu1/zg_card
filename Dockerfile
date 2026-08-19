@@ -22,7 +22,7 @@ ARG API_BASE_URL
 ARG API_HOST
 # Xsolla Login 客户端参数（编译期注入，缺省则按钮/静默登录不可用）
 ARG XSOLLA_CLIENT_ID=895277
-ARG XSOLLA_PROJECT_ID=310537
+ARG XSOLLA_PROJECT_ID=6db50f41-6a0a-4b9f-a033-8fd7bfaab372
 RUN if [ -n "$API_BASE_URL" ]; then \
       flutter build web --release \
         --dart-define=API_BASE_URL=$API_BASE_URL \
