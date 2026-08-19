@@ -27,7 +27,18 @@ void main() async {
   SaveManager.onPlayerDataSaved = (_) => BalanceSyncService.schedule();
   SaveManager.onCollectionSaved = (_) => BalanceSyncService.schedule();
   final prefs = await SharedPreferences.getInstance();
-  final savedLocale = prefs.getString('locale_code') ?? 'en';
+  // 分享链接：点击带 ?ref= 的链接即持久化邀请人，避免随后从主页
+  // 直接注册时丢参导致邀请关系断裂（30 天有效期窗口）。
+  if (kIsWeb) {
+    try {
+      final ref = Uri.base.queryParameters['ref'];
+      if (ref != null && ref.isNotEmpty) {
+        await prefs.setString('invite_referrer_id', ref);
+        await prefs.setInt('invite_referrer_at', DateTime.now().millisecondsSinceEpoch);
+      }
+    } catch (_) {}
+  }
+ final savedLocale = prefs.getString('locale_code') ?? 'en';
   await LocaleService.I.init(localeCode: savedLocale);
 
   // 先 runApp 显示界面，再后台初始化其他

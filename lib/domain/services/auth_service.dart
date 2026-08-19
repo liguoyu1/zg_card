@@ -94,13 +94,23 @@ class AuthService {
   /// 邮箱注册
   Future<String?> register(String email, String password, String name) async {
     try {
-      // 分享链接邀请：读取 URL 上的 ?ref=<playerId>，随注册上报服务端
+      // 邀请人：URL ?ref= 优先，否则用本地持久化的邀请人（30 天有效期内）
       String? referrerId;
+      final prefs = await SharedPreferences.getInstance();
       if (kIsWeb) {
         try {
           referrerId = Uri.base.queryParameters['ref'];
         } catch (_) {}
       }
+      if (referrerId == null || referrerId.isEmpty) {
+        final savedAt = prefs.getInt('invite_referrer_at') ?? 0;
+        if (DateTime.now().millisecondsSinceEpoch - savedAt <= 30 * 86400000) {
+          referrerId = prefs.getString('invite_referrer_id');
+        }
+      }
+      // 注册成功与否都清除本地邀请人，避免下次他人注册被错误绑定
+      await prefs.remove('invite_referrer_id');
+      await prefs.remove('invite_referrer_at');
       final uri = Uri.parse('$_baseUrl/api/auth/register');
       final resp = await http.post(uri,
           headers: {'Content-Type': 'application/json'},
