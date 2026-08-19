@@ -231,9 +231,10 @@ export async function register(email: string, password: string, name: string, re
   if (Date.now() < NEW_USER_BONUS_UNTIL) {
     await addGems(player.id, NEW_USER_BONUS_DIAMONDS, '新用户注册奖励').catch(() => {});
   }
-  // 邀请奖励：给邀请人发放钻石
+  // 邀请奖励：邀请人与被邀请的新用户各得钻石（与公告"各得50钻石"一致）
   if (referrer) {
     await addGems(referrer.id, REFERRAL_BONUS_DIAMONDS, `邀请新用户奖励`).catch(() => {});
+    await addGems(player.id, REFERRAL_BONUS_DIAMONDS, '受邀注册奖励').catch(() => {});
   }
   // 重新读取最新余额（含赠钻）
   const updated = await prisma.player.findUnique({ where: { id: player.id } });
@@ -842,6 +843,25 @@ export async function listAnnouncements() {
     },
     orderBy: { sort: 'asc' },
     select: { id: true, title: true, content: true },
+  });
+}
+
+// 后台管理：新增公告（生效周期用 startsAt/endsAt 指定，null 表示不限制）
+export async function createAnnouncement(input: {
+  title: string;
+  content: string;
+  startsAt?: Date | null;
+  endsAt?: Date | null;
+  sort?: number;
+}) {
+  return await prisma.announcement.create({
+    data: {
+      title: input.title,
+      content: input.content,
+      startsAt: input.startsAt ?? null,
+      endsAt: input.endsAt ?? null,
+      sort: input.sort ?? 0,
+    },
   });
 }
 
