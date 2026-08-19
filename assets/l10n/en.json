@@ -1643,5 +1643,15 @@
   "invite.autocopied": "Link copied to clipboard",
   "invite.tap_copy": "Tap the button below to copy the link and send it to friends",
   "invite.copied": "Invite link copied!",
-  "invite.copy": "Copy Link"
+  "invite.copy": "Copy Link",
+  "terms.title": "Terms of Service",
+  "terms.updated": "Last updated: August 2026",
+  "terms.account": "Account & Login",
+  "terms.account_body": "1. Guest accounts are stored locally on this device; uninstalling or clearing data may result in lost progress. Register with an email to secure your account.\n2. Keep your password safe. Losses from account theft or sharing are your responsibility.\n3. Each email may register only one account.",
+  "terms.payment": "Purchases",
+  "terms.payment_body": "1. In-game currency (diamonds/gold) is virtual goods. Once delivered, refunds are not available except as required by law.\n2. Minors should obtain guardian consent before making purchases.\n3. If a payment issue occurs, contact support with your order number.",
+  "terms.conduct": "Code of Conduct",
+  "terms.conduct_body": "1. Cheating, scripting, exploiting bugs, or using automation to break game fairness is prohibited.\n2. Abusing rewards, fake transactions, or harming the in-game economy is prohibited.\n3. Violations may result in account suspension and confiscation of illicit gains.",
+  "terms.liability": "Disclaimer",
+  "terms.liability_body": "1. We strive to ensure stable operation but are not liable for interruptions caused by force majeure, network failures, or third-party reasons.\n2. These terms may be updated; the latest version on the official website prevails.\n3. Questions? Contact in-game support."
 }
