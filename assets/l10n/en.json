@@ -1653,5 +1653,16 @@
   "terms.conduct": "Code of Conduct",
   "terms.conduct_body": "1. Cheating, scripting, exploiting bugs, or using automation to break game fairness is prohibited.\n2. Abusing rewards, fake transactions, or harming the in-game economy is prohibited.\n3. Violations may result in account suspension and confiscation of illicit gains.",
   "terms.liability": "Disclaimer",
-  "terms.liability_body": "1. We strive to ensure stable operation but are not liable for interruptions caused by force majeure, network failures, or third-party reasons.\n2. These terms may be updated; the latest version on the official website prevails.\n3. Questions? Contact in-game support."
+  "terms.liability_body": "1. We strive to ensure stable operation but are not liable for interruptions caused by force majeure, network failures, or third-party reasons.\n2. These terms may be updated; the latest version on the official website prevails.\n3. Questions? Contact in-game support.",
+  "privacy.title": "Privacy Policy & Data Management",
+  "privacy.updated": "Last updated: August 2026",
+  "privacy.collect": "What We Collect",
+  "privacy.collect_body": "1. Account info: guest ID, registered email, nickname (used for login and account persistence).\n2. Game data: match records, rankings, currency balances, items and progress (used to deliver game services).\n3. Device & technical info: platform, version, network status (used for compatibility and troubleshooting).\n4. We do NOT collect real names, government IDs, contacts, location, or other unnecessary private information.",
+  "privacy.use": "How We Use & Share Data",
+  "privacy.use_body": "1. Data is used solely to provide game services, save progress, grant rewards, support, and security.\n2. We do not sell your personal data or share it with third parties, except as required by law.\n3. Data is stored on protected servers accessible only to authorized personnel.",
+  "privacy.manage": "How to Manage Your Data",
+  "privacy.manage_body": "1. View & edit: After logging in, visit your profile to view and edit your nickname, email and game data.\n2. Delete local guest data: Clear your browser cache or uninstall the app to remove guest account data and progress from this device.\n3. Contact us: To correct inaccurate data or ask about data usage, email us at the address below. We will respond within a reasonable time (typically 30 days).",
+  "privacy.delete": "How to Delete Your Account & Personal Data",
+  "privacy.delete_body": "1. Contact us: Send an email to support@wscard.games (subject: \"Delete Account\") from the email address associated with your registered account. Describe your request. We will verify and complete the deletion within a reasonable time (typically 30 days).\n2. What is deleted: Your account, personal profile, game progress, ranking records, and all other personal data will be permanently deleted and cannot be recovered. In-game currency and items will be forfeited.\n3. Guest accounts: Clearing your browser cache or uninstalling the app will delete guest data.\n4. Legal retention: A minimal set of records required by law (e.g. transaction logs) will be retained for the shortest period mandated and then deleted.",
+  "privacy.contact_btn": "Email Us (Data Request)"
 }

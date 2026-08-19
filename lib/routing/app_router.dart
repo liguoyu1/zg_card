@@ -14,6 +14,7 @@ import '../presentation/screens/hero_select_screen.dart';
 import '../presentation/screens/home_screen.dart';
 import '../presentation/screens/leaderboard_screen.dart';
 import '../presentation/screens/legal_screen.dart';
+import '../presentation/screens/privacy_screen.dart';
 import '../presentation/screens/terms_screen.dart';
 import '../presentation/screens/login_screen.dart';
 import '../presentation/screens/online_game_screen.dart';
@@ -47,6 +48,8 @@ class AppRouter {
           GoRoute(path: '/legal', builder: (_, __) => const LegalScreen()),
       // 服务条款（/terms）— 全屏独立页
       GoRoute(path: '/terms', builder: (_, __) => const TermsScreen()),
+      // 隐私政策与数据管理说明（/privacy）— 全屏独立页
+      GoRoute(path: '/privacy', builder: (_, __) => const PrivacyScreen()),
         ],
       ),
       // 对战页面在 ShellRoute 外，不显示底部导航栏
