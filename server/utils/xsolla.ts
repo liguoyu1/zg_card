@@ -4,6 +4,8 @@ import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 const MERCHANT_ID = process.env.XSOLLA_MERCHANT_ID || '';
 const API_KEY = process.env.XSOLLA_API_KEY || '';
 const PROJECT_ID = process.env.XSOLLA_PROJECT_ID || '';
+// Login 验证用 UUID（数字支付 project_id 不适用于 Login API）
+const LOGIN_PROJECT_ID = process.env.XSOLLA_LOGIN_PROJECT_ID || PROJECT_ID;
 const webhookSecret = () => process.env.XSOLLA_WEBHOOK_SECRET || '';
 
 const XSOLLA_API = 'https://api.xsolla.com';
@@ -23,7 +25,7 @@ export async function validateXsollaUserToken(token: string): Promise<{
   if (!token || !PROJECT_ID) return null;
   try {
     const resp = await fetch(
-      `${XSOLLA_LOGIN_VALIDATE}?projectId=${encodeURIComponent(PROJECT_ID)}`,
+      `${XSOLLA_LOGIN_VALIDATE}?projectId=${encodeURIComponent(LOGIN_PROJECT_ID)}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
