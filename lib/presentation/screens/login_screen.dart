@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:html' as html;
+import '../../domain/services/page_nav_io.dart'
+    if (dart.library.js_interop) '../../domain/services/page_nav_web.dart';
 import '../../core/theme/app_theme.dart';
 import '../../domain/services/auth_service.dart' show AuthService;
 import '../../l10n/locale_service.dart';
@@ -92,7 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       // 同标签页跳转；Xsolla 授权后重定向回 /auth/xsolla 携带 token
       if (kIsWeb) {
-        html.window.location.assign(url);
+        assignPage(url);
       } else {
         await launchUrl(Uri.parse(url), mode: LaunchMode.platformDefault);
       }
