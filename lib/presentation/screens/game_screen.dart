@@ -604,16 +604,17 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         ? gameState.player2
         : gameState.player1;
 
-    // 响应式尺寸 — 竖屏高度驱动（手机战场卡偏小），横屏宽度驱动，避免上限锁死
+    // 响应式尺寸 — 竖屏高度驱动（手机竖屏宽度小，用高度定卡大小），横屏宽度驱动
+    // 手牌与战场卡同一基准高度、同一 1:1.45 比例
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
     final isPortrait = screenWidth < screenHeight;
-    final boardCardHeight = isPortrait
-        ? min(130.0, screenHeight * 0.12)
+    final cardHeight = isPortrait
+        ? min(120.0, screenHeight * 0.115)
         : min(130.0, screenWidth * 0.09);
-    final boardCardWidth = boardCardHeight / 1.45;
-    final handCardWidth = min(88.0, screenWidth * 0.15);
+    final boardCardWidth = cardHeight / 1.45;
+    final handCardWidth = cardHeight / 1.45;
 
     return Scaffold(
       backgroundColor: AppTheme.bgDark,
@@ -621,7 +622,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         builder: (context, constraints) {
           final isShort = constraints.maxHeight < 700;
           final adjCW = min(boardCardWidth, isShort ? 64.0 : boardCardWidth);
-          final adjCH = min(boardCardHeight, isShort ? 88.0 : boardCardHeight);
+          final adjCH = min(cardHeight, isShort ? 88.0 : cardHeight);
           final adjHW = isShort ? 72.0 : handCardWidth;
           return SafeArea(
             child: Container(
@@ -630,7 +631,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 children: [
                   // 对手区域（固定）
                   _buildHeroPanel(opponent, isOpponent: true, compact: isShort),
-                  _buildHandArea(opponent, adjHW, gameState, isShort: isShort, isEnemy: true),
+                  _buildHandArea(opponent, adjHW, gameState, isShort: isShort, isEnemy: true, handHeight: cardHeight),
                   // 对战区：对手战场 + 分隔线 + 玩家战场（均分）
                   Expanded(
                     child: Column(
@@ -662,7 +663,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     ),
                   ),
                   // 下方固定：玩家手牌 + 英雄面板 + 操作栏
-                  _buildHandArea(player, adjHW, gameState, isShort: isShort),
+                  _buildHandArea(player, adjHW, gameState, isShort: isShort, handHeight: cardHeight),
                   _buildHeroPanel(player, compact: isShort),
                   _buildBottomControls(),
                 ],
@@ -1143,8 +1144,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     return skill is BuffPower || skill is ControlPower || skill is DebuffPower;
   }
 
-  /// 构建手牌区域
-  Widget _buildHandArea(Player player, double handCardWidth, GameState gameState, {bool isShort = false, bool isEnemy = false}) {
+  /// 构建手牌区域 — 手牌与战场卡同高同比例（cardHeight/1.45 宽）
+  Widget _buildHandArea(Player player, double handCardWidth, GameState gameState, {bool isShort = false, bool isEnemy = false, double handHeight = 100}) {
     if (player.hand.isEmpty) {
       return Container(
         height: isShort ? 60 : 100,
@@ -1172,7 +1173,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     final totalOverlap = overlap ? (count - 1) * 4.0 : 0.0;
 
     return Container(
-      height: isShort ? 90 : 120,
+      height: isShort ? handHeight * 0.8 : handHeight + 12,
       padding: EdgeInsets.only(left: isShort ? 4 : 8, right: totalOverlap + (isShort ? 4 : 8)),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -1185,7 +1186,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Container(
                 width: handCardWidth,
-                height: 90,
+                height: handHeight,
                 decoration: BoxDecoration(
                   color: const Color(0xFF4A3728),
                   borderRadius: BorderRadius.circular(6),

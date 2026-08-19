@@ -196,7 +196,7 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
       child: Transform.translate(
         offset: Offset(0, _enteringSlide.value * 20),
         child: Container(
-          width: 80,
+          width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
             border: Border.all(color: borderColor, width: borderWidth),
