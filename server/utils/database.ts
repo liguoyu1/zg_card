@@ -843,7 +843,7 @@ export async function listAnnouncements(locale: string = 'zh') {
       ],
     },
     orderBy: { sort: 'asc' },
-    select: { id: true, title: true, content: true },
+    select: { id: true, title: true, content: true, startsAt: true, endsAt: true },
   });
 }
 
