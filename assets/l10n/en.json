@@ -1635,5 +1635,13 @@
   "home.checkin_ok": "Checked in! +{gold} Gold",
   "home.checkin_done": "Already checked in today. Streak: {streak} days",
   "home.checkin_bonus": "Streak {streak} days! +{gold} Gold (incl. bonus)",
-  "home.checkin_failed": "Check-in failed, please try again."
+  "home.checkin_failed": "Check-in failed, please try again.",
+  "home.invite_friends": "Invite Friends",
+  "home.invite_login_first": "Please log in first to share your invite link",
+  "home.invite_title": "Invite friends and earn 50 diamonds each",
+  "home.invite_desc": "When a friend registers via your link, you both earn 50 diamonds!",
+  "invite.autocopied": "Link copied to clipboard",
+  "invite.tap_copy": "Tap the button below to copy the link and send it to friends",
+  "invite.copied": "Invite link copied!",
+  "invite.copy": "Copy Link"
 }

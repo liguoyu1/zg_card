@@ -1204,6 +1204,10 @@
   "home.skin_coming_soon": "皮肤还在优化中，敬请期待",
   "home.sound_off": "音效 关",
   "home.sound_on": "音效 开",
+  "home.invite_friends": "邀请好友",
+  "home.invite_login_first": "请先登录后再分享邀请链接",
+  "home.invite_title": "邀请好友，双方各得50钻石",
+  "home.invite_desc": "好友通过你的专属链接注册，你与好友各得50钻石！",
   "home.starter_desc": "10x卡包 + 300金币 + 限定卡背",
   "home.starter_title": "首充礼包",
   "home.style_coming_soon": "Q版风格还在优化中，敬请期待",
@@ -1635,5 +1639,9 @@
   "home.checkin_ok": "签到成功！+{gold} 金币",
   "home.checkin_done": "今日已签到，连续 {streak} 天",
   "home.checkin_bonus": "连续 {streak} 天！+{gold} 金币（含额外奖励）",
-  "home.checkin_failed": "签到失败，请稍后重试"
+  "home.checkin_failed": "签到失败，请稍后重试",
+  "invite.autocopied": "链接已自动复制到剪贴板",
+  "invite.tap_copy": "点击下方按钮复制链接，发送给好友",
+  "invite.copied": "邀请链接已复制！",
+  "invite.copy": "复制链接"
 }

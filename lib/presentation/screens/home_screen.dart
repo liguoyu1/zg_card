@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -349,6 +350,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             AudioManager.I.toggleMute();
             setState(() {});
             break;
+          case 'invite':
+            await _shareInvite(loggedIn, auth);
+            break;
           case 'transactions':
             if (loggedIn) {
               context.push('/shop/transactions');
@@ -489,6 +493,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 contentPadding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
               )),
+          // 分享邀请：好友通过链接注册，双方各得钻石
+          PopupMenuItem(
+              value: 'invite',
+              child: ListTile(
+                leading: const Icon(Icons.share, color: AppTheme.parchment, size: 20),
+                title: Text(LocaleService.I.t('home.invite_friends'),
+                    style: const TextStyle(color: AppTheme.parchment)),
+                contentPadding: EdgeInsets.zero,
+                visualDensity: VisualDensity.compact,
+              )),
           // 交易记录：仅登录可用，未登录点击提示登录
           PopupMenuItem(
               value: 'transactions',
@@ -588,6 +602,85 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     visualDensity: VisualDensity.compact)),
         ];
       },
+    );
+  }
+
+  /// 分享邀请：生成带 ?ref=<playerId> 的链接并复制，好友注册后双方得钻石
+  Future<void> _shareInvite(bool loggedIn, AuthState? auth) async {
+    if (!loggedIn || auth == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(LocaleService.I.t('home.invite_login_first')),
+        ));
+      }
+      return;
+    }
+    String base;
+    if (kIsWeb) {
+      // Web 端使用当前站点的协议+主机（wscard.games）
+      try {
+        base = '${Uri.base.scheme}://${Uri.base.host}';
+      } catch (_) {
+        base = 'https://wscard.games';
+      }
+    } else {
+      base = 'https://wscard.games';
+    }
+    final link = '$base/?ref=${Uri.encodeComponent(auth.playerId)}';
+    await Clipboard.setData(ClipboardData(text: link));
+    if (!context.mounted) return;
+    // 展示链接 + 提示，用户可手动复制或直接发送
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.agedWood,
+        title: Text(LocaleService.I.t('home.invite_title'),
+            style: const TextStyle(color: AppTheme.goldAccent, fontSize: 16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(LocaleService.I.t('home.invite_desc'),
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppTheme.bgLight.withAlpha(200),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: AppTheme.goldAccent.withAlpha(90)),
+              ),
+              child: SelectableText(link,
+                  style: const TextStyle(color: AppTheme.parchment, fontSize: 12)),
+            ),
+            const SizedBox(height: 6),
+            Text(LocaleService.I.t('invite.autocopied'),
+                style: const TextStyle(color: AppTheme.textMuted, fontSize: 11)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: link));
+              if (ctx.mounted) {
+                ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+                  content: Text(LocaleService.I.t('invite.copied')),
+                  backgroundColor: AppTheme.healGreen,
+                ));
+              }
+              Navigator.pop(ctx);
+            },
+            child: Text(LocaleService.I.t('invite.copy'),
+                style: const TextStyle(color: AppTheme.goldAccent)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(LocaleService.I.t('close'),
+                style: const TextStyle(color: Colors.grey)),
+          ),
+        ],
+      ),
     );
   }
 
