@@ -27,16 +27,21 @@ class _XsollaCallbackScreenState extends ConsumerState<XsollaCallbackScreen> {
   Future<void> _handleToken() async {
     if (_dispatched) return;
     _dispatched = true;
-    // Implicit flow：token 位于 URL fragment
+    // 两格式兼容：XLogin widget redirect 模式 → ?token=<JWT>；
+    // implicit OAuth2 → #access_token=<token>
     String token = '';
     try {
-      final hash = Uri.base.fragment;
-      final parts = hash.split('&');
-      for (final p in parts) {
-        final kv = p.split('=');
-        if (kv[0] == 'access_token') {
-          token = Uri.decodeComponent(kv.length > 1 ? kv[1] : '');
-          break;
+      final query = Uri.base.queryParameters;
+      if (query.containsKey('token')) token = query['token']!;
+      if (token.isEmpty) {
+        final hash = Uri.base.fragment;
+        final parts = hash.split('&');
+        for (final p in parts) {
+          final kv = p.split('=');
+          if (kv[0] == 'access_token') {
+            token = Uri.decodeComponent(kv.length > 1 ? kv[1] : '');
+            break;
+          }
         }
       }
     } catch (_) {}

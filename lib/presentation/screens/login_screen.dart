@@ -83,13 +83,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!kIsWeb || AuthService.kXsollaClientId.isEmpty) return;
     final origin = '${Uri.base.scheme}://${Uri.base.authority}';
     final redirectUri = '$origin/auth/xsolla';
-    final state = DateTime.now().millisecondsSinceEpoch.toString();
-    final url = 'https://login.xsolla.com/api/oauth2/login'
-        '?response_type=token'
-        '&client_id=$AuthService.kXsollaClientId'
-        '&redirect_uri=${Uri.encodeComponent(redirectUri)}'
-        '&scope=offline'
-        '&state=$state';
+    // Xsolla Login widget 页（readme 标准入口），登录完成后 redirect 回 login_url
+    final url = 'https://login-widget.xsolla.com/latest/'
+        '?projectId=${AuthService.kXsollaProjectId}'
+        '&login_url=${Uri.encodeComponent(redirectUri)}'
+        '&locale=zh_CN';
     try {
       // 同标签页跳转；Xsolla 授权后重定向回 /auth/xsolla 携带 token
       await launchUrl(Uri.parse(url), mode: LaunchMode.platformDefault);
