@@ -62,9 +62,11 @@ class ActivityService {
   }
 
   /// 拉取系统公告（公开）
-  Future<List<Announcement>> fetchAnnouncements() async {
+  /// 拉取系统公告（指定语言，如 zh/en）
+  Future<List<Announcement>> fetchAnnouncements(String locale) async {
     try {
-      final resp = await http.get(Uri.parse('$_baseUrl/api/announcements'));
+      final uri = Uri.parse('$_baseUrl/api/announcements?lang=$locale');
+      final resp = await http.get(uri);
       if (resp.statusCode != 200) return [];
       final list = jsonDecode(resp.body) as List<dynamic>;
       return list

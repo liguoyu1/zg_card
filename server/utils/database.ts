@@ -832,10 +832,11 @@ export async function checkin(odID: string) {
 
 // ── 系统公告 ────────────────────────────────────────────────────────────────
 // 生效周期：startsAt(null=立刻) / endsAt(null=长期)，当前时间落在 [startsAt, endsAt) 才返回
-export async function listAnnouncements() {
+export async function listAnnouncements(locale: string = 'zh') {
   const now = new Date();
   return await prisma.announcement.findMany({
     where: {
+      locale,
       AND: [
         { OR: [{ startsAt: null }, { startsAt: { lte: now } }] },
         { OR: [{ endsAt: null }, { endsAt: { gt: now } }] },
@@ -848,6 +849,7 @@ export async function listAnnouncements() {
 
 // 后台管理：新增公告（生效周期用 startsAt/endsAt 指定，null 表示不限制）
 export async function createAnnouncement(input: {
+  locale?: string;
   title: string;
   content: string;
   startsAt?: Date | null;
@@ -856,6 +858,7 @@ export async function createAnnouncement(input: {
 }) {
   return await prisma.announcement.create({
     data: {
+      locale: input.locale || 'zh',
       title: input.title,
       content: input.content,
       startsAt: input.startsAt ?? null,

@@ -216,6 +216,7 @@ model Checkin {
 // ends_at 为 null 表示不限结束时间（长期有效）；当前时间在 [starts_at, ends_at) 内才显示。
 model Announcement {
   id        String     @id @default(cuid())
+  locale    String     @default("zh")   // 语言：zh / en / 等
   title     String
   content   String
   startsAt  DateTime?  @map("starts_at")  // 生效开始时间，null=立刻生效
@@ -225,5 +226,5 @@ model Announcement {
   updatedAt DateTime   @updatedAt @map("updated_at")
 
   @@map("announcements")
-  @@index([startsAt, endsAt, sort])
+  @@index([locale, startsAt, endsAt, sort])
 }

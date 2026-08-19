@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../data/activity_service.dart';
+import '../../l10n/locale_service.dart';
 import 'ad_slot_scope.dart';
 
 /// 主页底部系统公告：服务器配置（多条按序循环滚动，无则不显示）
-/// 每次切回主页 tab 时重新拉取，获取最新生效周期内的公告。
+/// 每次切回主页 tab 或切换语言时重新拉取，获取对应语言/生效周期内的公告。
 class AnnouncementBar extends StatefulWidget {
   const AnnouncementBar({super.key});
 
@@ -21,12 +22,32 @@ class _AnnouncementBarState extends State<AnnouncementBar> {
   int _idx = 0;
   Timer? _timer;
   int? _lastActiveIndex;
+  String? _lastLocale;
 
   @override
   void initState() {
     super.initState();
     _lastActiveIndex = _readActiveIndex();
+    _lastLocale = LocaleService.I.localeCode;
     _load();
+    // 语言切换后重新拉取对应语言公告
+    LocaleService.I.localeVersion.addListener(_onLocaleChanged);
+  }
+
+  @override
+  void dispose() {
+    LocaleService.I.localeVersion.removeListener(_onLocaleChanged);
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _onLocaleChanged() {
+    if (!mounted) return;
+    final code = LocaleService.I.localeCode;
+    if (code != _lastLocale) {
+      _lastLocale = code;
+      _load();
+    }
   }
 
   @override
@@ -45,7 +66,11 @@ class _AnnouncementBarState extends State<AnnouncementBar> {
   }
 
   Future<void> _load() async {
-    final items = await ActivityService.I.fetchAnnouncements();
+    // 公告语言映射：zh/zh_TW 用中文公告，其余语言用英文公告（英文为兜底语言）
+    final code = LocaleService.I.localeCode;
+    final locale = (code == 'zh' || code == 'zh_TW') ? 'zh' : 'en';
+    final items =
+        await ActivityService.I.fetchAnnouncements(locale);
     if (!mounted) return;
     setState(() {
       _items = items;
@@ -60,12 +85,6 @@ class _AnnouncementBarState extends State<AnnouncementBar> {
         setState(() => _idx = (_idx + 1) % _items.length);
       });
     }
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 
   @override

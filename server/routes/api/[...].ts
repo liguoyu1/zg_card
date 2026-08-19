@@ -1,4 +1,4 @@
-import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency, checkin, listAnnouncements } from '../../utils/database';
+import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency, checkin, listAnnouncements, createAnnouncement } from '../../utils/database';
 import { joinMatchQueue, leaveMatchQueue, checkMatchStatus, submitGameAction, pollGameActions } from '../../utils/database';
 import { createSupportTicket, listSupportTickets, closeSupportTicket, prisma } from '../../utils/database';
 import { createPaymentToken, verifyWebhookSignature, handleUserValidation, resolveXsollaAmount, GEM_SKU_MAP } from '../../utils/xsolla';
@@ -331,9 +331,19 @@ export default defineEventHandler(async (event) => {
       return await checkin(token.playerId);
     }
 
-    // ── 系统公告（公开） ──
+    // ── 系统公告（公开，按语言返回） ──
     if (path === '/api/announcements' && method === 'GET') {
-      return await listAnnouncements();
+      const lang = getQuery(event).lang as string | undefined;
+      return await listAnnouncements(lang && lang.length <= 16 ? lang : 'zh');
+    }
+
+    // ── 后台管理：新增公告（x-admin-key 头 / ?key= 鉴权） ──────────
+    if (path === '/api/admin/announcements' && method === 'POST') {
+      if (!isSupportAdmin(event)) {
+        throw createError({ statusCode: 403, message: 'Forbidden' });
+      }
+      const body = await readBody(event);
+      return await createAnnouncement(body);
     }
 
     if (path === '/api/health' && method === 'GET') {
