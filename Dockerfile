@@ -20,10 +20,19 @@ RUN rm -rf build
 # 构建 web（无 dart-define 时 Flutter 用默认值；有则覆盖）
 ARG API_BASE_URL
 ARG API_HOST
+# Xsolla Login 客户端参数（编译期注入，缺省则按钮/静默登录不可用）
+ARG XSOLLA_CLIENT_ID=895277
+ARG XSOLLA_PROJECT_ID=310537
 RUN if [ -n "$API_BASE_URL" ]; then \
-      flutter build web --release --dart-define=API_BASE_URL=$API_BASE_URL --dart-define=API_HOST=$API_HOST; \
+      flutter build web --release \
+        --dart-define=API_BASE_URL=$API_BASE_URL \
+        --dart-define=API_HOST=$API_HOST \
+        --dart-define=XSOLLA_CLIENT_ID=$XSOLLA_CLIENT_ID \
+        --dart-define=XSOLLA_PROJECT_ID=$XSOLLA_PROJECT_ID; \
     else \
-      flutter build web --release; \
+      flutter build web --release \
+        --dart-define=XSOLLA_CLIENT_ID=$XSOLLA_CLIENT_ID \
+        --dart-define=XSOLLA_PROJECT_ID=$XSOLLA_PROJECT_ID; \
     fi
 
 FROM nginx:alpine
