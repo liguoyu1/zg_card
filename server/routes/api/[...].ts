@@ -1,7 +1,7 @@
-import { guestLogin, register, login, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency, checkin, listAnnouncements, createAnnouncement } from '../../utils/database';
+import { guestLogin, register, login, platformLogin, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency, checkin, listAnnouncements, createAnnouncement } from '../../utils/database';
 import { joinMatchQueue, leaveMatchQueue, checkMatchStatus, submitGameAction, pollGameActions } from '../../utils/database';
 import { createSupportTicket, listSupportTickets, closeSupportTicket, prisma } from '../../utils/database';
-import { createPaymentToken, verifyWebhookSignature, handleUserValidation, resolveXsollaAmount, GEM_SKU_MAP } from '../../utils/xsolla';
+import { createPaymentToken, verifyWebhookSignature, handleUserValidation, resolveXsollaAmount, GEM_SKU_MAP, validateXsollaUserToken } from '../../utils/xsolla';
 
 /** 客服后台鉴权：x-admin-key 头或 ?key= 查询参数，需配置 SUPPORT_ADMIN_KEY */
 function isSupportAdmin(event: any): boolean {
@@ -44,6 +44,20 @@ export default defineEventHandler(async (event) => {
       const { email, password } = await readBody(event);
       if (!email || !password) return { error: '邮箱和密码不能为空' };
       return await login(email, password);
+    }
+
+    // ── Xsolla / 第三方平台登录（邮箱合并） ──
+    if (path === '/api/auth/xsolla' && method === 'POST') {
+      const { token } = await readBody(event);
+      if (!token) return { error: '缺少 token' };
+      const xsollaUser = await validateXsollaUserToken(token);
+      if (!xsollaUser) return { error: 'Xsolla token 无效或已过期' };
+      return await platformLogin({
+        platform: 'xsolla',
+        platformUserId: xsollaUser.sub,
+        email: xsollaUser.email || null,
+        name: xsollaUser.name || null,
+      });
     }
     
     if (path.startsWith('/api/player/') && method === 'GET') {

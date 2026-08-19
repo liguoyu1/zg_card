@@ -16,6 +16,7 @@ import '../presentation/screens/leaderboard_screen.dart';
 import '../presentation/screens/legal_screen.dart';
 import '../presentation/screens/privacy_screen.dart';
 import '../presentation/screens/terms_screen.dart';
+import '../presentation/screens/xsolla_callback_screen.dart';
 import '../presentation/screens/login_screen.dart';
 import '../presentation/screens/online_game_screen.dart';
 import '../presentation/screens/quest_screen.dart';
@@ -87,6 +88,10 @@ class AppRouter {
       ),
       // 登录页面 — 全屏无底部导航
       GoRoute(path: '/auth/login', builder: (_, __) => const LoginScreen()),
+      // Xsolla OAuth 回调（登录后携带 access_token 回到本页完成验证）
+      GoRoute(
+          path: '/auth/xsolla',
+          builder: (_, __) => const XsollaCallbackScreen()),
     ],
   );
 }

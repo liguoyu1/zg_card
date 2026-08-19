@@ -26,6 +26,7 @@ model Player {
   gold          Int      @default(100)
   balanceVersion Int    @default(0)
   referrerId    String?  @map("referrer_id") // 邀请人(分享链接来源)玩家，新用户注册时记录
+  xsollaSub     String?  @unique @map("xsolla_sub") // Xsolla 登录用户 ID（平台账号），邮箱合并后仍保留
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 

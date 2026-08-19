@@ -171,6 +171,25 @@ class AuthService {
     }
   }
 
+  /// Xsolla 平台登录：客户端拿到 access token 后交给服务端验证+合并账号
+  Future<String?> xsollaLogin(String accessToken) async {
+    try {
+      final uri = Uri.parse('$_baseUrl/api/auth/xsolla');
+      final resp = await http.post(uri,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'token': accessToken}));
+      if (resp.statusCode != 200) return '网络错误';
+      final body = jsonDecode(resp.body);
+      if (body['error'] != null) return body['error'] as String;
+      if (!_parseAndSave(body)) return '解析响应失败';
+      await _persist();
+      return null;
+    } catch (e) {
+      debugPrint('AuthService xsollaLogin error: $e');
+      return '网络连接失败';
+    }
+  }
+
   /// 登出
   Future<void> logout() async {
     _state = null;

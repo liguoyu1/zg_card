@@ -10,6 +10,47 @@ const XSOLLA_API = 'https://api.xsolla.com';
 const XSOLLA_STORE = 'https://store.xsolla.com/api';
 const XSOLLA_PAYSTATION = 'https://secure.xsolla.com/paystation4';
 const XSOLLA_PAYSTATION_SANDBOX = 'https://sandbox-secure.xsolla.com/paystation4';
+const XSOLLA_LOGIN_VALIDATE = 'https://login.xsolla.com/api/oauth2/token/validate';
+
+// ─── Xsolla Login（OAuth 登录）───
+// 验证用户 JWT（客户端登录成功后回调携带的 access token）。
+// 返回 Xsolla 账号信息：sub（用户 ID）、email、name；失败返回 null。
+export async function validateXsollaUserToken(token: string): Promise<{
+  sub: string;
+  email?: string;
+  name?: string;
+} | null> {
+  if (!token || !PROJECT_ID) return null;
+  try {
+    const resp = await fetch(
+      `${XSOLLA_LOGIN_VALIDATE}?projectId=${encodeURIComponent(PROJECT_ID)}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      },
+    );
+    let body: Record<string, unknown> = {};
+    try { body = (await resp.json()) as Record<string, unknown>; } catch { /* ignore */ }
+    if (resp.status !== 200) return null;
+    // Xsolla 返回体含 auth_info.user.id / user.id 等结构，采样兼容性解析
+    const auth = body['auth_info'] ?? body;
+    const user =
+      typeof auth === 'object' && auth !== null && 'user' in auth
+        ? (auth as { user: unknown }).user
+        : auth;
+    const u = (typeof user === 'object' && user !== null ? user : {}) as Record<string, unknown>;
+    const sub = String(u['id'] ?? body['sub'] ?? '');
+    if (!sub) return null;
+    return {
+      sub,
+      email: typeof u['email'] === 'string' ? u['email'] : undefined,
+      name: typeof u['name'] === 'string' ? u['name'] : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
 
 // SKU → 钻石数量（Xsolla 专属：活动赠予 +20%）
 // 以各档位总额（如 gem_300 → 350）为基准新增 20% 活动钻（如 420），平台手续费仍低于 IAP

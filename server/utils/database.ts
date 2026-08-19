@@ -256,6 +256,66 @@ export async function login(email: string, password: string) {
   return { token, player: { id: player.id, name: player.name, rank: player.rank, email: player.email } };
 }
 
+// ─── Xsolla / 第三方平台账号登录 ───
+// 邮箱存在 → 合并（沿用历史 id，更新平台绑定）；xsollaSub 命中 → 复用；否则创建新账号。
+export async function platformLogin(input: {
+  platform: string;          // 平台标识：'xsolla' / 其它
+  platformUserId: string;    // 平台用户 ID（Xsolla sub 等）
+  email?: string | null;
+  name?: string | null;
+}) {
+  const { platform, platformUserId, email, name } = input;
+  const field = platform === 'xsolla' ? 'xsollaSub' : 'guestToken'; // 扩展平台时在 schema 加列
+  let player: any = null;
+
+  // 1) 邮箱优先合并（邮箱是用户体系去重键）
+  if (email) {
+    player = await prisma.player.findUnique({ where: { email } });
+  }
+  // 2) 平台 ID 命中（用户改邮箱后仍能识别）
+  if (!player && platformUserId) {
+    player = await prisma.player.findUnique({ where: { [field]: platformUserId } as any });
+  }
+  if (player) {
+    // 合并：补齐邮箱（如原为游客）、更新昵称（游客未改名时）、绑定平台 ID
+    const data: any = {};
+    if (email && !player.email) data.email = email;
+    if (name && (!player.name || player.name.startsWith('玩家') || player.name === '无名氏')) data.name = name;
+    if (field === 'xsollaSub' && !player.xsollaSub) data.xsollaSub = platformUserId;
+    if (Object.keys(data).length) {
+      await prisma.player.update({ where: { id: player.id }, data });
+      player = { ...player, ...data };
+    }
+    const token = createToken({ playerId: player.id, guestToken: player.guestToken });
+    return {
+      token,
+      merged: true,
+      player: { id: player.id, name: player.name, rank: player.rank, email: player.email },
+    };
+  }
+
+  // 3) 全新账号
+  const guestToken = crypto.randomUUID();
+  const created = await prisma.player.create({
+    data: {
+      guestToken,
+      email: email || null,
+      name: name || `玩家${Math.floor(Math.random() * 9999)}`,
+      ...(field === 'xsollaSub' ? { xsollaSub: platformUserId } : {}),
+    },
+  });
+  await prisma.collection.create({ data: { playerId: created.id, cards: [] } });
+  if (Date.now() < NEW_USER_BONUS_UNTIL) {
+    await addGems(created.id, NEW_USER_BONUS_DIAMONDS, '新用户注册奖励').catch(() => {});
+  }
+  const token = createToken({ playerId: created.id, guestToken });
+  return {
+    token,
+    merged: false,
+    player: { id: created.id, name: created.name, rank: created.rank, email: created.email },
+  };
+}
+
 export async function getPlayerProfile(playerId: string) {
   const cacheKey = `player:${playerId}`;
   const cached = await cacheGet(cacheKey);

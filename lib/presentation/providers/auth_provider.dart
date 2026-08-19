@@ -40,6 +40,13 @@ class AuthNotifier extends StateNotifier<AuthState?> {
     return err;
   }
 
+  /// Xsolla 平台登录（服务端验证+邮箱合并）
+  Future<String?> xsollaLogin(String accessToken) async {
+    final err = await _service.xsollaLogin(accessToken);
+    if (err == null) { state = _service.state; _bindBalanceSync(); }
+    return err;
+  }
+
   /// 登出
   Future<void> logout() async {
     await _service.logout();

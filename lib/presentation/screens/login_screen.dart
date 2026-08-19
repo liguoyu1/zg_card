@@ -1,11 +1,15 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../l10n/locale_service.dart';
 import '../providers/auth_provider.dart';
 
-/// 登录注册页 — 邮箱+密码注册/登录 + 游客快捷登录
+/// Xsolla Login OAuth Client ID（构建时注入；未配置则不显示入口）
+const String _kXsollaClientId = String.fromEnvironment('XSOLLA_CLIENT_ID');
+
+/// 登录注册页 — 邮箱+密码注册/登录 + 游客快捷登录 + Xsolla 平台登录
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
   @override
@@ -77,6 +81,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  Future<void> _xsollaLogin() async {
+    if (!kIsWeb || _kXsollaClientId.isEmpty) return;
+    final origin = '${Uri.base.scheme}://${Uri.base.authority}';
+    final redirectUri = '$origin/auth/xsolla';
+    final state = DateTime.now().millisecondsSinceEpoch.toString();
+    final url = 'https://login.xsolla.com/api/oauth2/login'
+        '?response_type=token'
+        '&client_id=$_kXsollaClientId'
+        '&redirect_uri=${Uri.encodeComponent(redirectUri)}'
+        '&scope=offline'
+        '&state=$state';
+    try {
+      // 同标签页跳转；Xsolla 授权后重定向回 /auth/xsolla 携带 token
+      await launchUrl(Uri.parse(url), mode: LaunchMode.platformDefault);
+    } catch (_) {
+      setState(() => _error = '无法打开 Xsolla 登录页面');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,6 +157,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           const SizedBox(height: 24),
           Row(children: [const Expanded(child: Divider(color: AppTheme.borderLight)), Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text(LocaleService.I.t('auth.or'), style: const TextStyle(color: AppTheme.textMuted))), const Expanded(child: Divider(color: AppTheme.borderLight))]),
           const SizedBox(height: 16),
+
+          // Xsolla 平台登录（Web 构建配置了 XSOLLA_CLIENT_ID 时显示）
+          if (kIsWeb && _kXsollaClientId.isNotEmpty) ...[
+            SizedBox(
+              width: double.infinity, height: 44,
+              child: OutlinedButton.icon(
+                onPressed: _loading ? null : _xsollaLogin,
+                icon: const Icon(Icons.language, size: 18),
+                label: Text(LocaleService.I.t('auth.xsolla_login'),
+                    style: const TextStyle(color: AppTheme.textSecondary)),
+                style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: AppTheme.borderGold.withAlpha(120))),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
 
           // 游客登录
           _field(_guestNameCtrl, LocaleService.I.t('auth.guest_name_hint'), Icons.person, false),
