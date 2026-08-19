@@ -606,9 +606,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     // 响应式尺寸 — 原图 1:1.5，战场卡用 1:1.45 接近原图，防止两侧过度裁剪
     final screenWidth = MediaQuery.of(context).size.width;
-    final boardCardWidth = min(66.0, screenWidth * 0.115);
+    final boardCardWidth = min(96.0, screenWidth * 0.13);
     final boardCardHeight = boardCardWidth * 1.45;
-    final handCardWidth = min(76.0, screenWidth * 0.13);
+    final handCardWidth = min(88.0, screenWidth * 0.15);
 
     return Scaffold(
       backgroundColor: AppTheme.bgDark,
