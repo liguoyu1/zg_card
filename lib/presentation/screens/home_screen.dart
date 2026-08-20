@@ -40,14 +40,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// App Store 链接（审核通过后填 https://apps.apple.com/app/idXXXXXX）
   static const String _iosStoreUrl = '';
 
-  /// Android APK 直链（独立 dl 服务，按 ABI 拆分）
-  static const List<({String file, String label})> _apkVariants = [
-    (
-      file:
-          'https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk',
-      label: 'ARM64'
-    ),
-  ];
+  /// Android 下载：itch.io 页面（免自建 dl 服务）
+  static const String _androidDownloadUrl =
+      'https://guoyuli.itch.io/warring-states-card/purchase';
 
   /// 支持的语言（下拉框显示母语名）
   static const List<({String code, String label})> _languages = [
@@ -734,9 +729,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         WMenuPlaque(
           icon: Icons.android,
           label: LocaleService.I.t('home.download_android'),
-          subtitle: '${_apkVariants.first.label} · $version',
+          subtitle: version,
           accentColor: const Color(0xFF3DDC84),
-          onTap: () => launchUrl(Uri.parse(_apkVariants.first.file),
+          onTap: () => launchUrl(Uri.parse(_androidDownloadUrl),
               mode: LaunchMode.externalApplication),
         ),
         WMenuPlaque(
