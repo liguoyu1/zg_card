@@ -1670,5 +1670,6 @@
   "privacy.delete_body": "1. 联系我们：发送邮件至 support@wscard.games（标题请注明「删除账号」），使用您注册账号的邮箱，说明您的诉求，我们将在合理期限内（通常 30 天内）完成核实与删除。\n2. 删除内容：账号、个人资料、游戏进度、排行记录等全部个人数据将被永久删除且不可恢复，游戏内货币与道具一并清除。\n3. 游客账号：清除浏览器缓存或卸载应用即视为删除游客数据。\n4. 依法保留：为遵守法律法规、防止欺诈或结算需要，法律要求必须保留的少量记录（如交易流水）将按规定最短期限留存后删除。",
   "privacy.contact_btn": "邮件联系我们（数据请求）",
   "home.download_android_mirror": "itch.io 下载",
-  "home.download_legacy": "历史版本"
+  "home.download_legacy": "历史版本",
+  "home.download_versions": "共{n}个版本"
 }

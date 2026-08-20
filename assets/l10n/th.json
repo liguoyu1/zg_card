@@ -1631,5 +1631,6 @@
   "game.invalid_target": "เป้าหมายไม่ถูกต้อง",
   "game.spell_condition_failed": "ไม่เป็นไปตามเงื่อนไข ไม่สามารถใช้เวทมนตร์ได้",
   "home.download_android_mirror": "ดาวน์โหลด itch.io",
-  "home.download_legacy": "เวอร์ชันเก่า"
+  "home.download_legacy": "เวอร์ชันเก่า",
+  "home.download_versions": "{n} เวอร์ชัน"
 }

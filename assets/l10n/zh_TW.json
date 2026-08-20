@@ -1637,5 +1637,6 @@
   "home.checkin_bonus": "連續 {streak} 天！+{gold} 金幣（含額外獎勵）",
   "home.checkin_failed": "簽到失敗，請稍後重試",
   "home.download_android_mirror": "itch.io 下載",
-  "home.download_legacy": "歷史版本"
+  "home.download_legacy": "歷史版本",
+  "home.download_versions": "共{n}個版本"
 }

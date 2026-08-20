@@ -1631,5 +1631,6 @@
   "game.invalid_target": "Неверная цель",
   "game.spell_condition_failed": "Условие не выполнено — заклинание нельзя разыграть",
   "home.download_android_mirror": "Скачать itch.io",
-  "home.download_legacy": "Предыдущая версия"
+  "home.download_legacy": "Предыдущая версия",
+  "home.download_versions": "{n} версий"
 }

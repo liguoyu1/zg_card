@@ -1631,5 +1631,6 @@
   "game.invalid_target": "Cible invalide",
   "game.spell_condition_failed": "Condition non remplie : sort incastrable",
   "home.download_android_mirror": "Télécharger itch.io",
-  "home.download_legacy": "Version précédente"
+  "home.download_legacy": "Version précédente",
+  "home.download_versions": "{n} versions"
 }

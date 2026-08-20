@@ -1631,5 +1631,6 @@
   "game.invalid_target": "無効な対象",
   "game.spell_condition_failed": "条件を満たしていないため呪文を唱えられません",
   "home.download_android_mirror": "itch.io ダウンロード",
-  "home.download_legacy": "旧バージョン"
+  "home.download_legacy": "旧バージョン",
+  "home.download_versions": "{n}個のバージョン"
 }

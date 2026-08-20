@@ -737,35 +737,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         WSectionTitle(
             label: t('home.download_title'), icon: Icons.phone_android),
-        // 主下载：dl 直连（国内稳定）
-        WMenuPlaque(
-          icon: Icons.android,
-          label: t('home.download_android'),
-          subtitle: '${t('home.download_recommended')} · $version',
-          accentColor: const Color(0xFF3DDC84),
-          onTap: () => launchUrl(Uri.parse(_androidDownloadUrl),
-              mode: LaunchMode.externalApplication),
+        // Android 下载：点击展开全部选项（dl 主 + 历史 + itch 备选）
+        ExpansionTile(
+          leading: const Icon(Icons.android,
+              color: Color(0xFF3DDC84), size: 28),
+          title: Text(t('home.download_android'),
+              style: const TextStyle(
+                  fontSize: 17, fontWeight: FontWeight.w600)),
+          subtitle: Text(
+              '${t('home.download_recommended')} · $version · ${t('home.download_versions', args: {'n': '${1 + _dlHistory.length}'})}'),
+          tilePadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          childrenPadding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          iconColor: const Color(0xFF3DDC84),
+          collapsedIconColor: AppTheme.manaBlue,
+          children: [
+            // 主下载：dl 直连（国内稳定）
+            WMenuPlaque(
+              icon: Icons.download,
+              label: '${t('home.download_recommended')} · dl',
+              subtitle: 'ARM64 · $version',
+              accentColor: const Color(0xFF3DDC84),
+              onTap: () => launchUrl(Uri.parse(_androidDownloadUrl),
+                  mode: LaunchMode.externalApplication),
+            ),
+            // dl 历史版本（最多 3 个，防止最新版有问题可回退）
+            ..._dlHistory.map(
+              (v) => WMenuPlaque(
+                icon: Icons.history,
+                label: t('home.download_legacy'),
+                subtitle: v.label,
+                accentColor: AppTheme.manaBlue,
+                onTap: () => launchUrl(Uri.parse(v.file),
+                    mode: LaunchMode.externalApplication),
+              ),
+            ),
+            // 备选：itch.io（海外）
+            WMenuPlaque(
+              icon: Icons.cloud_download,
+              label: t('home.download_android_mirror'),
+              subtitle: 'itch.io · $version',
+              accentColor: AppTheme.manaBlue,
+              onTap: () => launchUrl(Uri.parse(_itchDownloadUrl),
+                  mode: LaunchMode.externalApplication),
+            ),
+          ],
         ),
-        // dl 历史版本（最多 3 个，防止最新版有问题可回退）
-        ..._dlHistory.map(
-          (v) => WMenuPlaque(
-            icon: Icons.history,
-            label: t('home.download_legacy'),
-            subtitle: v.label,
-            accentColor: AppTheme.manaBlue,
-            onTap: () => launchUrl(Uri.parse(v.file),
-                mode: LaunchMode.externalApplication),
-          ),
-        ),
-        // 备选：itch.io（海外）
-        WMenuPlaque(
-          icon: Icons.cloud_download,
-          label: t('home.download_android_mirror'),
-          subtitle: 'itch.io · $version',
-          accentColor: AppTheme.manaBlue,
-          onTap: () => launchUrl(Uri.parse(_itchDownloadUrl),
-              mode: LaunchMode.externalApplication),
-        ),
+        // iOS：仅应用商店链接
         WMenuPlaque(
           icon: Icons.apple,
           label: t('home.download_ios'),

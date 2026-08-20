@@ -1631,5 +1631,6 @@
   "game.invalid_target": "Sasaran tidak sah",
   "game.spell_condition_failed": "Syarat tidak dipenuhi, mantera tidak boleh dimainkan",
   "home.download_android_mirror": "Muat turun itch.io",
-  "home.download_legacy": "Versi lama"
+  "home.download_legacy": "Versi lama",
+  "home.download_versions": "{n} versi"
 }

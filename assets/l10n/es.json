@@ -1631,5 +1631,6 @@
   "game.invalid_target": "Objetivo no válido",
   "game.spell_condition_failed": "No se cumplen las condiciones: no se puede lanzar el hechizo",
   "home.download_android_mirror": "Descargar itch.io",
-  "home.download_legacy": "Versión anterior"
+  "home.download_legacy": "Versión anterior",
+  "home.download_versions": "{n} versiones"
 }

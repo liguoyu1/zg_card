@@ -1631,5 +1631,6 @@
   "game.invalid_target": "Ungültiges Ziel",
   "game.spell_condition_failed": "Bedingung nicht erfüllt – Zauberspruch kann nicht gespielt werden",
   "home.download_android_mirror": "itch.io Download",
-  "home.download_legacy": "Ältere Version"
+  "home.download_legacy": "Ältere Version",
+  "home.download_versions": "{n} Versionen"
 }

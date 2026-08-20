@@ -1670,5 +1670,6 @@
   "privacy.delete_body": "1. Contact us: Send an email to support@wscard.games (subject: \"Delete Account\") from the email address associated with your registered account. Describe your request. We will verify and complete the deletion within a reasonable time (typically 30 days).\n2. What is deleted: Your account, personal profile, game progress, ranking records, and all other personal data will be permanently deleted and cannot be recovered. In-game currency and items will be forfeited.\n3. Guest accounts: Clearing your browser cache or uninstalling the app will delete guest data.\n4. Legal retention: A minimal set of records required by law (e.g. transaction logs) will be retained for the shortest period mandated and then deleted.",
   "privacy.contact_btn": "Email Us (Data Request)",
   "home.download_android_mirror": "itch.io Download",
-  "home.download_legacy": "Legacy version"
+  "home.download_legacy": "Legacy version",
+  "home.download_versions": "{n} versions"
 }
