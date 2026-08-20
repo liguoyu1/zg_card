@@ -247,6 +247,7 @@ class PlayerData {
     this.achievedMedals = const [], this.deckSlots = const {'slot_1': 0},
     DateTime? lastLogin, this.totalMatches = 0, this.winCount = 0,
     this.firstRun = true, this.stats = const {}, this.lastTrialWeek = 0,
+    this.starterSeeded = false,
   }) : lastLogin = lastLogin ?? DateTime.now();
 
   factory PlayerData.fromJson(Map<String, dynamic> json) => PlayerData(
@@ -262,6 +263,7 @@ class PlayerData {
     firstRun: json['firstRun'] ?? true,
     stats: json['stats'] != null ? Map<String, int>.from(json['stats']) : {},
     lastTrialWeek: json['lastTrialWeek'] ?? 0,
+    starterSeeded: json['starterSeeded'] ?? false,
   );
   final String id;
   final String name;
@@ -281,6 +283,7 @@ class PlayerData {
   final bool firstRun;
   final Map<String, int> stats;
   final int lastTrialWeek;
+  final bool starterSeeded;
 
   double get winRate => totalMatches > 0 ? winCount / totalMatches : 0;
 
@@ -289,6 +292,7 @@ class PlayerData {
     int? rankScore, int? rank, List<String>? unlockedHeroes, List<String>? unlockedCards,
     List<String>? achievedMedals, Map<String, int>? deckSlots, DateTime? lastLogin,
     int? totalMatches, int? winCount, bool? firstRun, Map<String, int>? stats, int? lastTrialWeek,
+    bool? starterSeeded,
   }) => PlayerData(
     id: id ?? this.id, name: name ?? this.name, level: level ?? this.level,
     exp: exp ?? this.exp, gold: gold ?? this.gold, gems: gems ?? this.gems,
@@ -300,6 +304,7 @@ class PlayerData {
     totalMatches: totalMatches ?? this.totalMatches, winCount: winCount ?? this.winCount,
     firstRun: firstRun ?? this.firstRun, stats: stats ?? this.stats,
     lastTrialWeek: lastTrialWeek ?? this.lastTrialWeek,
+    starterSeeded: starterSeeded ?? this.starterSeeded,
   );
 
   Map<String, dynamic> toJson() => {
@@ -309,6 +314,7 @@ class PlayerData {
     'deckSlots': deckSlots, 'lastLogin': lastLogin.toIso8601String(),
     'totalMatches': totalMatches, 'winCount': winCount, 'firstRun': firstRun,
     'stats': stats, 'lastTrialWeek': lastTrialWeek,
+    'starterSeeded': starterSeeded,
   };
 }
 

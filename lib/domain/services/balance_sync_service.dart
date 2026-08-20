@@ -153,7 +153,16 @@ class BalanceSyncService {
 
     final remotePd = _extractPlayerData(remote.json);
     if (remotePd == null) return; // 云端数据异常：保守不动
-    final remoteHasAssets =
+    // 云端为旧版初始档（孙膑+全池随机卡，未开局）→ 视同无资产，由本地新初始档覆盖
+    final cloudIsLegacyStarter = !remotePd.starterSeeded &&
+        remotePd.totalMatches == 0 &&
+        remotePd.winCount == 0 &&
+        remotePd.gems == 0 &&
+        remotePd.gold <= 100 &&
+        remotePd.unlockedHeroes.length <= 1 &&
+        remotePd.achievedMedals.isEmpty &&
+        remotePd.stats.isEmpty;
+    final remoteHasAssets = !cloudIsLegacyStarter &&
         !isEmptySave(remotePd, _extractCollection(remote.json));
 
     // 本地空档（新设备）→ 恢复云端

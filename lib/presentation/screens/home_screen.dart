@@ -106,11 +106,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await ref.read(authProvider.notifier).loadSession();
     final auth = ref.read(authProvider);
     // 仅注册登录用户首次初始化赠送 20 张卡牌（游客不送，需注册登录后获得）
+    // seed 内部判定：无卡或旧版初始档重新随机英雄+学派卡，老玩家不动
     if (auth?.email != null) {
-      final existing = await SaveManager.loadPlayerData();
-      if (existing == null || existing.unlockedCards.isEmpty) {
-        await CardPool.seedStarterCards();
-      }
+      await CardPool.seedStarterCards();
     }
     await BalanceSyncService.waitForInitialSync();
     d = await SaveManager.loadPlayerData();

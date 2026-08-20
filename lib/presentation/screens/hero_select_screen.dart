@@ -54,14 +54,25 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
     final isGuest = auth?.email == null;
     if (isGuest) {
       var gpd = await SaveManager.loadPlayerData();
+      // 游客旧档（仅孙膑、未开局）→ 重新随机基础英雄，避免一直孙膑
+      final guestLegacy = gpd != null &&
+          !gpd.starterSeeded &&
+          gpd.totalMatches == 0 &&
+          gpd.winCount == 0 &&
+          gpd.gems == 0 &&
+          gpd.gold <= 100 &&
+          gpd.unlockedHeroes.length <= 1 &&
+          gpd.achievedMedals.isEmpty &&
+          gpd.stats.isEmpty;
       String heroId;
-      if (gpd == null || gpd.unlockedHeroes.isEmpty) {
+      if (gpd == null || gpd.unlockedHeroes.isEmpty || guestLegacy) {
         final pool = CardPool.starterHeroPool;
         heroId = pool[_rng.nextInt(pool.length)];
         gpd ??= PlayerData(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             name: 'Player');
-        await SaveManager.savePlayerData(gpd.copyWith(unlockedHeroes: [heroId]));
+        await SaveManager.savePlayerData(gpd.copyWith(
+            unlockedHeroes: [heroId], starterSeeded: true));
       } else {
         heroId = gpd.unlockedHeroes.first;
       }

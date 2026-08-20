@@ -41,12 +41,21 @@ class CardPool {
 
   static Future<void> seedStarterCards() async {
     var data = await SaveManager.loadPlayerData();
-    // 无卡即为新用户：无论 data 是否为 null，只要 unlockedCards 空就视为新手
+    // 无卡即为新用户；或旧版初始档（starterSeeded=false 且未开局/无余额积累/仅默认英雄）
+    // → 视为新用户重新初始化（随机基础英雄 + 配套学派卡）
     data ??= PlayerData(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: 'Player',
       );
-    if (data.unlockedCards.isNotEmpty) return;
+    final isLegacyStarter = !data.starterSeeded &&
+        data.totalMatches == 0 &&
+        data.winCount == 0 &&
+        data.gems == 0 &&
+        data.gold <= 100 &&
+        data.unlockedHeroes.length <= 1 &&
+        data.achievedMedals.isEmpty &&
+        data.stats.isEmpty;
+    if (data.unlockedCards.isNotEmpty && !isLegacyStarter) return;
 
     final allCards = CardDataProvider.getAllCards();
     final rng = Random(DateTime.now().millisecondsSinceEpoch);
@@ -91,6 +100,7 @@ class CardPool {
     final newData = data.copyWith(
       unlockedCards: [...commonIds, ...rareIds, ...epicIds],
       unlockedHeroes: [heroId],
+      starterSeeded: true,
     );
     await SaveManager.savePlayerData(newData);
   }
