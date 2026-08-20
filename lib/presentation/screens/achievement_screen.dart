@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../data/data_version.dart';
@@ -68,6 +69,13 @@ class _AchievementScreenState extends State<AchievementScreen>
         title: Text(LocaleService.I.t('achievement.title')),
         backgroundColor: AppTheme.agedWood,
         foregroundColor: AppTheme.parchment,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.leaderboard, color: AppTheme.goldAccent),
+            tooltip: LocaleService.I.t('leaderboard.title'),
+            onPressed: () => context.push('/progress/leaderboard'),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabCtrl,
           indicatorColor: AppTheme.goldAccent,

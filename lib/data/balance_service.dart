@@ -337,4 +337,47 @@ class BalanceService {
       return false;
     }
   }
+
+  /// 上报对局结果（排行榜胜场数据源）。失败静默，不阻塞对局结算。
+  static Future<void> recordOnlineMatch({
+    required String odID,
+    required String heroId,
+    required String heroClass,
+    String opponentHero = '',
+    required bool won,
+  }) async {
+    try {
+      await http.post(
+        Uri.parse('$_baseUrl/api/match/record'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'odID': odID,
+          'heroId': heroId,
+          'heroClass': heroClass,
+          'opponentHero': opponentHero,
+          'won': won,
+        }),
+      );
+    } catch (e) {
+      debugPrint('BalanceService.recordOnlineMatch error: $e');
+    }
+  }
+
+  /// 获取排行榜榜单（触发上一周期结算）。
+  static Future<Map<String, dynamic>?> fetchRankings({
+    required String metric,
+    required String period,
+    String? myId,
+  }) async {
+    try {
+      final uri = Uri.parse('$_baseUrl/api/rankings?metric=$metric&period=$period'
+          '${myId != null ? '&odID=$myId' : ''}');
+      final resp = await http.get(uri);
+      if (resp.statusCode != 200) return null;
+      return jsonDecode(resp.body) as Map<String, dynamic>;
+    } catch (e) {
+      debugPrint('BalanceService.fetchRankings error: $e');
+      return null;
+    }
+  }
 }

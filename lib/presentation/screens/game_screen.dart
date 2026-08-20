@@ -9,6 +9,7 @@ import '../../domain/models/card.dart' as domain;
 import '../../domain/models/player.dart';
 import '../../domain/models/game_state.dart';
 import '../../domain/services/services.dart';
+import '../../data/balance_service.dart';
 import '../../domain/services/spell_system.dart';
 import '../../domain/services/ad_service.dart';
 import '../../domain/services/ad_service_factory.dart';
@@ -459,6 +460,19 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             opponentRankScore: 0,
           );
           await SaveManager.addMatchRecord(record);
+
+          // 排行榜数据源：仅服务端账号对局（非本地 AI 局）上报英雄胜场
+          if (widget.playerId != 'player_1' && widget.playerId != 'player_2') {
+            try {
+              await BalanceService.recordOnlineMatch(
+                odID: widget.playerId,
+                heroId: widget.playerHero.id,
+                heroClass: widget.playerHero.className,
+                opponentHero: opponent.hero.id,
+                won: isPlayerWinner,
+              );
+            } catch (_) {}
+          }
 
           final pd = await SaveManager.loadPlayerData();
           if (pd != null) {

@@ -26,6 +26,9 @@ class BalanceSyncService {
   static const int _minSyncIntervalMs = 5000;
   static const Duration _pollInterval = Duration(seconds: 5);
 
+  static String? get playerId => _playerId;
+  static String? get playerName => _playerName;
+
   static void setSession(String playerId, String token, {String? playerName}) {
     _playerId = playerId;
     _token = token;
