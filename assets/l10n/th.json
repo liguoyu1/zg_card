@@ -1629,5 +1629,7 @@
   "home.login_first_skin": "กรุณาเข้าสู่ระบบก่อนใช้ฟีเจอร์สกิน",
   "difficulty.select": "เลือกความยาก",
   "game.invalid_target": "เป้าหมายไม่ถูกต้อง",
-  "game.spell_condition_failed": "ไม่เป็นไปตามเงื่อนไข ไม่สามารถใช้เวทมนตร์ได้"
+  "game.spell_condition_failed": "ไม่เป็นไปตามเงื่อนไข ไม่สามารถใช้เวทมนตร์ได้",
+  "home.download_android_mirror": "ดาวน์โหลด itch.io",
+  "home.download_legacy": "เวอร์ชันเก่า"
 }

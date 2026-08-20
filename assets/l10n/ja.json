@@ -1629,5 +1629,7 @@
   "home.login_first_skin": "スキン機能を使用するにはログインしてください",
   "difficulty.select": "難易度を選択",
   "game.invalid_target": "無効な対象",
-  "game.spell_condition_failed": "条件を満たしていないため呪文を唱えられません"
+  "game.spell_condition_failed": "条件を満たしていないため呪文を唱えられません",
+  "home.download_android_mirror": "itch.io ダウンロード",
+  "home.download_legacy": "旧バージョン"
 }

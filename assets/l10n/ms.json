@@ -1629,5 +1629,7 @@
   "home.login_first_skin": "Sila log masuk dahulu untuk menggunakan fungsi skin",
   "difficulty.select": "Pilih Kesukaran",
   "game.invalid_target": "Sasaran tidak sah",
-  "game.spell_condition_failed": "Syarat tidak dipenuhi, mantera tidak boleh dimainkan"
+  "game.spell_condition_failed": "Syarat tidak dipenuhi, mantera tidak boleh dimainkan",
+  "home.download_android_mirror": "Muat turun itch.io",
+  "home.download_legacy": "Versi lama"
 }

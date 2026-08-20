@@ -1629,5 +1629,7 @@
   "home.login_first_skin": "Mangyaring mag-log in muna para magamit ang skin feature",
   "difficulty.select": "Pumili ng Hirap",
   "game.invalid_target": "Hindi wastong target",
-  "game.spell_condition_failed": "Hindi natugunan ang kundisyon, hindi maaaring gamitin ang spell"
+  "game.spell_condition_failed": "Hindi natugunan ang kundisyon, hindi maaaring gamitin ang spell",
+  "home.download_android_mirror": "I-download sa itch.io",
+  "home.download_legacy": "Lumang bersyon"
 }

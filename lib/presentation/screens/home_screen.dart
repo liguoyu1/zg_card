@@ -40,9 +40,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// App Store 链接（审核通过后填 https://apps.apple.com/app/idXXXXXX）
   static const String _iosStoreUrl = '';
 
-  /// Android 下载：itch.io 页面（免自建 dl 服务）
+  /// Android 下载：主 dl 直连（国内稳定）；itch.io 备选（海外）
+  static const String _dlBase = 'https://dl-production-4a3d.up.railway.app/dl';
   static const String _androidDownloadUrl =
+      '$_dlBase/app-arm64-v8a-release.apk';
+  static const String _itchDownloadUrl =
       'https://guoyuli.itch.io/warring-states-card/purchase';
+
+  /// dl 历史版本（最多 3 个；新版本出现时最旧的移除）
+  static const List<({String file, String label})> _dlHistory = [
+    (
+      file: '$_dlBase/app-arm64-v8a-release-1.0.0-20260817.apk',
+      label: 'v1.0.0 (2026-08-17)'
+    ),
+  ];
 
   /// 支持的语言（下拉框显示母语名）
   static const List<({String code, String label})> _languages = [
@@ -721,29 +732,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildDownloadSection() {
     final version = LocaleService.I.t('home.version');
+    final t = LocaleService.I.t;
     return Column(
       children: [
         WSectionTitle(
-            label: LocaleService.I.t('home.download_title'),
-            icon: Icons.phone_android),
+            label: t('home.download_title'), icon: Icons.phone_android),
+        // 主下载：dl 直连（国内稳定）
         WMenuPlaque(
           icon: Icons.android,
-          label: LocaleService.I.t('home.download_android'),
-          subtitle: version,
+          label: t('home.download_android'),
+          subtitle: '${t('home.download_recommended')} · $version',
           accentColor: const Color(0xFF3DDC84),
           onTap: () => launchUrl(Uri.parse(_androidDownloadUrl),
               mode: LaunchMode.externalApplication),
         ),
+        // dl 历史版本（最多 3 个，防止最新版有问题可回退）
+        ..._dlHistory.map(
+          (v) => WMenuPlaque(
+            icon: Icons.history,
+            label: t('home.download_legacy'),
+            subtitle: v.label,
+            accentColor: AppTheme.manaBlue,
+            onTap: () => launchUrl(Uri.parse(v.file),
+                mode: LaunchMode.externalApplication),
+          ),
+        ),
+        // 备选：itch.io（海外）
+        WMenuPlaque(
+          icon: Icons.cloud_download,
+          label: t('home.download_android_mirror'),
+          subtitle: 'itch.io · $version',
+          accentColor: AppTheme.manaBlue,
+          onTap: () => launchUrl(Uri.parse(_itchDownloadUrl),
+              mode: LaunchMode.externalApplication),
+        ),
         WMenuPlaque(
           icon: Icons.apple,
-          label: LocaleService.I.t('home.download_ios'),
-          subtitle: '${LocaleService.I.t('home.ios_reviewing')} · $version',
+          label: t('home.download_ios'),
+          subtitle: '${t('home.ios_reviewing')} · $version',
           accentColor: AppTheme.manaBlue,
           onTap: () {
             if (_iosStoreUrl.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                    content: Text(LocaleService.I.t('home.ios_reviewing')),
+                    content: Text(t('home.ios_reviewing')),
                     backgroundColor: AppTheme.goldAccent),
               );
             } else {

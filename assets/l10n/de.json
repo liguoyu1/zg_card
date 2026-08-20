@@ -1629,5 +1629,7 @@
   "home.login_first_skin": "Bitte melden Sie sich zuerst an, um die Skin-Funktion zu nutzen",
   "difficulty.select": "Schwierigkeit wählen",
   "game.invalid_target": "Ungültiges Ziel",
-  "game.spell_condition_failed": "Bedingung nicht erfüllt – Zauberspruch kann nicht gespielt werden"
+  "game.spell_condition_failed": "Bedingung nicht erfüllt – Zauberspruch kann nicht gespielt werden",
+  "home.download_android_mirror": "itch.io Download",
+  "home.download_legacy": "Ältere Version"
 }

@@ -1668,5 +1668,7 @@
   "privacy.manage_body": "1. View & edit: After logging in, visit your profile to view and edit your nickname, email and game data.\n2. Delete local guest data: Clear your browser cache or uninstall the app to remove guest account data and progress from this device.\n3. Contact us: To correct inaccurate data or ask about data usage, email us at the address below. We will respond within a reasonable time (typically 30 days).",
   "privacy.delete": "How to Delete Your Account & Personal Data",
   "privacy.delete_body": "1. Contact us: Send an email to support@wscard.games (subject: \"Delete Account\") from the email address associated with your registered account. Describe your request. We will verify and complete the deletion within a reasonable time (typically 30 days).\n2. What is deleted: Your account, personal profile, game progress, ranking records, and all other personal data will be permanently deleted and cannot be recovered. In-game currency and items will be forfeited.\n3. Guest accounts: Clearing your browser cache or uninstalling the app will delete guest data.\n4. Legal retention: A minimal set of records required by law (e.g. transaction logs) will be retained for the shortest period mandated and then deleted.",
-  "privacy.contact_btn": "Email Us (Data Request)"
+  "privacy.contact_btn": "Email Us (Data Request)",
+  "home.download_android_mirror": "itch.io Download",
+  "home.download_legacy": "Legacy version"
 }

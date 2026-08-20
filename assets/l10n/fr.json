@@ -1629,5 +1629,7 @@
   "home.login_first_skin": "Veuillez d'abord vous connecter pour utiliser la fonction de skin",
   "difficulty.select": "Choisir la difficulté",
   "game.invalid_target": "Cible invalide",
-  "game.spell_condition_failed": "Condition non remplie : sort incastrable"
+  "game.spell_condition_failed": "Condition non remplie : sort incastrable",
+  "home.download_android_mirror": "Télécharger itch.io",
+  "home.download_legacy": "Version précédente"
 }
