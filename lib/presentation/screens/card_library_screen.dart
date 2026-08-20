@@ -59,14 +59,18 @@ class _CardLibraryScreenState extends ConsumerState<CardLibraryScreen>
     final pd = await SaveManager.loadPlayerData();
     final ownedIds = pd?.unlockedCards ?? [];
     final owned = Set<String>.from(ownedIds);
-    // 游客：仅试用默认英雄（孙膑·兵家）的卡牌，不足 20 张时补中立卡牌；
+    // 游客：试用随机基础英雄对应学派的卡牌，不足 20 张时补中立卡牌；
     // 登录用户仅周试用卡牌为试用。
     final isGuest = ref.read(authProvider)?.email == null;
     final allCards = CardDataProvider.getAllCards();
     Set<String> trial;
     if (isGuest) {
-      // 游客固定英雄 H_B001（孙膑·兵家）
-      final trialHero = HeroDataProvider.getHeroById('H_B001');
+      // 游客：读游客档随机英雄对应的学派（无档则兜底兵家）
+      final gpd = await SaveManager.loadPlayerData();
+      final heroId = (gpd?.unlockedHeroes.isNotEmpty ?? false)
+          ? gpd!.unlockedHeroes.first
+          : 'H_B001';
+      final trialHero = HeroDataProvider.getHeroById(heroId);
       final owner = trialHero?.owner ?? cm.CardOwner.bingjia;
       final school = allCards.where((c) => c.owner == owner).map((c) => c.id).toList();
       final neutral = allCards.where((c) => c.owner == cm.CardOwner.neutral).map((c) => c.id).toList();

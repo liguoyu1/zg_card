@@ -46,16 +46,26 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
     super.dispose();
   }
 
-  /// 游客固定解锁的默认英雄（孙膑，兵家）。游客无收藏/进度概念，固定这套即可开玩。
-  static const String _guestHeroId = 'H_B001';
-
   Future<void> _load({bool syncFirst = false}) async {
     if (syncFirst) await BalanceSyncService.refreshNow();
-    // 游客：固定开放默认英雄，不写入账号、不参与首抽，纯本地临时可玩。
+    // 游客：随机开放一名各家基础英雄，持久化到游客档，可随时开玩。
+    // 不参与首抽（首抽仅注册用户），纯本地临时可玩。
     final auth = ref.read(authProvider);
     final isGuest = auth?.email == null;
     if (isGuest) {
-      if (mounted) setState(() { _unlockedHeroes = {_guestHeroId}; _loading = false; });
+      var gpd = await SaveManager.loadPlayerData();
+      String heroId;
+      if (gpd == null || gpd.unlockedHeroes.isEmpty) {
+        final pool = CardPool.starterHeroPool;
+        heroId = pool[_rng.nextInt(pool.length)];
+        gpd ??= PlayerData(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            name: 'Player');
+        await SaveManager.savePlayerData(gpd.copyWith(unlockedHeroes: [heroId]));
+      } else {
+        heroId = gpd.unlockedHeroes.first;
+      }
+      if (mounted) setState(() { _unlockedHeroes = {heroId}; _loading = false; });
       return;
     }
     final pd = await SaveManager.loadPlayerData();

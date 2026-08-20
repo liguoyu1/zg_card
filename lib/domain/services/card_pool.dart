@@ -41,7 +41,7 @@ class CardPool {
 
   static Future<void> seedStarterCards() async {
     var data = await SaveManager.loadPlayerData();
-    final isNew = data == null;
+    // 无卡即为新用户：无论 data 是否为 null，只要 unlockedCards 空就视为新手
     data ??= PlayerData(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: 'Player',
@@ -51,44 +51,46 @@ class CardPool {
     final allCards = CardDataProvider.getAllCards();
     final rng = Random(DateTime.now().millisecondsSinceEpoch);
 
-    // 新用户：随机一名各家基础英雄
-    final starterHero = isNew
-        ? starterHeroPool[rng.nextInt(starterHeroPool.length)]
+    // 新用户：随机一名各家基础英雄（已有初始英雄则沿用，保证卡牌与其配套）
+    final heroId = data.unlockedHeroes.isNotEmpty
+        ? data.unlockedHeroes.first
+        : starterHeroPool[rng.nextInt(starterHeroPool.length)];
+
+    // 初始卡牌：围绕该英雄的学派编排
+    final hero = HeroDataProvider.getHeroById(heroId);
+    final owner = hero != null
+        ? CardOwner.values.firstWhere(
+            (o) => o.name == hero.className,
+            orElse: () => CardOwner.neutral)
         : null;
 
-    // 初始卡牌：围绕该英雄的学派编排（学派卡 + 中立卡混合），
-    // 而非全卡池任意随机，保证新手套牌与所选英雄风格一致。
-    final hero = starterHero != null
-        ? HeroDataProvider.getHeroById(starterHero)
-        : null;
-    final factionCards = hero != null
-        ? allCards
-            .where((c) =>
-                c.owner.name == hero.className || c.owner == CardOwner.neutral)
-            .toList()
-        : allCards;
+    // 按稀有度取卡：学派卡优先，不足用中立补足
+    List<Card> _pick(Rarity rarity, int want) {
+      final faction = allCards
+          .where((c) => c.rarity == rarity && c.owner == owner)
+          .toList();
+      final neutral = allCards
+          .where((c) => c.rarity == rarity && c.owner == CardOwner.neutral)
+          .toList();
+      // 学派卡全部纳入（不超过 want），不足由中立补
+      if (faction.length >= want) {
+        faction.shuffle(rng);
+        return faction.take(want).toList();
+      }
+      final result = List<Card>.from(faction);
+      final need = want - result.length;
+      neutral.shuffle(rng);
+      result.addAll(neutral.take(need));
+      return result;
+    }
 
-    final common = factionCards
-        .where((c) => c.rarity == Rarity.common)
-        .toList()
-      ..shuffle(rng);
-    final commonIds = common.take(starterCommon).map((c) => c.id).toList();
-
-    final rare = factionCards
-        .where((c) => c.rarity == Rarity.rare)
-        .toList()
-      ..shuffle(rng);
-    final rareIds = rare.take(starterRare).map((c) => c.id).toList();
-
-    final epic = factionCards
-        .where((c) => c.rarity == Rarity.epic)
-        .toList()
-      ..shuffle(rng);
-    final epicIds = epic.take(starterEpic).map((c) => c.id).toList();
+    final commonIds = _pick(Rarity.common, starterCommon).map((c) => c.id).toList();
+    final rareIds = _pick(Rarity.rare, starterRare).map((c) => c.id).toList();
+    final epicIds = _pick(Rarity.epic, starterEpic).map((c) => c.id).toList();
 
     final newData = data.copyWith(
       unlockedCards: [...commonIds, ...rareIds, ...epicIds],
-      unlockedHeroes: starterHero != null ? [starterHero] : data.unlockedHeroes,
+      unlockedHeroes: [heroId],
     );
     await SaveManager.savePlayerData(newData);
   }
