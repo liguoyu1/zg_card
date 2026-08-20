@@ -11,6 +11,7 @@ import 'package:warring_states_card/data/persistence/save_manager.dart';
 import 'package:warring_states_card/domain/services/balance_sync_service.dart';
 import 'package:warring_states_card/domain/models/card.dart' as domain;
 import 'package:warring_states_card/domain/models/hero.dart' as h;
+import 'package:warring_states_card/domain/services/card_pool.dart';
 import 'package:warring_states_card/domain/services/hero_data_provider.dart' as provider;
 import 'package:warring_states_card/domain/services/services.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
@@ -60,10 +61,10 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
     final pd = await SaveManager.loadPlayerData();
     if (pd == null) { if (mounted) setState(() => _loading = false); return; }
     var ids = Set<String>.from(pd.unlockedHeroes);
-    // 首次使用：随机分配一个初始英雄
+    // 首次使用：从各家基础英雄中随机分配一个初始英雄
     if (ids.isEmpty && pd.firstRun) {
-      final all = provider.HeroDataProvider.getAllHeroes();
-      ids = {all[_rng.nextInt(all.length)].id};
+      final pool = CardPool.starterHeroPool;
+      ids = {pool[_rng.nextInt(pool.length)]};
       await SaveManager.savePlayerData(pd.copyWith(unlockedHeroes: ids.toList(), firstRun: false));
     }
     if (mounted) setState(() { _unlockedHeroes = ids; _loading = false; });
