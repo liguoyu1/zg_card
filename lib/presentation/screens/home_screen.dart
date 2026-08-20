@@ -784,24 +784,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-        // iOS：仅应用商店链接
-        WMenuPlaque(
-          icon: Icons.apple,
-          label: t('home.download_ios'),
-          subtitle: '${t('home.ios_reviewing')} · $version',
-          accentColor: AppTheme.manaBlue,
-          onTap: () {
-            if (_iosStoreUrl.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(t('home.ios_reviewing')),
-                    backgroundColor: AppTheme.goldAccent),
-              );
-            } else {
-              launchUrl(Uri.parse(_iosStoreUrl),
-                  mode: LaunchMode.externalApplication);
-            }
-          },
+        // iOS：仅应用商店链接（与 Android 相同的展开式风格）
+        ExpansionTile(
+          leading: const Icon(Icons.apple, color: Colors.white, size: 28),
+          title: Text(t('home.download_ios'),
+              style: const TextStyle(
+                  fontSize: 17, fontWeight: FontWeight.w600)),
+          subtitle: Text('${t('home.ios_reviewing')} · $version'),
+          tilePadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          childrenPadding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          iconColor: Colors.white,
+          collapsedIconColor: AppTheme.manaBlue,
+          children: [
+            WMenuPlaque(
+              icon: Icons.apple,
+              label: t('home.download_ios'),
+              subtitle: 'App Store',
+              accentColor: Colors.white,
+              onTap: () {
+                if (_iosStoreUrl.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(t('home.ios_reviewing')),
+                        backgroundColor: AppTheme.goldAccent),
+                  );
+                } else {
+                  launchUrl(Uri.parse(_iosStoreUrl),
+                      mode: LaunchMode.externalApplication);
+                }
+              },
+            ),
+          ],
         ),
       ],
     );
