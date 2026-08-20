@@ -10,6 +10,7 @@ import '../../domain/models/player.dart';
 import '../../domain/models/game_state.dart';
 import '../../domain/services/services.dart';
 import '../../data/balance_service.dart';
+import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/spell_system.dart';
 import '../../domain/services/ad_service.dart';
 import '../../domain/services/ad_service_factory.dart';
@@ -461,16 +462,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           );
           await SaveManager.addMatchRecord(record);
 
-          // 排行榜数据源：仅服务端账号对局（非本地 AI 局）上报英雄胜场
-          if (widget.playerId != 'player_1' && widget.playerId != 'player_2') {
+          // 排行榜数据源：有账号（含游客）就上报对局。
+          // 金币人机也算；胜场榜仅计联机 PK。
+          final odId = BalanceSyncService.playerId;
+          final isPk = widget.playerId != 'player_1' && widget.playerId != 'player_2';
+          if (odId != null) {
             try {
               await BalanceService.recordOnlineMatch(
-                odID: widget.playerId,
+                odID: odId,
                 heroId: widget.playerHero.id,
                 heroClass: widget.playerHero.className,
                 opponentHero: opponent.hero.id,
                 won: isPlayerWinner,
                 goldEarned: isPlayerWinner ? _rewardGold : 0,
+                isPk: isPk,
               );
             } catch (_) {}
           }

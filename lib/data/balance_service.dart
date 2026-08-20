@@ -338,7 +338,8 @@ class BalanceService {
     }
   }
 
-  /// 上报对局结果（排行榜胜场数据源 + 对局金币流水）。失败静默，不阻塞对局结算。
+  /// 上报对局结果（排行榜数据源）。失败静默，不阻塞对局结算。
+  /// isPk=false 时仅记录金币（人机局），不计胜场榜。
   static Future<void> recordOnlineMatch({
     required String odID,
     required String heroId,
@@ -346,6 +347,7 @@ class BalanceService {
     String opponentHero = '',
     required bool won,
     int goldEarned = 0,
+    bool isPk = false,
   }) async {
     try {
       await http.post(
@@ -358,6 +360,7 @@ class BalanceService {
           'opponentHero': opponentHero,
           'won': won,
           'goldEarned': goldEarned,
+          'isPk': isPk,
         }),
       );
     } catch (e) {
