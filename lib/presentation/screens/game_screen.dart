@@ -470,6 +470,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 heroClass: widget.playerHero.className,
                 opponentHero: opponent.hero.id,
                 won: isPlayerWinner,
+                goldEarned: isPlayerWinner ? _rewardGold : 0,
               );
             } catch (_) {}
           }

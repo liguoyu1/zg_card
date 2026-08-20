@@ -59,6 +59,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
         return LocaleService.I.t('txn.spend_gems');
       case 'earn_gold':
         return LocaleService.I.t('txn.earn_gold');
+      case 'earn_gold_match':
+        return LocaleService.I.t('txn.earn_gold_match');
       case 'spend_gold':
         return LocaleService.I.t('txn.spend_gold');
       case 'exchange':

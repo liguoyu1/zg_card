@@ -338,13 +338,14 @@ class BalanceService {
     }
   }
 
-  /// 上报对局结果（排行榜胜场数据源）。失败静默，不阻塞对局结算。
+  /// 上报对局结果（排行榜胜场数据源 + 对局金币流水）。失败静默，不阻塞对局结算。
   static Future<void> recordOnlineMatch({
     required String odID,
     required String heroId,
     required String heroClass,
     String opponentHero = '',
     required bool won,
+    int goldEarned = 0,
   }) async {
     try {
       await http.post(
@@ -356,6 +357,7 @@ class BalanceService {
           'heroClass': heroClass,
           'opponentHero': opponentHero,
           'won': won,
+          'goldEarned': goldEarned,
         }),
       );
     } catch (e) {

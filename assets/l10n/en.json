@@ -1691,5 +1691,6 @@
   "leaderboard.reward_day": "1st 1000·2nd 500·3rd 200·4-10th 50 gold",
   "leaderboard.reward_week": "1st 10000·2nd 6000·3rd 3000·4-10th 300 gold",
   "leaderboard.reward_month": "1st 2000·2nd 1200·3rd 800·4-10th 80 gems",
-  "leaderboard.refresh": "Refresh"
+  "leaderboard.refresh": "Refresh",
+  "txn.earn_gold_match": "Match reward"
 }
