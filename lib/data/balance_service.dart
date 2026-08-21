@@ -363,12 +363,13 @@ class BalanceService {
   }
 
   /// 上报对局结果（排行榜数据源）。失败静默，不阻塞对局结算。
-  /// isPk=false 时仅记录金币（人机局），不计胜场榜。
+  /// isPk=false 时仅记录金币（人机局），不计胜场榜/ELO。
   static Future<void> recordOnlineMatch({
     required String odID,
     required String heroId,
     required String heroClass,
     String opponentHero = '',
+    String opponentId = '',
     required bool won,
     int goldEarned = 0,
     bool isPk = false,
@@ -382,6 +383,7 @@ class BalanceService {
           'heroId': heroId,
           'heroClass': heroClass,
           'opponentHero': opponentHero,
+          'opponentId': opponentId,
           'won': won,
           'goldEarned': goldEarned,
           'isPk': isPk,

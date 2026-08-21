@@ -1679,7 +1679,7 @@
   "leaderboard.metric_gold": "金币排行",
   "leaderboard.my_rank": "我的排名",
   "leaderboard.not_in_list": "暂未上榜",
-  "leaderboard.wins_desc": "按主英雄（使用最多的英雄的学派）胜场排序",
+  "leaderboard.wins_desc": "按本周期联机对战 ELO 综合分排序",
   "leaderboard.gold_desc": "按本周期累积获得金币排序",
   "leaderboard.reward_title": "周期奖励",
   "leaderboard.reward_hint": "每周期结束自动发放：",
@@ -1692,5 +1692,6 @@
   "leaderboard.reward_week": "第1名10000·第2名6000·第3名3000·4-10名300金币",
   "leaderboard.reward_month": "第1名2000·第2名1200·第3名800·4-10名80钻石",
   "leaderboard.refresh": "刷新",
-  "txn.earn_gold_match": "对局奖励"
+  "txn.earn_gold_match": "对局奖励",
+  "leaderboard.elo_pt": "竞技分"
 }

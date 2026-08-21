@@ -10,6 +10,7 @@ import '../../domain/models/player.dart';
 import '../../domain/models/game_state.dart';
 import '../../domain/services/services.dart';
 import '../../data/balance_service.dart';
+import '../../presentation/providers/online_game_provider.dart';
 import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/spell_system.dart';
 import '../../domain/services/ad_service.dart';
@@ -479,11 +480,18 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           final isPk = widget.playerId != 'player_1' && widget.playerId != 'player_2';
           if (odId != null) {
             try {
+              // PK 局对手是联机真实玩家（aiGameProvider 里是 ai_normal，取 online 状态的真实 ID）
+              String oppId = '';
+              if (isPk) {
+                final os = ref.read(onlineGameProvider);
+                oppId = os?.opponentId ?? '';
+              }
               await BalanceService.recordOnlineMatch(
                 odID: odId,
                 heroId: widget.playerHero.id,
                 heroClass: widget.playerHero.className,
                 opponentHero: opponent.hero.id,
+                opponentId: oppId,
                 won: isPlayerWinner,
                 goldEarned: isPlayerWinner ? _rewardGold : 0,
                 isPk: isPk,

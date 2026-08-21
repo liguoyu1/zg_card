@@ -1679,7 +1679,7 @@
   "leaderboard.metric_gold": "Gold Earned",
   "leaderboard.my_rank": "My Rank",
   "leaderboard.not_in_list": "Not ranked",
-  "leaderboard.wins_desc": "Ranked by wins of your main hero's school",
+  "leaderboard.wins_desc": "Ranked by ELO competitive score from online PK matches this period",
   "leaderboard.gold_desc": "Ranked by gold earned this period",
   "leaderboard.reward_title": "Period Rewards",
   "leaderboard.reward_hint": "Auto-awarded at period end:",
@@ -1692,5 +1692,6 @@
   "leaderboard.reward_week": "1st 10000·2nd 6000·3rd 3000·4-10th 300 gold",
   "leaderboard.reward_month": "1st 2000·2nd 1200·3rd 800·4-10th 80 gems",
   "leaderboard.refresh": "Refresh",
-  "txn.earn_gold_match": "Match reward"
+  "txn.earn_gold_match": "Match reward",
+  "leaderboard.elo_pt": "ELO pts"
 }

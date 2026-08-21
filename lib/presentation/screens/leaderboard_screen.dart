@@ -49,8 +49,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     _fetch();
   }
 
-  String _schoolLabel(String cls) => LocaleService.I.t('owner.$cls', fallback: cls);
-
   @override
   Widget build(BuildContext context) {
     final loc = LocaleService.I;
@@ -232,7 +230,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final name = entry['name'] as String? ?? '';
     final score = entry['score'] as int? ?? 0;
     final isMe = entry['isMe'] == true;
-    final heroClass = (_metric == 'wins') ? entry['heroClass'] as String? : null;
 
     // 排名颜色
     Color rankColor;
@@ -251,7 +248,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       rankColor = AppTheme.textMuted;
     }
 
-    final unit = _metric == 'wins' ? LocaleService.I.t('leaderboard.wins') : LocaleService.I.t('leaderboard.gold');
+    // wins=ELO 综合分（PK 对局胜场加分），gold=对局金币
+    final unit = _metric == 'wins' ? LocaleService.I.t('leaderboard.elo_pt') : LocaleService.I.t('leaderboard.gold');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
@@ -273,18 +271,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     fontWeight: FontWeight.w600,
                     fontSize: 13)),
           ),
-          if (heroClass != null && heroClass.isNotEmpty) ...[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                  color: AppTheme.bgDark,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: AppTheme.borderLight)),
-              child: Text(_schoolLabel(heroClass),
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
-            ),
-            const SizedBox(width: 8),
-          ],
           Text('$score $unit',
               style: TextStyle(
                   color: rank <= 3 ? rankColor : AppTheme.textSecondary,
@@ -297,7 +283,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Widget _buildMyRank(int? myRank, int? myScore) {
     final loc = LocaleService.I;
-    final unit = _metric == 'wins' ? loc.t('leaderboard.wins') : loc.t('leaderboard.gold');
+    final unit = _metric == 'wins' ? loc.t('leaderboard.elo_pt') : loc.t('leaderboard.gold');
     final name = BalanceSyncService.playerName ?? '';
 
     return Container(
