@@ -1693,5 +1693,16 @@
   "leaderboard.reward_month": "1st 2000·2nd 1200·3rd 800·4-10th 80 gems",
   "leaderboard.refresh": "Refresh",
   "txn.earn_gold_match": "Match reward",
-  "leaderboard.elo_pt": "ELO pts"
+  "leaderboard.elo_pt": "ELO pts",
+  "hero_stats.title": "Hero Stats",
+  "hero_stats.scope_all": "All",
+  "hero_stats.scope_day": "Today",
+  "hero_stats.scope_week": "Week",
+  "hero_stats.scope_month": "Month",
+  "hero_stats.by_school": "By School",
+  "hero_stats.by_hero": "By Hero",
+  "hero_stats.matches": "Matches",
+  "hero_stats.winrate": "Win rate",
+  "hero_stats.damage": "Damage",
+  "hero_stats.empty": "No match data yet, go battle!"
 }

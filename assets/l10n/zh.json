@@ -1693,5 +1693,16 @@
   "leaderboard.reward_month": "第1名2000·第2名1200·第3名800·4-10名80钻石",
   "leaderboard.refresh": "刷新",
   "txn.earn_gold_match": "对局奖励",
-  "leaderboard.elo_pt": "竞技分"
+  "leaderboard.elo_pt": "竞技分",
+  "hero_stats.title": "英雄全平台统计",
+  "hero_stats.scope_all": "全部",
+  "hero_stats.scope_day": "今日",
+  "hero_stats.scope_week": "本周",
+  "hero_stats.scope_month": "本月",
+  "hero_stats.by_school": "按学派",
+  "hero_stats.by_hero": "按英雄",
+  "hero_stats.matches": "对局",
+  "hero_stats.winrate": "胜率",
+  "hero_stats.damage": "总伤害",
+  "hero_stats.empty": "暂无对局数据，快去对战吧"
 }

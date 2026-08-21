@@ -75,6 +75,11 @@ class _AchievementScreenState extends State<AchievementScreen>
             tooltip: LocaleService.I.t('leaderboard.title'),
             onPressed: () => context.push('/progress/leaderboard'),
           ),
+          IconButton(
+            icon: const Icon(Icons.bar_chart, color: AppTheme.goldAccent),
+            tooltip: LocaleService.I.t('hero_stats.title'),
+            onPressed: () => context.push('/progress/hero-stats'),
+          ),
         ],
         bottom: TabBar(
           controller: _tabCtrl,

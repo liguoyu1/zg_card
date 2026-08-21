@@ -373,6 +373,7 @@ class BalanceService {
     required bool won,
     int goldEarned = 0,
     bool isPk = false,
+    int damage = 0,
   }) async {
     try {
       await http.post(
@@ -387,6 +388,7 @@ class BalanceService {
           'won': won,
           'goldEarned': goldEarned,
           'isPk': isPk,
+          'damage': damage,
         }),
       );
     } catch (e) {

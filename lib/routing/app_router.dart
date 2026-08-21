@@ -13,6 +13,7 @@ import '../presentation/screens/game_screen_args.dart';
 import '../presentation/screens/hero_select_screen.dart';
 import '../presentation/screens/home_screen.dart';
 import '../presentation/screens/leaderboard_screen.dart';
+import '../presentation/screens/hero_stats_screen.dart';
 import '../presentation/screens/legal_screen.dart';
 import '../presentation/screens/privacy_screen.dart';
 import '../presentation/screens/terms_screen.dart';
@@ -42,6 +43,7 @@ class AppRouter {
           GoRoute(path: '/progress/achievement', builder: (_, __) => const AchievementScreen()),
           GoRoute(path: '/progress/quest', builder: (_, __) => const QuestScreen()),
           GoRoute(path: '/progress/leaderboard', builder: (_, __) => const LeaderboardScreen()),
+          GoRoute(path: '/progress/hero-stats', builder: (_, __) => const HeroStatsScreen()),
           GoRoute(path: '/progress/battle-pass', builder: (_, __) => const BattlePassScreen()),
           GoRoute(path: '/shop/adventure', builder: (_, __) => const AdventureScreen()),
           GoRoute(path: '/shop/shop', builder: (_, __) => const ShopScreen()),

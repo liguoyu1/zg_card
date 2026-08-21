@@ -211,6 +211,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     _diffPlayer(prev.getCurrentPlayer(pid), next.getCurrentPlayer(pid));
     final prevOpp = prev.player1.id == pid ? prev.player2 : prev.player1;
     final nextOpp = next.player1.id == pid ? next.player2 : next.player1;
+    // 出牌/技能造成的对手伤害计入英雄总伤害（法术/英雄技能/亡语）
+    final oppLoss = prevOpp.health - nextOpp.health;
+    if (oppLoss > 0) _totalDamageDealt += oppLoss;
     _diffPlayer(prevOpp, nextOpp);
   }
 
@@ -495,6 +498,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 won: isPlayerWinner,
                 goldEarned: isPlayerWinner ? _rewardGold : 0,
                 isPk: isPk,
+                damage: _totalDamageDealt,
               );
             } catch (_) {}
           }
@@ -1007,6 +1011,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         AudioManager.I.attack();
         AudioManager.I.damage();
         _showDamage(card.id, attacker.attack, DamageIndicatorState.damage);
+        _totalDamageDealt += attacker.attack; // 英雄全平台伤害统计
         _log(LocaleService.I.t('game.log_attack', args: {'attacker': attacker.lname, 'target': card.lname}));
         ref.read(aiGameProvider.notifier).minionAttack(
           widget.playerId,
@@ -1109,6 +1114,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     // 随从攻击英雄
     _triggerAttackAnimation(attacker.id, 'hero');
+    _totalDamageDealt += attacker.attack; // 英雄全平台伤害统计
     ref.read(aiGameProvider.notifier).minionAttackHero(widget.playerId, attacker);
     setState(() {
       _selectedMinion = null;
