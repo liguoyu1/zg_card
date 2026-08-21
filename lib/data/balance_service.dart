@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../core/api_config.dart';
+import '../domain/services/balance_sync_service.dart';
 
 /// 联机对战余额服务 — 调用后端 API
 class BalanceService {
@@ -335,6 +336,29 @@ class BalanceService {
     } catch (e) {
       debugPrint('BalanceService.addGems error: $e');
       return false;
+    }
+  }
+
+  /// 自动游客登录，确保有服务端账号 ID。返回 null 表示失败。
+  static Future<String?> ensureSession([String name = '玩家']) async {
+    try {
+      final resp = await http.post(
+        Uri.parse('$_baseUrl/api/auth/guest'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'name': name}),
+      );
+      if (resp.statusCode != 200) return null;
+      final body = jsonDecode(resp.body);
+      final id = body['player']?['id'] as String?;
+      final token = body['token'] as String?;
+      if (id != null && token != null) {
+        BalanceSyncService.setSession(id, token, playerName: name);
+        return id;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('BalanceService.ensureSession error: $e');
+      return null;
     }
   }
 

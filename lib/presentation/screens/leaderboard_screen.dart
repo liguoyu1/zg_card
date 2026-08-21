@@ -16,7 +16,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   String _metric = 'wins'; // wins | gold
   bool _loading = true;
   Map<String, dynamic>? _data;
-  String? _error;
 
   @override
   void initState() {
@@ -32,9 +31,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         period: _period,
         myId: BalanceSyncService.playerId,
       );
-      if (mounted) setState(() { _data = d; _loading = false; _error = null; });
+      if (mounted) setState(() { _data = d; _loading = false; });
     } catch (e) {
-      if (mounted) setState(() { _loading = false; _error = e.toString(); });
+      if (mounted) setState(() { _loading = false; });
     }
   }
 

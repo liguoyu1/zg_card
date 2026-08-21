@@ -462,9 +462,14 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           );
           await SaveManager.addMatchRecord(record);
 
-          // 排行榜数据源：有账号（含游客）就上报对局。
-          // 金币人机也算；胜场榜仅计联机 PK。
-          final odId = BalanceSyncService.playerId;
+          // 排行榜数据源：金币人机也算；胜场榜仅计联机 PK。
+          // 未登录时自动游客注册，确保有服务端账号。
+          var odId = BalanceSyncService.playerId;
+          if (odId == null) {
+            try {
+              odId = await BalanceService.ensureSession();
+            } catch (_) {}
+          }
           final isPk = widget.playerId != 'player_1' && widget.playerId != 'player_2';
           if (odId != null) {
             try {
