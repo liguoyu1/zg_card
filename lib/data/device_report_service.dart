@@ -23,8 +23,8 @@ class DeviceReportService {
     return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}';
   }
 
-  /// 上报（可多次调用，传 playerId 关联已登录账号）
-  static Future<void> report({String? playerId}) async {
+  /// 上报（可多次调用。登录后带 playerId 补报，服务端将同 deviceId 的游客记录更新为玩家）
+  static Future<void> report({String? playerId, bool? isGuest}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       String deviceId = prefs.getString(_deviceIdKey) ?? '';
@@ -39,7 +39,7 @@ class DeviceReportService {
       final body = {
         'deviceId': deviceId,
         'playerId': playerId ?? '',
-        'isGuest': (playerId == null || playerId.isEmpty),
+        'isGuest': isGuest ?? (playerId == null || playerId.isEmpty),
         'screen': '${w}x$h',
         'lang': dipl.locale.toLanguageTag(),
         'tz': DateTime.now().timeZoneName,

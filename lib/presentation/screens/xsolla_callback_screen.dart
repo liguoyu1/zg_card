@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../data/device_report_service.dart';
 import '../../l10n/locale_service.dart';
 import '../providers/auth_provider.dart';
 
@@ -58,6 +59,8 @@ class _XsollaCallbackScreenState extends ConsumerState<XsollaCallbackScreen> {
       _showError(err);
       return;
     }
+    // Xsolla 登录成功：以玩家身份补报设备信息
+    DeviceReportService.report(playerId: ref.read(authProvider)?.playerId);
     // 跳回首页（go_router 会替换 URL，同时清除 fragment 中的 token）
     if (mounted) context.go('/');
   }

@@ -1,0 +1,81 @@
+# 战国卡牌 — 本地 Docker 部署
+#   web     : Flutter Web 前端（nginx，需本机先 flutter build web --release）
+#   server  : Nitro 后端 → http://localhost:3000
+#   db      : PostgreSQL
+#
+# 启动：
+#   1. 本机构建前端：flutter build web --release --dart-define=API_BASE_URL=http://localhost:3000
+#   2. docker compose up --build -d
+# 启动（仅后端，前端用 dev server）：
+#   docker compose up -d db redis server
+#   flutter run -d web-server --web-port 8080 --dart-define=API_BASE_URL=http://localhost:3000
+# 停止：
+#   docker compose down
+name: zg-card
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: zg_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: warring_states
+      # 允许容器网络(非 localhost)TCP 连接,否则 pg_hba.conf 默认只放行 127.0.0.1
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "15432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d warring_states"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: zg_server
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/warring_states
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: warring-states-local-secret
+      SUPPORT_ADMIN_KEY: local-admin-key
+      NODE_ENV: production
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: zg_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zg_web
+    depends_on:
+      - server
+    environment:
+      PORT: "80"
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:
