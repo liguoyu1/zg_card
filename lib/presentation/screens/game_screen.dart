@@ -415,7 +415,13 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         _rewardCardName = card.lname;
         _rewardCardRarity = card.rarity;
       }
-      _rewardGold = 50 + (DateTime.now().millisecondsSinceEpoch % 51); // 50-100
+      // PK 联机奖励更高（3倍），刷人机需更多局才追平
+      final isPkReward = widget.playerId != 'player_1' && widget.playerId != 'player_2';
+      if (isPkReward) {
+        _rewardGold = 150 + (DateTime.now().millisecondsSinceEpoch % 151); // 150-300
+      } else {
+        _rewardGold = 50 + (DateTime.now().millisecondsSinceEpoch % 51); // 50-100
+      }
     }
   }
 
