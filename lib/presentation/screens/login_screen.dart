@@ -66,8 +66,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (err != null) {
       setState(() => _error = err);
     } else {
-      // 登录成功：以玩家身份补报，服务端将同 deviceId 的游客记录更新为玩家
-      DeviceReportService.report(playerId: ref.read(authProvider)?.playerId);
+      // 登录成功：补报身份，服务端更新同 deviceId 记录
+      final au = ref.read(authProvider);
+      DeviceReportService.report(playerId: au?.playerId, playerName: au?.playerName);
       Navigator.pop(context);
     }
   }
@@ -85,8 +86,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (err != null) {
       setState(() => _error = err);
     } else {
-      // 游客登录：补报但保留游客标记（服务端将同 deviceId 的记录关联游客账号）
-      DeviceReportService.report(playerId: ref.read(authProvider)?.playerId, isGuest: true);
+      // 游客登录：不补报身份（游客记录保持原样，账号/昵称无值仍按游客统计）
       Navigator.pop(context);
     }
   }

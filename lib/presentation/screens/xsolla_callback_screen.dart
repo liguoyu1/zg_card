@@ -59,8 +59,9 @@ class _XsollaCallbackScreenState extends ConsumerState<XsollaCallbackScreen> {
       _showError(err);
       return;
     }
-    // Xsolla 登录成功：以玩家身份补报设备信息
-    DeviceReportService.report(playerId: ref.read(authProvider)?.playerId);
+    // Xsolla 登录成功：补报身份，服务端更新同 deviceId 记录
+    final au = ref.read(authProvider);
+    DeviceReportService.report(playerId: au?.playerId, playerName: au?.playerName);
     // 跳回首页（go_router 会替换 URL，同时清除 fragment 中的 token）
     if (mounted) context.go('/');
   }
