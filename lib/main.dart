@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/audio/audio.dart';
 import 'core/theme/app_theme.dart';
 import 'data/persistence/save_manager.dart';
+import 'data/device_report_service.dart';
 import 'domain/services/battle_pass_service.dart';
 import 'domain/services/balance_sync_service.dart';
 import 'domain/services/purchase_service.dart';
@@ -79,6 +80,8 @@ class _WarringStatesAppState extends ConsumerState<WarringStatesApp>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     LocaleService.I.localeVersion.addListener(_onLocaleChanged);
+    // 打开网站即上报一次设备信息（无论是否登录）
+    DeviceReportService.report();
     // 启动时恢复登录态（含 Xsolla 静默无感登录）
     ref.read(authProvider.notifier).loadSession();
   }

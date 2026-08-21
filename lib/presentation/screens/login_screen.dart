@@ -29,7 +29,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    DeviceReportService.report();
   }
 
   @override
