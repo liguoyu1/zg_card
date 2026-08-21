@@ -25,3 +25,10 @@ web/out
 web/dl
 warring_states_card
 assets/style_samples
+build
+.codebuddy
+build
+.codebuddy
+warring_states_card
+*.zip
+*.apk

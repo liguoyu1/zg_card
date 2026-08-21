@@ -6,6 +6,7 @@ import '../../domain/services/page_nav_io.dart'
     if (dart.library.js_interop) '../../domain/services/page_nav_web.dart';
 import '../../core/theme/app_theme.dart';
 import '../../domain/services/auth_service.dart' show AuthService;
+import '../../data/device_report_service.dart';
 import '../../l10n/locale_service.dart';
 import '../providers/auth_provider.dart';
 
@@ -24,6 +25,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _guestNameCtrl = TextEditingController(text: '');
   bool _loading = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    DeviceReportService.report();
+  }
 
   @override
   void dispose() {
