@@ -284,7 +284,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   Widget _buildMyRank(int? myRank, int? myScore) {
     final loc = LocaleService.I;
     final unit = _metric == 'wins' ? loc.t('leaderboard.elo_pt') : loc.t('leaderboard.gold');
-    final name = BalanceSyncService.playerName ?? '';
+    // 优先展示服务端下发的昵称（未设置昵称时服务端随机生成）；本地保留名兜底
+    String name = BalanceSyncService.playerName ?? '';
+    final list = (_data?['list'] as List?) ?? const [];
+    if (myRank != null) {
+      for (final e in list) {
+        if (e['isMe'] == true && e['name'] is String && (e['name'] as String).isNotEmpty) {
+          name = e['name'] as String;
+          break;
+        }
+      }
+    }
 
     return Container(
       padding: const EdgeInsets.all(12),
