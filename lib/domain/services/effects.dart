@@ -117,14 +117,14 @@ class SummonEffect implements CardEffect {
     if (player.isBoardFull) return state;
 
     final summonedCard = cardToSummon.copyWith(
-      id: '${cardToSummon.id}_summon_${DateTime.now().microsecondsSinceEpoch}',
+      id: '${cardToSummon.id}_summon_${state.idSeq}',
       maxHealth: cardToSummon.maxHealth > 0
           ? cardToSummon.maxHealth
           : cardToSummon.health,
     );
 
     final newBoard = [...player.board, summonedCard];
-    return state.updatePlayer(player.copyWith(board: newBoard));
+    return state.updatePlayer(player.copyWith(board: newBoard)).nextId();
   }
 }
 
@@ -290,10 +290,10 @@ class CopyEffect implements CardEffect {
       final newBoard = [
         ...player.board,
         targetCard.copyWith(
-          id: '${targetCard.id}_copy_${DateTime.now().microsecondsSinceEpoch}',
+          id: '${targetCard.id}_copy_${state.idSeq}',
         )
       ];
-      return state.updatePlayer(player.copyWith(board: newBoard));
+      return state.updatePlayer(player.copyWith(board: newBoard)).nextId();
     }
   }
 }
@@ -344,7 +344,7 @@ class WeaponEffect implements CardEffect {
   GameState execute(GameState state, String playerId, String? targetId) {
     final player = state.getCurrentPlayer(playerId);
     final weapon = Card(
-      id: 'weapon_${DateTime.now().microsecondsSinceEpoch}',
+      id: 'weapon_${state.idSeq}',
       name: '武器',
       type: CardType.weapon,
       cost: 0,
@@ -357,7 +357,7 @@ class WeaponEffect implements CardEffect {
       rarity: Rarity.common,
     );
 
-    return state.updatePlayer(player.copyWith(weapon: weapon));
+    return state.updatePlayer(player.copyWith(weapon: weapon)).nextId();
   }
 }
 

@@ -145,7 +145,7 @@ class SummonPower implements HeroPowerEffect {
     if (player.boardCount >= 7) return state;
     
     final soldier = Card(
-      id: 'soldier_${DateTime.now().microsecondsSinceEpoch}',
+      id: 'soldier_${state.idSeq}',
       name: '士兵',
       type: CardType.minion,
       cost: 1,
@@ -160,7 +160,7 @@ class SummonPower implements HeroPowerEffect {
       board: [...player.board, soldier],
       mana: player.mana - 2,
     );
-    return state.updatePlayer(updatedPlayer);
+    return state.updatePlayer(updatedPlayer).nextId();
   }
 }
 
@@ -176,10 +176,10 @@ class RandomPower implements HeroPowerEffect {
     final opponent = state.opponent;
     if (opponent.board.isEmpty) return state;
     
-    // 随机选一个随从
-    final randomIndex = DateTime.now().millisecond % opponent.board.length;
+    // 随机选一个随从（确定性 rng）
+    final randomIndex = state.rng.nextInt(opponent.board.length);
     final target = opponent.board[randomIndex];
-    final damage = 1 + (DateTime.now().millisecond % 2); // 1-2点伤害
+    final damage = state.rng.nextIntRange(1, 2); // 1-2点伤害
     
     final newHealth = target.health - damage;
     final newBoard = List<Card>.from(opponent.board);

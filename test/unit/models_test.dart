@@ -115,7 +115,7 @@ void main() {
         skillType: SkillType.control,
       );
       
-      const state = GameState(
+      final state = GameState(
         player1: Player(id: 'p1', hero: hero1),
         player2: Player(id: 'p2', hero: hero2),
         activePlayerId: 'p1',

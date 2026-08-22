@@ -319,7 +319,7 @@ void main() {
         maxMana: 5,
       );
       
-      const state = GameState(
+      final state = GameState(
         player1: player,
         player2: Player(
           id: 'p2',
@@ -345,7 +345,7 @@ void main() {
     
     test('endTurn - switch active player', () {
       final service = TurnService();
-      const state = GameState(
+      final state = GameState(
         player1: Player(
           id: 'p1',
           hero: Hero(

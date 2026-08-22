@@ -3,6 +3,7 @@ import 'dart:math';
 import '../../data/card_image_service.dart';
 import '../models/models.dart';
 import 'combo_system.dart';
+import 'deterministic_random.dart';
 import 'effect_executor.dart';
 import 'spell_system.dart';
 
@@ -93,11 +94,6 @@ class GameRules {
 class BattlefieldService {
   final EffectExecutor _executor = EffectExecutor();
 
-  /// 全局递增序号，保证每次出牌/召唤的卡牌 id 唯一
-  // ponytail: 进程级单例计数器；多 isolate 不共享，但单机对战场景足够
-  static int _seq = 0;
-  static int _nextSeq() => ++_seq;
-
   /// 出牌 — 支持随从/法术/武器三种类型
   GameState playCard(GameState state, String playerId, Card card, {String? targetId}) {
     final player = state.getCurrentPlayer(playerId);
@@ -126,11 +122,15 @@ class BattlefieldService {
     List<Card> newBoard = player.board;
     Card? newWeapon = player.weapon;
 
+    // 对局级确定性实例 id 计数（替代进程级静态 _seq；id 生成不消耗 rng 随机序列）
+    var idSeq = state.idSeq;
+    String instId(String base) => '${base}_${idSeq++}';
+
     if (card.isMinion) {
       // 随从：加入战场
       if (player.boardCount < GameRules.maxBoardSize) {
         final playedCard = card.copyWith(
-          id: '${card.id}_${_nextSeq()}',
+          id: instId(card.id),
           imageAsset: card.imageAsset.isNotEmpty ? card.imageAsset : CardImageService.getImageAsset(card.id),
           isDormant: !card.hasCharge,
           maxHealth: card.health,
@@ -140,7 +140,7 @@ class BattlefieldService {
     } else if (card.isWeapon) {
       // 武器：装备到英雄，替换旧武器
       newWeapon = card.copyWith(
-        id: '${card.id}_${_nextSeq()}',
+        id: instId(card.id),
         imageAsset: card.imageAsset.isNotEmpty ? card.imageAsset : CardImageService.getImageAsset(card.id),
       );
     }
@@ -154,6 +154,7 @@ class BattlefieldService {
     );
 
     var updatedState = state.updatePlayer(updatedPlayer);
+    if (idSeq != state.idSeq) updatedState = updatedState.copyWith(idSeq: idSeq);
 
     // 执行效果：法术 / 武器佩戴（含学派共振）/ 随从战吼
     if (card.isSpell) {
@@ -480,20 +481,21 @@ class TurnService {
     );
   }
   
-  /// 洗牌
-  static List<Card> shuffleDeck(List<Card> deck) {
-    final random = Random();
+  /// 洗牌。联机时传入确定性 rng（两端同一种子 → 同一顺序）；单机默认真随机。
+  static List<Card> shuffleDeck(List<Card> deck, {DeterministicRandom? rng}) {
+    final random = rng?.raw ?? Random();
     final shuffled = List<Card>.from(deck);
     shuffled.shuffle(random);
     return shuffled;
   }
   
-  /// 初始发牌
+  /// 初始发牌。联机时传入确定性 rng（两端同一种子 → 同一手牌/牌库）。
   static ({List<Card> hand, List<Card> deck}) drawInitialHands(
     List<Card> deck,
-    int handSize,
-  ) {
-    final shuffled = shuffleDeck(deck);
+    int handSize, {
+    DeterministicRandom? rng,
+  }) {
+    final shuffled = shuffleDeck(deck, rng: rng);
     final hand = shuffled.take(handSize).toList();
     final remainingDeck = shuffled.skip(handSize).toList();
     return (hand: hand, deck: remainingDeck);

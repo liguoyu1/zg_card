@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/cards/cards.dart';
 import '../../data/heroes/heroes_data.dart';
 import '../../domain/models/models.dart';
+import '../../domain/services/deterministic_random.dart';
 import '../../domain/services/services.dart' show AIDifficulty, TurnService, GameRules, BattlefieldService, HeroPowerFactory;
 
 /// 游戏状态Notifier
@@ -23,14 +26,19 @@ class GameStateNotifier extends StateNotifier<GameState?> {
     List<Card>? player2Deck,
     int? player1Health,
     int? player2Health,
+    int? seed,
   }) {
     // 使用预设卡组或自定义卡组
     final deck1 = player1Deck ?? getPresetDeck(player1Hero.owner);
     final deck2 = player2Deck ?? getPresetDeck(player2Hero.owner);
 
-    // 初始发牌
-    final hand1 = TurnService.drawInitialHands(deck1, GameRules.initialHandSize);
-    final hand2 = TurnService.drawInitialHands(deck2, GameRules.initialHandSize);
+    // 对局种子：联机时两端同步；单机时随机生成（每局不同）
+    final s = seed ?? Random().nextInt(1 << 31);
+    final rng = DeterministicRandom(s);
+
+    // 初始发牌（同一确定性 rng → 两端手牌/牌库一致）
+    final hand1 = TurnService.drawInitialHands(deck1, GameRules.initialHandSize, rng: rng);
+    final hand2 = TurnService.drawInitialHands(deck2, GameRules.initialHandSize, rng: rng);
 
     final player1 = Player(
       id: player1Id,
@@ -57,6 +65,7 @@ class GameStateNotifier extends StateNotifier<GameState?> {
       player2: player2,
       activePlayerId: player1Id,
       phase: GamePhase.mulligan,
+      seed: s,
     );
   }
 

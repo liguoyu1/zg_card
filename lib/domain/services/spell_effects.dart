@@ -13,8 +13,6 @@ Player _playerFor(GameState s, String pid, EffSide side) =>
 Iterable<EffSide> _sides(EffSide side) =>
     side == EffSide.all ? [EffSide.self, EffSide.enemy] : [side];
 
-int _n() => DateTime.now().microsecondsSinceEpoch;
-
 /// 对单个随从造成伤害（吃法术强度）
 class DamageMinionEffect implements CardEffect {
   const DamageMinionEffect(this.damage, {this.side = EffSide.enemy});
@@ -94,7 +92,7 @@ class DamageRandomEnemyMinionEffect implements CardEffect {
     if (enemy.board.isEmpty) {
       return DamageEnemyHeroEffect(damage).execute(state, playerId, null);
     }
-    final victim = enemy.board[Random().nextInt(enemy.board.length)];
+    final victim = enemy.board[state.rng.nextInt(enemy.board.length)];
     return DamageMinionEffect(damage).execute(state, playerId, victim.id);
   }
 }
@@ -277,7 +275,7 @@ class AdjustRandomEnemyEffect implements CardEffect {
   GameState execute(GameState state, String playerId, String? targetId) {
     final enemy = state.opponent;
     if (enemy.board.isEmpty) return state;
-    final victim = enemy.board[Random().nextInt(enemy.board.length)];
+    final victim = enemy.board[state.rng.nextInt(enemy.board.length)];
     return BuffMinionEffect(atk: atk, def: def, side: EffSide.enemy).execute(state, playerId, victim.id);
   }
 }
@@ -387,7 +385,7 @@ class SilenceRandomEnemyEffect implements CardEffect {
   GameState execute(GameState state, String playerId, String? targetId) {
     final enemy = state.opponent;
     if (enemy.board.isEmpty) return state;
-    final victim = enemy.board[Random().nextInt(enemy.board.length)];
+    final victim = enemy.board[state.rng.nextInt(enemy.board.length)];
     final board = List<Card>.from(enemy.board);
     final idx = board.indexWhere((c) => c.id == victim.id);
     board[idx] = victim.copyWith(keywords: const <Keyword>[]);
@@ -427,7 +425,7 @@ class SummonCopiesEffect implements CardEffect {
       final p = current.getCurrentPlayer(playerId);
       if (p.isBoardFull) break;
       final summoned = Card(
-        id: 'summon_${_n()}_$i',
+        id: '${card.id}_summon_${current.idSeq}',
         name: card.name,
         type: CardType.minion,
         cost: 0,
@@ -439,7 +437,9 @@ class SummonCopiesEffect implements CardEffect {
         owner: card.owner,
         rarity: card.rarity,
       );
-      current = current.updatePlayer(p.copyWith(board: [...p.board, summoned]));
+      current = current
+          .updatePlayer(p.copyWith(board: [...p.board, summoned]))
+          .nextId();
     }
     return current;
   }
@@ -517,7 +517,7 @@ class RandomDestroyEffect implements CardEffect {
     final cond = condition;
     final candidates = cond == null ? owner.board : owner.board.where(cond).toList();
     if (candidates.isEmpty) return state;
-    final card = candidates[Random().nextInt(candidates.length)];
+    final card = candidates[state.rng.nextInt(candidates.length)];
     final board = owner.board.where((c) => c.id != card.id).toList();
     return state.updatePlayer(owner.copyWith(board: board));
   }
@@ -568,12 +568,14 @@ class ReturnToHandEffect implements CardEffect {
     final card = owner.board[idx];
     final board = List<Card>.from(owner.board)..removeAt(idx);
     final bounced = card.copyWith(
-      id: '${card.id}_ret_${_n()}',
+      id: '${card.id}_ret_${state.idSeq}',
       hasAttackedThisTurn: false,
       isDormant: false,
       keywords: const <Keyword>[],
     );
-    return state.updatePlayer(owner.copyWith(board: board, hand: [...owner.hand, bounced]));
+    return state
+        .updatePlayer(owner.copyWith(board: board, hand: [...owner.hand, bounced]))
+        .nextId();
   }
 }
 
@@ -645,7 +647,7 @@ class BetrayEffect implements CardEffect {
           .updatePlayer(enemy.copyWith(board: enemyBoard))
           .updatePlayer(caster.copyWith(health: caster.health - traitor.attack));
     }
-    final victim = caster.board[Random().nextInt(caster.board.length)];
+    final victim = caster.board[state.rng.nextInt(caster.board.length)];
     var casterBoard = List<Card>.from(caster.board);
     final vIdx = casterBoard.indexWhere((c) => c.id == victim.id);
     if (victim.health - traitor.attack <= 0) {
@@ -676,7 +678,7 @@ class RandomFiveElementEffect implements CardEffect {
       const AdjustRandomEnemyEffect(-1, 0),
     ];
     for (int i = 0; i < count; i++) {
-      current = pool[Random().nextInt(pool.length)].execute(current, playerId, null);
+      current = pool[state.rng.nextInt(pool.length)].execute(current, playerId, null);
     }
     return current;
   }
@@ -711,7 +713,7 @@ class DiscoverEffect implements CardEffect {
     for (int i = 0; i < count; i++) {
       final p = current.getCurrentPlayer(playerId);
       if (p.handCount >= GameRules.maxHandSize) break;
-      final c = pool[Random().nextInt(pool.length)];
+      final c = pool[state.rng.nextInt(pool.length)];
       current = current.updatePlayer(p.copyWith(hand: [...p.hand, c]));
     }
     return current;
@@ -764,7 +766,7 @@ class DrawDiscardEffect implements CardEffect {
     final drawn = deck.take(2).toList();
     final rest = deck.skip(2).toList();
     final hand = [...p.hand, ...drawn];
-    final idx = Random().nextInt(hand.length);
+    final idx = state.rng.nextInt(hand.length);
     final hand2 = List<Card>.from(hand)..removeAt(idx);
     return state.updatePlayer(p.copyWith(deck: rest, hand: hand2));
   }

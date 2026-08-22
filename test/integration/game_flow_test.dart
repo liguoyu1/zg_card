@@ -187,7 +187,7 @@ void main() {
         keywords:[Keyword.deathrattle],description:'',owner:CardOwner.neutral,rarity:Rarity.common);
       const atk = Card(id:'a',name:'a',type:CardType.minion,cost:2,attack:5,health:5,
         description:'',owner:CardOwner.neutral,rarity:Rarity.common);
-      var gs = const GameState(
+      var gs = GameState(
         player1:Player(id:'p1',hero:testHero,board:[atk],mana:10),
         player2:Player(id:'p2',hero:opponentHero,board:[card],mana:10),
         activePlayerId:'p1');
@@ -260,7 +260,7 @@ void main() {
     });
 
     test('5.4 疲劳递增', () {
-      var gs = const GameState(
+      var gs = GameState(
         player1:Player(id:'p1',hero:testHero,mana:5,maxMana:5),
         player2:Player(id:'p2',hero:opponentHero),
         activePlayerId:'p1');
@@ -279,7 +279,7 @@ void main() {
     test('5.6 沉默圣盾', () {
       const s = Card(id:'s',name:'s',type:CardType.minion,cost:3,attack:3,health:5,
         keywords:[Keyword.divineShield],description:'',owner:CardOwner.neutral,rarity:Rarity.common);
-      var gs = const GameState(
+      var gs = GameState(
         player1:Player(id:'p1',hero:testHero,board:[s],mana:10),
         player2:Player(id:'p2',hero:opponentHero),
         activePlayerId:'p1');
@@ -346,7 +346,7 @@ void main() {
   // Group 7: 效果系统
   // ═══════════════════════════════════════════════════════
   group('7 效果系统', () {
-    var gs = const GameState(
+    var gs = GameState(
       player1:Player(id:'p1',hero:testHero,mana:10,health:25),
       player2:Player(id:'p2',hero:opponentHero,health:20),
       activePlayerId:'p1');

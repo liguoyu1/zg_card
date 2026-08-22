@@ -126,7 +126,7 @@ void main() {
     late GameState state;
     
     setUp(() {
-      state = const GameState(
+      state = GameState(
         player1: Player(
           id: 'p1',
           hero: Hero(
@@ -190,7 +190,7 @@ void main() {
   group('DamageEffect Tests', () {
     test('Damage to hero', () {
       const effect = DamageEffect(3, targetHero: true);
-      const state = GameState(
+      final state = GameState(
         player1: Player(
           id: 'p1',
           hero: Hero(
@@ -227,7 +227,7 @@ void main() {
   group('BuffEffect Tests', () {
     test('Buff to self', () {
       const buffEffect = BuffEffect(attackBonus: 2, healthBonus: 2, toSelf: true);
-      const state = GameState(
+      final state = GameState(
         player1: Player(
           id: 'p1',
           hero: Hero(
@@ -282,7 +282,7 @@ void main() {
         HealEffect(2),
       ]);
       
-      const state = GameState(
+      final state = GameState(
         player1: Player(
           id: 'p1',
           health: 25,  // 设置初始生命值25
