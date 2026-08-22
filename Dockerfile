@@ -24,13 +24,13 @@ ARG API_HOST
 ARG XSOLLA_CLIENT_ID=895277
 ARG XSOLLA_PROJECT_ID=6db50f41-6a0a-4b9f-a033-8fd7bfaab372
 RUN if [ -n "$API_BASE_URL" ]; then \
-      flutter build web --release \
+      flutter build web --release --wasm \
         --dart-define=API_BASE_URL=$API_BASE_URL \
         --dart-define=API_HOST=$API_HOST \
         --dart-define=XSOLLA_CLIENT_ID=$XSOLLA_CLIENT_ID \
         --dart-define=XSOLLA_PROJECT_ID=$XSOLLA_PROJECT_ID; \
     else \
-      flutter build web --release \
+      flutter build web --release --wasm \
         --dart-define=XSOLLA_CLIENT_ID=$XSOLLA_CLIENT_ID \
         --dart-define=XSOLLA_PROJECT_ID=$XSOLLA_PROJECT_ID; \
     fi

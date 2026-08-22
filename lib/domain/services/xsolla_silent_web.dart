@@ -1,7 +1,9 @@
 // Xsolla 静默登录 Web 实现：利用 Xsolla SSO cookie。
 // 浏览器已有 login.xsolla.com 登录会话时，GET /jwt/sso 直接返回用户 JWT（无用户交互）。
+// 使用 package:web 的 HttpRequest（基于 fetch，wasm 兼容，替代已弃用的 dart:html）。
 import 'dart:convert';
-import 'dart:html';
+
+import 'package:web/web.dart' as web;
 
 /// 在浏览器当前会话中静默换取 Xsolla 用户 JWT。
 /// 返回 null = 无有效 Xsolla 会话（用户未在 Xsolla 登录过 / cookie 过期）。
@@ -21,7 +23,7 @@ Future<String?> xsollaSilentJwt({
         .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
         .join('&');
     final url = 'https://login.xsolla.com/api/jwt/sso?$query';
-    final req = await HttpRequest.request(
+    final req = await web.HttpRequest.request(
       url,
       withCredentials: true,
       requestHeaders: {'Accept': 'application/json'},

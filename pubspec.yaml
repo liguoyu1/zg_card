@@ -28,7 +28,10 @@ dependencies:
   lottie: ^3.0.0
   
   # Audio
-  audioplayers: ^5.2.0
+  audioplayers: ^6.7.0
+  
+  # Web 互操作（dart2wasm 兼容替代 dart:html）
+  web: ^1.1.0
   
   # Utils
   uuid: ^4.2.0
