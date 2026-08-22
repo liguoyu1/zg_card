@@ -3,9 +3,9 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/api_config.dart';
+import 'device_id_store.dart';
 
 /// 设备信息上报（匿名设备ID, 屏幕, 语言, 时区）
 /// 服务端从请求头读 User-Agent 解析设备类型/型号。
@@ -15,7 +15,6 @@ class DeviceReportService {
   static final DeviceReportService I = DeviceReportService._();
 
   static const String _baseUrl = ApiConfig.baseUrl;
-  static const String _deviceIdKey = 'dev_id';
 
   static String _uuid() {
     final rnd = Random.secure();
@@ -26,9 +25,8 @@ class DeviceReportService {
   /// 上报（可多次调用。登录后带 playerId/playerName 补报，服务端更新同 deviceId 记录）
   static Future<void> report({String? playerId, String? playerName, bool? isGuest}) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      String deviceId = prefs.getString(_deviceIdKey) ?? '';
-      if (deviceId.length < 16) { deviceId = _uuid(); await prefs.setString(_deviceIdKey, deviceId); }
+      String? deviceId = await readStoredDeviceId();
+      if (deviceId == null) { deviceId = _uuid(); await writeStoredDeviceId(deviceId); }
 
       final dipl = PlatformDispatcher.instance;
       final view = dipl.views.first;
