@@ -13,6 +13,9 @@ class GameScreenArgs {
     this.runHp,
     this.opponentHero,
     this.isOnline = false,
+    this.isHost = false,
+    this.matchId,
+    this.oppId,
   });
   final String playerId;
   final hero.Hero playerHero;
@@ -21,4 +24,7 @@ class GameScreenArgs {
   final int? runHp;
   final hero.Hero? opponentHero;
   final bool isOnline;
+  final bool isHost;
+  final String? matchId;
+  final String? oppId;
 }

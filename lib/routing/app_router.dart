@@ -85,6 +85,10 @@ class AppRouter {
             playerId: args.playerId,
             playerHero: args.playerHero,
             isOnline: args.isOnline,
+            opponentHero: args.opponentHero,
+            isHost: args.isHost,
+            matchId: args.matchId,
+            oppId: args.oppId,
           );
         },
       ),

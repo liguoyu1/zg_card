@@ -80,6 +80,7 @@ class OnlineGameService {
           opponentId: response['opponent']?['odID'],
           opponentName: response['opponent']?['odName'],
           opponentHeroId: response['opponent']?['odHeroId'],
+          isHost: response['isHost'] == true,
         );
       }
       return null;
@@ -213,11 +214,13 @@ class MatchResult {
     this.opponentId,
     this.opponentName,
     this.opponentHeroId,
+    this.isHost = false,
   });
   final String matchId;
   final String? opponentId;
   final String? opponentName;
   final String? opponentHeroId;
+  final bool isHost;
 }
 
 /// 玩家档案

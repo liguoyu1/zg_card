@@ -10,7 +10,6 @@ import '../../l10n/locale_service.dart';
 import '../../data/balance_service.dart';
 import '../../data/persistence/save_manager.dart';
 import '../../domain/services/services.dart' show AIDifficulty;
-import '../providers/online_game_provider.dart';
 import 'game_screen_args.dart';
 
 /// 联机对战服务提供者
@@ -38,6 +37,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
   String? _opponentName;
   String? _opponentHeroId;
   String? _matchId;
+  bool? _isHost;
   String _playerName = '';
   bool _loggedIn = false;
   int _elapsed = 0;
@@ -105,6 +105,7 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
         setState(() {
           _status = MatchQueueStatus.matched;
           _matchId = result.matchId;
+          _isHost = result.isHost;
           _opponentId = result.opponentId;
           _opponentName = result.opponentName;
           _opponentHeroId = result.opponentHeroId;
@@ -137,20 +138,18 @@ class _MatchmakingScreenState extends ConsumerState<MatchmakingScreen> {
       orElse: () => allHeroes.first,
     );
 
-    // 初始化联机游戏
-    final onlineNotifier = ref.read(onlineGameProvider.notifier);
-    onlineNotifier.startOnlineGame(
-      myId: _service.myId ?? 'player',
-      opponentId: _opponentId!,
-      myHero: widget.selectedHero,
-      opponentHero: opponentHero,
-      // ponytail: matchId & service pass — add when online backend is wired up
-    );
+    // 取匹配结果的 isHost（host 始终为 engine player1，先手）
+    final isHost = _isHost ?? false;
 
-    // 导航到对战页
+    // 导航到对战页（游戏由 aiGameProvider 驱动）
     context.pushReplacement('/battle/online-game', extra: GameScreenArgs(
       playerId: _service.myId ?? 'player',
       playerHero: widget.selectedHero,
+      opponentHero: opponentHero,
+      isOnline: true,
+      isHost: isHost,
+      matchId: _matchId,
+      oppId: _opponentId,
     ));
   }
 

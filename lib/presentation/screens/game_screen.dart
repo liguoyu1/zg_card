@@ -51,6 +51,9 @@ class GameScreen extends ConsumerStatefulWidget {
   final int? runHp; // Roguelite: 继承的HP
   final hero.Hero? opponentHero; // Roguelite: 指定对手
   final bool isOnline;
+  final bool isHost;
+  final String? matchId;
+  final String? oppId;
 
   const GameScreen({
     super.key,
@@ -61,6 +64,9 @@ class GameScreen extends ConsumerStatefulWidget {
     this.runHp,
     this.opponentHero,
     this.isOnline = false,
+    this.isHost = false,
+    this.matchId,
+    this.oppId,
   });
 
   @override
@@ -77,6 +83,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   List<String> _spellTargetIds = const [];
   Map<String, int> _lastBoardHealths = {};
   bool _isPlayerTurn = true;
+  bool _wasMyTurn = false; // 联机回合切换检测
   int _turnTimeRemaining = 20;
   int? _timerStartTime;
   final Set<String> _attackingCardIds = {};
@@ -106,6 +113,15 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.isOnline) {
+      // host 恒为 player1 先手，其首回合由 _initializeGame 直接启动，
+      // 故初始即视为"在我的回合"，避免监听器误触发重复 startTurn。
+      _wasMyTurn = widget.isHost;
+      // 联机回合切换检测：监听 aiGameProvider 状态变化。
+      ref.listenManual<GameState?>(aiGameProvider, (prev, cur) {
+        _onOnlineStateChanged(prev, cur);
+      });
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeGame();
       // 延迟启动 BGM（等音频引擎就绪）
@@ -115,6 +131,30 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     });
     // 启动回合计时器（每秒刷新）
     _startTimerLoop();
+  }
+
+  /// 联机状态变化处理：检测本地玩家回合开始（对端 end_turn → activePlayerId 变回 myId）。
+  void _onOnlineStateChanged(GameState? prev, GameState? cur) {
+    if (!mounted || !widget.isOnline) return;
+    if (cur == null) return;
+    if (cur.phase == GamePhase.ended) return; // 结束由 build 的 isEnded 分支处理
+    final myTurnNow = cur.activePlayerId == widget.playerId;
+    if (myTurnNow && !_wasMyTurn) {
+      _startMyTurn();
+    }
+    _wasMyTurn = myTurnNow;
+  }
+
+  /// 本地玩家回合开始：启动回合引擎并恢复交互。
+  void _startMyTurn() {
+    if (!mounted || _wasMyTurn) return; // 防重复启动
+    _wasMyTurn = true; // 先置位再启动引擎，避免 listener 重入再次触发
+    ref.read(aiGameProvider.notifier).startTurn(widget.playerId);
+    AudioManager.I.manaCrystal();
+    setState(() {
+      _isPlayerTurn = true;
+    });
+    _startTurnTimer();
   }
 
   void _startTimerLoop() {
@@ -264,6 +304,27 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   void _initializeGame() {
     _preloadBattleAssets();
+    if (widget.isOnline) {
+      // 真联机：由 aiGameProvider 确定性引擎驱动（本地演化 + 网络提交）。
+      ref.read(aiGameProvider.notifier).startOnlineGame(
+        playerHero: widget.playerHero,
+        opponentHero: widget.opponentHero!,
+        matchId: widget.matchId!,
+        myId: widget.playerId,
+        oppId: widget.oppId!,
+        isHost: widget.isHost,
+      );
+      // 非 host 不启动回合：等待轮询到 host 的 start_turn 后再行动。
+      if (widget.isHost) {
+        // host 恒为 player1，先手启动本地回合。
+        ref.read(aiGameProvider.notifier).startTurn(widget.playerId);
+        AudioManager.I.manaCrystal();
+        _isPlayerTurn = true;
+        _wasMyTurn = true;
+        _startTurnTimer();
+      }
+      return;
+    }
     if (widget.runHp != null && widget.opponentHero != null) {
       ref.read(aiGameProvider.notifier).startMissionGame(
         playerId: widget.playerId,
@@ -1586,9 +1647,13 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     AudioManager.I.endTurn();
     setState(() {
       _isPlayerTurn = false;
+      _wasMyTurn = false;
       _selectedMinion = null;
       _interactionMode = _InteractionMode.none;
     });
+
+    // 联机：对端动作经网络轮询驱动，不再本地跑 AI 回合
+    if (widget.isOnline) return;
 
     // AI回合
     Future.delayed(const Duration(milliseconds: 500), () {
