@@ -1671,5 +1671,7 @@
   "hero_stats.matches": "對局",
   "hero_stats.winrate": "勝率",
   "hero_stats.damage": "總傷害",
-  "hero_stats.empty": "暫無對局數據，快去對戰吧"
+  "hero_stats.empty": "暫無對局數據，快去對戰吧",
+  "splash.loading_item": "正在載入：{name}",
+  "splash.loading_count": "已載入 {done}/{total} 個"
 }

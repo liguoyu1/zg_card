@@ -1704,5 +1704,7 @@
   "hero_stats.matches": "对局",
   "hero_stats.winrate": "胜率",
   "hero_stats.damage": "总伤害",
-  "hero_stats.empty": "暂无对局数据，快去对战吧"
+  "hero_stats.empty": "暂无对局数据，快去对战吧",
+  "splash.loading_item": "正在加载：{name}",
+  "splash.loading_count": "已加载 {done}/{total} 个"
 }

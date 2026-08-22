@@ -4,6 +4,7 @@
 library;
 
 import 'package:warring_states_card/core/asset_style.dart';
+import 'package:warring_states_card/domain/services/card_data_provider.dart';
 
 class CardImageService {
   static String get _base => 'assets/${AssetStyle.current.dirName}/';
@@ -321,5 +322,59 @@ class CardImageService {
         if (v.isNotEmpty) v,
     ];
     return paths;
+  }
+
+  /// 资源路径 → 中文显示名（卡牌名或英雄名），供加载页展示"正在加载什么"
+  /// 入参形如 `assets/fantasy_rpg/minions/weiwuzu.webp`，取带目录的相对段
+  /// (`minions/weiwuzu.webp`) 校验，避免同名英雄/随从文件互相覆盖。
+  static String displayNameFor(String path) {
+    final parts = path.split('/');
+    if (parts.length < 2) return '';
+    final rel = '${parts[parts.length - 2]}/${parts[parts.length - 1]}';
+    return _fileToName[rel] ?? '';
+  }
+
+  /// 懒加载反查表：`minions/xxx.webp` → 中文名（从卡牌数据 + 图片映射构建）
+  static Map<String, String>? _fileToNameCache;
+  static Map<String, String> get _fileToName {
+    final cached = _fileToNameCache;
+    if (cached != null) return cached;
+
+    final result = <String, String>{};
+    final byId = <String, String>{};
+    // 英雄：ID(H_B001) → 中文名
+    final heroNames = <String, String>{
+      'H_B001': '孙武', 'H_B002': '吴起', 'H_B003': '廉颇',
+      'H_F001': '商鞅', 'H_F002': '韩非', 'H_F003': '申不害',
+      'H_R001': '孔子', 'H_R002': '孟子', 'H_R003': '荀子',
+      'H_D001': '老子', 'H_D002': '庄子', 'H_D003': '列子',
+      'H_M001': '墨子', 'H_M002': '公输般', 'H_M003': '禽滑厘',
+      'H_Y001': '邹衍', 'H_Y002': '甘德', 'H_Y003': '石申',
+      'H_Z001': '苏秦', 'H_Z002': '张仪', 'H_Z003': '鬼谷子',
+    };
+    for (final e in _heroImageMap.entries) {
+      final name = heroNames[e.key];
+      if (name != null) result['heroes/${e.value}'] = '英雄·$name';
+    }
+
+    // 卡牌：从数据反查 ID → 名字
+    for (final c in CardDataProvider.getAllCards()) {
+      byId[c.id] = c.lname;
+    }
+    for (final e in _minionImageMap.entries) {
+      final n = byId[e.key];
+      if (n != null) result['minions/${e.value}'] = '随从·$n';
+    }
+    for (final e in _spellImageMap.entries) {
+      final n = byId[e.key];
+      if (n != null) result['spells/${e.value}'] = '法术·$n';
+    }
+    for (final e in _weaponImageMap.entries) {
+      final n = byId[e.key];
+      if (n != null) result['weapons/${e.value}'] = '武器·$n';
+    }
+
+    _fileToNameCache = result;
+    return result;
   }
 }

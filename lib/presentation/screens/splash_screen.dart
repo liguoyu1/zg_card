@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,20 +60,37 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // 启动全局预加载：全部英雄 + 卡牌素材进入队列（后台 3 并发，进度可观察）
     AssetPreloadQueue.I.queueAll(CardImageService.getAllImagePaths());
 
-    // 2秒后自动跳转
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const HomeScreen(),
-            transitionDuration: const Duration(milliseconds: 500),
-            transitionsBuilder: (_, animation, __, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        );
-      }
-    });
+    // 进入首页策略：素材加载达标(90%) 或 超时(8秒) 才进入，避免固定秒数闪屏。
+    _enterTimer = Timer(const Duration(seconds: 8), _goHome);
+    AssetPreloadQueue.I.progress.addListener(_onProgress);
+    _checkReadyToEnter();
+  }
+
+  Timer? _enterTimer;
+  bool _entered = false;
+
+  void _onProgress() => _checkReadyToEnter();
+
+  /// 素材进度达标即进入；由 [progress] 监听驱动。
+  void _checkReadyToEnter() {
+    if (_entered || !mounted) return;
+    if (AssetPreloadQueue.I.progress.value >= 0.9) _goHome();
+  }
+
+  void _goHome() {
+    if (_entered || !mounted) return;
+    _entered = true;
+    _enterTimer?.cancel();
+    AssetPreloadQueue.I.progress.removeListener(_onProgress);
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const HomeScreen(),
+        transitionDuration: const Duration(milliseconds: 500),
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
   }
 
   Future<void> _initAudio() async {
@@ -85,6 +104,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   void dispose() {
+    _enterTimer?.cancel();
+    AssetPreloadQueue.I.progress.removeListener(_onProgress);
     _controller.dispose();
     super.dispose();
   }
@@ -220,7 +241,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   /// 加载指示器
   Widget _buildLoadingIndicator() {
     return SizedBox(
-      width: 200,
+      width: 220,
       child: Column(
         children: [
           // 自定义加载条
@@ -239,16 +260,55 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             ),
           ),
           const SizedBox(height: 12),
+          // 百分比 + 已加载 n/总
           ValueListenableBuilder<double>(
             valueListenable: AssetPreloadQueue.I.progress,
             builder: (_, v, __) {
               final pct = (v * 100).clamp(0, 100).toStringAsFixed(0);
+              final loaded = AssetPreloadQueue.I.targetLoaded;
+              final total = AssetPreloadQueue.I.targetCount;
+              final percentText = LocaleService.I.t('splash.loading', args: {'pct': pct});
+              final countText = total > 0
+                  ? LocaleService.I.t('splash.loading_count', args: {'done': '$loaded', 'total': '$total'})
+                  : '';
+              return Column(
+                children: [
+                  Text(
+                    percentText,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.parchment.withAlpha(153),
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    countText,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppTheme.parchment.withAlpha(102),
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 4),
+          // 当前正在加载的资源名
+          ValueListenableBuilder<String>(
+            valueListenable: AssetPreloadQueue.I.currentPath,
+            builder: (_, path, __) {
+              final name = CardImageService.displayNameFor(path);
+              if (name.isEmpty) return const SizedBox(height: 14);
               return Text(
-                LocaleService.I.t('splash.loading', args: {'pct': pct}),
+                LocaleService.I.t('splash.loading_item', args: {'name': name}),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 12,
-                  color: AppTheme.parchment.withAlpha(153),
-                  letterSpacing: 2,
+                  fontSize: 11,
+                  color: AppTheme.parchment.withAlpha(102),
+                  letterSpacing: 1,
                 ),
               );
             },

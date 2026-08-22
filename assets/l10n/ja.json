@@ -1632,5 +1632,7 @@
   "game.spell_condition_failed": "条件を満たしていないため呪文を唱えられません",
   "home.download_android_mirror": "itch.io ダウンロード",
   "home.download_legacy": "旧バージョン",
-  "home.download_versions": "{n}個のバージョン"
+  "home.download_versions": "{n}個のバージョン",
+  "splash.loading_item": "読み込み中：{name}",
+  "splash.loading_count": "読み込み済み {done}/{total}"
 }

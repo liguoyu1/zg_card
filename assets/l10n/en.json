@@ -1704,5 +1704,7 @@
   "hero_stats.matches": "Matches",
   "hero_stats.winrate": "Win rate",
   "hero_stats.damage": "Damage",
-  "hero_stats.empty": "No match data yet, go battle!"
+  "hero_stats.empty": "No match data yet, go battle!",
+  "splash.loading_item": "Loading: {name}",
+  "splash.loading_count": "Loaded {done}/{total}"
 }

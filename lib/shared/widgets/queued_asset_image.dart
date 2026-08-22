@@ -17,6 +17,11 @@ class AssetPreloadQueue {
   /// 全局预加载进度（0~1），供启动页进度条展示
   final ValueNotifier<double> progress = ValueNotifier(0);
 
+  /// 当前正在加载的资源路径（取最近一次入队的并发任务），供加载页展示"正在加载什么"
+  final ValueNotifier<String> currentPath = ValueNotifier('');
+  /// 当前在途加载任务数（0~[_maxConcurrent]）
+  final ValueNotifier<int> inflight = ValueNotifier(0);
+
   int get targetCount => _target.length;
   int get targetLoaded => _target.where(_done.contains).length;
 
@@ -61,6 +66,8 @@ class AssetPreloadQueue {
   }
 
   void _load(String path) {
+    currentPath.value = path;
+    inflight.value = _inFlight;
     final provider = AssetImage(path);
     final stream = provider.resolve(ImageConfiguration.empty);
     bool finished = false;
@@ -76,6 +83,8 @@ class AssetPreloadQueue {
       }
       _notify();
       _inFlight--;
+      inflight.value = _inFlight;
+      if (_inFlight == 0) currentPath.value = '';
       _pump();
     }
     listener = ImageStreamListener(
@@ -92,6 +101,8 @@ class AssetPreloadQueue {
     _target.clear();
     _inFlight = 0;
     progress.value = 0;
+    currentPath.value = '';
+    inflight.value = 0;
   }
 }
 
