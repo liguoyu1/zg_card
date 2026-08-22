@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../core/api_config.dart';
 import 'device_id_store.dart';
+import 'device_info.dart';
 
 /// 设备信息上报（匿名设备ID, 屏幕, 语言, 时区）
 /// 服务端从请求头读 User-Agent 解析设备类型/型号。
@@ -39,6 +40,7 @@ class DeviceReportService {
         'playerId': playerId ?? '',
         'playerName': playerName ?? '',
         'isGuest': isGuest ?? (playerId == null || playerId.isEmpty),
+        'deviceModel': await readDeviceModel() ?? '',
         'screen': '${w}x$h',
         'lang': dipl.locale.toLanguageTag(),
         'tz': DateTime.now().timeZoneName,
