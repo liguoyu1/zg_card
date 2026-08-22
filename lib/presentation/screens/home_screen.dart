@@ -37,6 +37,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   PlayerData? _cachedData;
   bool _loading = true;
 
+  /// 新手引导是否展示（首启显示一次，完成后持久化）
+  bool _showTutorial = false;
+
   /// App Store 链接（审核通过后填 https://apps.apple.com/app/idXXXXXX）
   static const String _iosStoreUrl = '';
 
@@ -85,6 +88,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _init() async {
+    // 新手引导：首次启动展示（完成后置位）
+    try {
+      final done =
+          await SharedPreferences.getInstance()
+              .then((p) => p.getBool('tutorial_done') ?? false);
+      if (!done && mounted) {
+        setState(() => _showTutorial = true);
+      }
+    } catch (_) {}
     // Xsolla 支付返回：优先消费 URL 状态并立即跳回商店（不依赖登录/云同步，避免卡在主页）
     final xsollaStatus =
         kIsWeb ? XsollaPaymentService.consumeReturnStatus() : null;
@@ -161,7 +173,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) return const SizedBox.shrink();
-    return Scaffold(
+    return Stack(
+      children: [
+        Scaffold(
       body: WThemeBackground(
         child: SafeArea(
           child: Column(
@@ -200,6 +214,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             label: LocaleService.I.t('home.btn_adventure'),
                             color: AppTheme.damageOrange,
                             onTap: () => context.push('/shop/adventure')),
+                        // 次级功能入口：任务 / 成就 / 排行榜 / 训练
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 2),
+                          child: Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              _buildChipEntry(
+                                  Icons.event_note_outlined,
+                                  LocaleService.I.t('home.btn_quests'),
+                                  AppTheme.manaBlue,
+                                  () => context.push('/progress/quest')),
+                              _buildChipEntry(
+                                  Icons.emoji_events_outlined,
+                                  LocaleService.I.t('home.btn_achievements'),
+                                  AppTheme.goldAccent,
+                                  () => context.push('/progress/achievement')),
+                              _buildChipEntry(
+                                  Icons.leaderboard_outlined,
+                                  LocaleService.I.t('home.btn_leaderboard'),
+                                  const Color(0xFF7C9ECF),
+                                  () => context.push('/progress/leaderboard')),
+                              _buildChipEntry(
+                                  Icons.school_outlined,
+                                  LocaleService.I.t('home.btn_training'),
+                                  const Color(0xFF9C88C4),
+                                  () => context.push('/battle/training')),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                         // 游戏选择菜单下方：广告横幅（真实 Adsterra 横幅，高度自适应素材）
                         const Padding(
                           padding: EdgeInsets.fromLTRB(24, 20, 24, 4),
@@ -225,6 +272,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       ),
+        ),
+        // 新手引导（首次启动展示一次）
+        if (_showTutorial)
+          TutorialOverlay(onComplete: () {
+            SharedPreferences.getInstance().then(
+                (p) => p.setBool('tutorial_done', true));
+            if (mounted) setState(() => _showTutorial = false);
+          }),
+      ],
     );
   }
 
@@ -726,6 +782,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       required VoidCallback onTap}) {
     return WMenuPlaque(
         icon: icon, label: label, accentColor: color, onTap: onTap);
+  }
+
+  /// 次级功能入口：小而精致的胶囊按钮（任务/成就/排行榜/训练等）
+  Widget _buildChipEntry(
+      IconData icon, String label, Color color, VoidCallback onTap) {
+    return Material(
+      color: color.withAlpha(16),
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border.all(color: color.withAlpha(70), width: 1),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: 16),
+              const SizedBox(width: 6),
+              Text(label,
+                  style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600)),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildDownloadSection() {
