@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>战国卡牌 · 免费网页卡牌对战 | 立即开始游戏 & 下载客户端</title>
+  <meta name="description" content="战国卡牌（Warring States: Card Battles）— 免费网页卡牌对战游戏。7 大学派、196 张卡牌、21 位传奇英雄，浏览器即点即玩；同时提供 Android / iOS 客户端下载。立即开始或下载客户端。">
+  <meta name="keywords" content="战国卡牌,卡牌对战,网页卡牌游戏,免费卡牌游戏,战国游戏,诸子百家,卡牌手游,Android下载,ios下载,Warring States card game">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="战国卡牌">
+  <meta property="og:title" content="战国卡牌 · 免费网页卡牌对战游戏">
+  <meta property="og:description" content="集结诸子百家与战国武将，7 大学派、196 张卡牌、21 位传奇英雄。免费网页卡牌对战，浏览器即点即玩，也可下载客户端。">
+  <meta property="og:url" content="https://wscard.games/landing.html">
+  <meta property="og:image" content="https://wscard.games/icons/Icon-512.png">
+  <link rel="canonical" href="https://wscard.games/landing.html">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: #2C1810; color: #E8DCC0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.8;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
+    .brand { text-align: center; margin-bottom: 30px; }
+    .brand h1 { color: #D4AF37; font-size: 34px; margin: 0 0 6px; letter-spacing: 2px; }
+    .brand .sub { color: #8A7A60; font-size: 14px; letter-spacing: 1px; }
+    .hero {
+      background: linear-gradient(135deg, rgba(74,53,32,0.6), rgba(42,28,16,0.7));
+      border: 1px solid #4A3520; border-radius: 14px; padding: 32px 30px;
+      text-align: center; margin-bottom: 30px;
+    }
+    .hero h2 { color: #E6C75B; font-size: 24px; margin: 0 0 12px; letter-spacing: 1px; }
+    .hero p { color: #E8DCC0; font-size: 16.5px; margin: 0 0 20px; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+    .cta {
+      display: inline-block; padding: 14px 34px; border-radius: 9px;
+      font-size: 16.5px; font-weight: 700; text-decoration: none;
+    }
+    .cta.play { background: #D4AF37; color: #2C1810; }
+    .cta.play:hover { background: #E6C75B; }
+    .cta.dl { background: #3A5A40; color: #F0EAD2; border: 1px solid #5A7A60; }
+    .cta.dl:hover { background: #4A7A50; }
+    h2.sect { color: #D4AF37; font-size: 22px; border-left: 4px solid #D4AF37; padding-left: 12px; margin-top: 40px; }
+    p, li { color: #C9BBA0; font-size: 15.5px; }
+    ul { padding-left: 22px; }
+    li { margin: 8px 0; }
+    b, .hl { color: #E6C75B; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .card { background: rgba(74,53,32,0.3); border: 1px solid #4A3520; border-radius: 10px; padding: 16px 18px; }
+    .card h3 { color: #D4AF37; font-size: 17px; margin: 0 0 8px; }
+    .card p { margin: 0; color: #C9BBA0; font-size: 14px; }
+    .dlcard {
+      background: rgba(74,53,32,0.3); border: 1px solid #4A3520; border-radius: 10px;
+      padding: 18px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .dlcard .ic { font-size: 30px; }
+    .dlcard .name { color: #E6C75B; font-weight: 700; font-size: 17px; }
+    .dlcard .desc { color: #C9BBA0; font-size: 13.5px; }
+    .btn {
+      display: inline-block; padding: 10px 22px; border-radius: 8px; text-decoration: none;
+      font-size: 14.5px; font-weight: 700;
+    }
+    .btn.android { background: #3A5A40; color: #F0EAD2; }
+    .btn.android:hover { background: #4A7A50; }
+    .btn.ios { background: #35424A; color: #E8EFF4; }
+    .btn.ios:hover { background: #46566B; }
+    .btn.web { background: #D4AF37; color: #2C1810; }
+    .btn.web:hover { background: #E6C75B; }
+    .btn.itch { background: #7A3B4A; color: #F5D9C8; }
+    .btn.itch:hover { background: #944A5A; }
+    .foot { text-align: center; color: #8A7A60; font-size: 13px; margin-top: 46px; border-top: 1px solid #4A3520; padding-top: 20px; }
+    .foot a { color: #D4AF37; }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <h1>战国卡牌 · Warring States</h1>
+    <div class="sub">FREE TO PLAY · WEB CARD BATTLER · 战国题材卡牌对战</div>
+  </div>
+
+  <div class="hero">
+    <h2>战国七雄，百家争鸣。这一次，历史在你手中。</h2>
+    <p>7 大学派 = 7 种玩法 · 196 张卡牌 · 21 位传奇英雄 · 3 分钟一局</p>
+    <div class="btn-row">
+      <a class="cta play" href="https://wscard.games/">🎮 立即开始游戏</a>
+      <a class="cta dl" href="https://wscard.games/download.html">📱 下载客户端</a>
+    </div>
+  </div>
+
+  <h2 class="sect">什么是《战国卡牌》？</h2>
+  <p><b>《战国卡牌》（Warring States: Card Battles）</b>是一款免费、即时可玩的<b>卡牌对战游戏</b>。它将中国古代战国时期的<b>诸子百家</b>思想化作可玩的卡牌流派：兵家、法家、儒家、道家、墨家、阴阳家、纵横家——每一家都是一种截然不同的打法。你既可以<b>浏览器即点即玩</b>，也可以<b>下载客户端</b>，随时随地开战。</p>
+
+  <h2 class="sect">游戏特色</h2>
+  <div class="grid">
+    <div class="card"><h3>⚔️ 7 大学派 = 7 种打法</h3><p>兵家冲锋、法家控场、道家续航、墨家造攻城器械……选择你的学派，定义你的战术。</p></div>
+    <div class="card"><h3>🃏 196 张独特卡牌</h3><p>74 张普通、69 张稀有、36 张史诗、17 张传说，构筑属于你的卡组。</p></div>
+    <div class="card"><h3>👑 21 位传奇英雄</h3><p>孙子、孔子、老子、墨子、鬼谷子……让战国名士为你而战。</p></div>
+    <div class="card"><h3>🌐 在线匹配对战</h3><p>与来自各地的真实玩家实时对战，凭实力登上排行榜。</p></div>
+    <div class="card"><h3>🧠 真正的策略博弈</h3><p>连招、控场、以弱胜强。3 分钟一局，快节奏里见深度。</p></div>
+    <div class="card"><h3>🆓 免费无门槛</h3><p>无氪金陷阱，无赌博玩法，纯粹的策略乐趣，全平台免费畅玩。</p></div>
+  </div>
+
+  <h2 class="sect">选择你的平台</h2>
+  <div class="grid">
+    <div class="dlcard">
+      <div class="ic">🌐</div>
+      <div class="name">网页版（推荐）</div>
+      <div class="desc">无需下载，浏览器即点即玩，桌面端 / 移动端均可</div>
+      <a class="btn web" href="https://wscard.games/">立即开始</a>
+    </div>
+    <div class="dlcard">
+      <div class="ic">🤖</div>
+      <div class="name">Android 客户端</div>
+      <div class="desc">安装到手机，离线流畅体验，随时开战</div>
+      <a class="btn android" href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk">下载 APK</a>
+    </div>
+    <div class="dlcard">
+      <div class="ic">🍎</div>
+      <div class="name">iOS 客户端</div>
+      <div class="desc">App Store 审核中，即将上线</div>
+      <a class="btn ios" href="https://wscard.games/download.html">即将上线</a>
+    </div>
+    <div class="dlcard">
+      <div class="ic">🌍</div>
+      <div class="name">海外平台</div>
+      <div class="desc">itch.io 亦可购买/支持与下载</div>
+      <a class="btn itch" href="https://guoyuli.itch.io/warring-states-card/purchase">itch.io 下载</a>
+    </div>
+  </div>
+
+  <h2 class="sect">支持平台与语言</h2>
+  <ul>
+    <li><b>平台</b>：网页浏览器（桌面端与移动端）、Android 客户端、iOS 客户端</li>
+    <li><b>语言</b>：简体中文、繁體中文、English、日本語、Français、Deutsch、Español、Русский、ไทย、Melayu、Filipino</li>
+    <li><b>模式</b>：在线匹配对战、单人冒险、每日任务、英雄养成、卡牌收集</li>
+  </ul>
+
+  <div class="foot">
+    <a href="https://wscard.games/">返回游戏首页</a> ·
+    <a href="https://wscard.games/download.html">下载客户端</a> ·
+    <a href="https://wscard.games/about.html">关于游戏</a> ·
+    <a href="https://wscard.games/privacy.html">隐私政策</a><br>
+    © 2026 战国卡牌 Warring States Card Battles · zgfylgy@163.com
+  </div>
+
+</div>
+</body>
+</html>
