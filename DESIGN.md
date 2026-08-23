@@ -88,3 +88,11 @@ single named signature move present.
 - 2026-08-23 v3: Rebrand from "dark+gold+portrait-dump" to product-led, screenshot-first.
   Real game screenshots added at `web/screens/*.webp`. Type switched Cinzel → Archivo + Noto Sans.
   Removed raw portrait galleries and emoji icons. This document created.
+
+- 2026-08-23 v4 (deployed 24fddd7): Shipped the product-first design across all three pages.
+  landing.html: full-bleed battle-screenshot hero + "See it in motion" 3-shot strip + 8-school
+  grid + 4-stat band + editorial "Why" + platform cards + screenshot final CTA.
+  promo.html: battle-hero + stats band + 8-school chips + 4-point "Why" + platform row.
+  download.html: browser-vs-Android cards + 3-step quick start + 3-shot gallery.
+  All en/zh/ja i18n, default English, real screenshots served at /screens/*.webp.
+  Verified live: all screenshots load (0 broken), no horizontal overflow, 3-lang switching works.
