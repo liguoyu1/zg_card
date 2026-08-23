@@ -14,78 +14,218 @@
   <meta property="og:url" content="https://wscard.games/landing.html">
   <meta property="og:image" content="https://wscard.games/icons/Icon-512.png">
   <link rel="canonical" href="https://wscard.games/landing.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+JP:wght@500;700;900&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; background: #2C1810; color: #E8DCC0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      line-height: 1.8;
+    /* ===== Design tokens ===== */
+    :root {
+      --bg: #140c06;
+      --bg-2: #1e130b;
+      --panel: rgba(58, 40, 22, 0.35);
+      --panel-border: #4a3520;
+      --ink: #efe6d0;
+      --ink-muted: #b9a884;
+      --ink-dim: #8a7a60;
+      --gold: #d4af37;
+      --gold-hi: #f0d272;
+      --gold-lo: #9c7b22;
+      --jade: #3a5a40;
+      --radius: 14px;
+      --display: 'Cinzel', 'Noto Serif SC', serif;
+      --body: 'Noto Sans', 'Noto Serif SC', 'Noto Sans JP', -apple-system, sans-serif;
+      --shadow: 0 18px 50px rgba(0,0,0,0.5);
     }
-    .wrap { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--ink);
+      font-family: var(--body); line-height: 1.7; overflow-x: hidden;
+    }
+    /* 背景纹理 */
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% -10%, rgba(212,175,55,0.12), transparent 55%),
+        radial-gradient(ellipse at 85% 20%, rgba(140,90,30,0.10), transparent 45%),
+        linear-gradient(180deg, #140c06 0%, #1a100a 45%, #140c06 100%);
+    }
+    body::after {
+      content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.5;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px 90px; }
 
     /* 语言切换器 */
     .langbar {
-      position: fixed; top: 14px; right: 14px; z-index: 100;
-      display: flex; gap: 6px; background: rgba(20,12,6,0.72);
-      border: 1px solid #4A3520; border-radius: 20px; padding: 5px;
-      backdrop-filter: blur(4px);
+      position: fixed; top: 16px; right: 16px; z-index: 1000;
+      display: flex; gap: 4px; background: rgba(12,7,3,0.82);
+      border: 1px solid var(--panel-border); border-radius: 24px; padding: 5px;
+      backdrop-filter: blur(6px);
     }
     .langbar button {
-      background: transparent; color: #C9BBA0; border: none; border-radius: 16px;
-      padding: 5px 12px; font-size: 13px; cursor: pointer; transition: all 0.15s;
+      background: transparent; color: var(--ink-muted); border: none; border-radius: 18px;
+      padding: 5px 13px; font-size: 13px; cursor: pointer; transition: all 0.15s;
     }
-    .langbar button.active { background: #D4AF37; color: #1a0f0a; font-weight: 700; }
+    .langbar button.active { background: var(--gold); color: #140c06; font-weight: 700; }
 
-    .brand { text-align: center; margin-bottom: 30px; padding-top: 20px; }
-    .brand h1 { color: #D4AF37; font-size: 34px; margin: 0 0 6px; letter-spacing: 2px; }
-    .brand .sub { color: #8A7A60; font-size: 14px; letter-spacing: 1px; }
+    /* ===== Hero ===== */
     .hero {
-      background: linear-gradient(135deg, rgba(74,53,32,0.6), rgba(42,28,16,0.7));
-      border: 1px solid #4A3520; border-radius: 14px; padding: 32px 30px;
-      text-align: center; margin-bottom: 30px;
+      position: relative; text-align: center; padding: 96px 20px 70px; overflow: hidden;
     }
-    .hero h2 { color: #E6C75B; font-size: 24px; margin: 0 0 12px; letter-spacing: 1px; }
-    .hero p { color: #E8DCC0; font-size: 16.5px; margin: 0 0 20px; }
-    .btn-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+    .hero-title {
+      font-family: var(--display); font-weight: 900;
+      font-size: clamp(34px, 6vw, 62px); letter-spacing: 4px;
+      color: var(--gold-hi); text-shadow: 0 4px 30px rgba(212,175,55,0.35);
+      line-height: 1.15;
+    }
+    .hero-kicker {
+      display: inline-block; letter-spacing: 6px; font-size: 13px; color: var(--ink-dim);
+      text-transform: uppercase; margin-bottom: 18px; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;
+    }
+    .hero-tagline {
+      font-family: var(--display); font-size: clamp(18px, 2.6vw, 26px);
+      color: var(--ink); margin: 18px 0 12px; letter-spacing: 2px;
+    }
+    .hero-sub { color: var(--ink-muted); font-size: 17px; max-width: 640px; margin: 0 auto 34px; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
     .cta {
-      display: inline-block; padding: 14px 34px; border-radius: 9px;
-      font-size: 16.5px; font-weight: 700; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 10px; padding: 16px 38px; border-radius: 10px;
+      font-size: 17px; font-weight: 700; text-decoration: none; letter-spacing: 0.5px;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
     }
-    .cta.play { background: #D4AF37; color: #2C1810; }
-    .cta.play:hover { background: #E6C75B; }
-    .cta.dl { background: #3A5A40; color: #F0EAD2; border: 1px solid #5A7A60; }
-    .cta.dl:hover { background: #4A7A50; }
-    h2.sect { color: #D4AF37; font-size: 22px; border-left: 4px solid #D4AF37; padding-left: 12px; margin-top: 40px; }
-    p, li { color: #C9BBA0; font-size: 15.5px; }
-    ul { padding-left: 22px; }
-    li { margin: 8px 0; }
-    b, .hl { color: #E6C75B; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .card { background: rgba(74,53,32,0.3); border: 1px solid #4A3520; border-radius: 10px; padding: 16px 18px; }
-    .card h3 { color: #D4AF37; font-size: 17px; margin: 0 0 8px; }
-    .card p { margin: 0; color: #C9BBA0; font-size: 14px; }
-    .dlcard {
-      background: rgba(74,53,32,0.3); border: 1px solid #4A3520; border-radius: 10px;
-      padding: 18px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    .cta:hover { transform: translateY(-3px); }
+    .cta.play { background: linear-gradient(135deg, var(--gold-hi), var(--gold)); color: #140c06; box-shadow: 0 10px 30px rgba(212,175,55,0.35); }
+    .cta.play:hover { box-shadow: 0 16px 40px rgba(212,175,55,0.5); }
+    .cta.dl { background: linear-gradient(135deg, #4a7a50, var(--jade)); color: #eef4e8; border: 1px solid #5a8a60; }
+    .cta.dl:hover { box-shadow: 0 12px 34px rgba(60,110,70,0.4); }
+
+    /* 英雄拱门墙 */
+    .hero-arch {
+      display: flex; justify-content: center; gap: clamp(6px, 2vw, 22px);
+      align-items: flex-end; margin: 64px auto 0; max-width: 920px; perspective: 900px;
     }
-    .dlcard .ic { font-size: 30px; }
-    .dlcard .name { color: #E6C75B; font-weight: 700; font-size: 17px; }
-    .dlcard .desc { color: #C9BBA0; font-size: 13.5px; }
+    .arch-fig { width: clamp(70px, 12vw, 118px); position: relative; transition: transform 0.4s; }
+    .arch-fig img {
+      width: 100%; height: auto; border-radius: 10px; object-fit: cover; object-position: top;
+      box-shadow: 0 0 0 2px var(--panel-border), 0 20px 40px rgba(0,0,0,0.55);
+      filter: saturate(1.05) contrast(1.02);
+      background: linear-gradient(180deg, rgba(212,175,55,0.12), rgba(20,12,6,0.6));
+    }
+    .arch-fig:hover { transform: translateY(-10px) scale(1.05); z-index: 3; }
+    .arch-fig .name {
+      position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
+      font-family: var(--display); font-size: 11px; letter-spacing: 1px; color: var(--ink-dim);
+      white-space: nowrap;
+    }
+    .arch-fig .name.zh { font-family: 'Noto Serif SC', serif; font-size: 12px; }
+    .arch-fig .name.ja { font-family: 'Noto Sans JP', sans-serif; font-size: 11px; }
+
+    /* 数字亮点 */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 80px 0 20px;
+    }
+    .stat {
+      background: var(--panel); border: 1px solid var(--panel-border); border-radius: var(--radius);
+      padding: 26px 12px; text-align: center; backdrop-filter: blur(3px);
+      border-top: 2px solid var(--gold-lo);
+    }
+    .stat .num { font-family: var(--display); color: var(--gold-hi); font-size: 40px; font-weight: 700; line-height: 1; }
+    .stat .lbl { color: var(--ink-muted); font-size: 13.5px; letter-spacing: 1px; margin-top: 8px; text-transform: uppercase; }
+
+    /* ===== 通用章节 ===== */
+    .sect { margin-top: 90px; text-align: center; }
+    .sect-eyebrow { color: var(--gold); letter-spacing: 5px; font-size: 13px; text-transform: uppercase; }
+    .sect-title {
+      font-family: var(--display); font-size: clamp(26px, 4vw, 38px); font-weight: 700;
+      letter-spacing: 2px; color: var(--ink); margin: 12px 0 10px;
+    }
+    .sect-line { width: 90px; height: 3px; margin: 18px auto 42px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+
+    /* ===== 学派英雄卡 ===== */
+    .schools { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .school {
+      position: relative; border-radius: var(--radius); overflow: hidden;
+      background: var(--panel); border: 1px solid var(--panel-border);
+      padding: 0; text-align: center; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    }
+    .school:hover { transform: translateY(-6px); border-color: var(--gold-lo); box-shadow: var(--shadow); }
+    .school .fig { position: relative; height: 260px; overflow: hidden; }
+    .school .fig img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.4s; }
+    .school:hover .fig img { transform: scale(1.06); }
+    .school .fig::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 45%, rgba(20,12,6,0.9) 100%);
+    }
+    .school .ic { position: absolute; top: 10px; left: 10px; font-size: 20px; z-index: 2; filter: drop-shadow(0 2px 4px #000); }
+    .school .nm { font-family: var(--display); color: var(--gold-hi); font-size: 20px; font-weight: 700; margin-top: 14px; letter-spacing: 1px; }
+    .school .de { color: var(--ink-muted); font-size: 13px; margin: 4px auto 16px; letter-spacing: 0.5px; }
+    .school .hero-lbl { color: var(--ink-dim); font-size: 11px; padding-bottom: 14px; }
+
+    /* ===== 特性卡 ===== */
+    .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .feat {
+      background: var(--panel); border: 1px solid var(--panel-border); border-radius: var(--radius);
+      padding: 24px 22px; text-align: left; transition: transform 0.2s, border-color 0.2s;
+    }
+    .feat:hover { transform: translateY(-4px); border-color: var(--gold-lo); }
+    .feat .ic { font-size: 26px; }
+    .feat h3 { font-family: var(--display); color: var(--gold); font-size: 18px; margin: 12px 0 8px; letter-spacing: 0.5px; }
+    .feat p { color: var(--ink-muted); font-size: 14px; line-height: 1.7; }
+
+    /* ===== 平台卡 ===== */
+    .plat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .plat {
+      background: var(--panel); border: 1px solid var(--panel-border); border-radius: var(--radius);
+      padding: 26px 18px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .plat:hover { transform: translateY(-4px); border-color: var(--gold-lo); }
+    .plat .ic { font-size: 34px; }
+    .plat .name { font-family: var(--display); color: var(--gold-hi); font-weight: 700; font-size: 16px; }
+    .plat .desc { color: var(--ink-muted); font-size: 13px; }
     .btn {
-      display: inline-block; padding: 10px 22px; border-radius: 8px; text-decoration: none;
-      font-size: 14.5px; font-weight: 700;
+      display: inline-block; padding: 10px 24px; border-radius: 8px; text-decoration: none;
+      font-size: 14px; font-weight: 700; margin-top: 4px; transition: transform 0.15s;
     }
-    .btn.android { background: #3A5A40; color: #F0EAD2; }
-    .btn.android:hover { background: #4A7A50; }
-    .btn.ios { background: #35424A; color: #E8EFF4; }
-    .btn.ios:hover { background: #46566B; }
-    .btn.web { background: #D4AF37; color: #2C1810; }
-    .btn.web:hover { background: #E6C75B; }
-    .btn.itch { background: #7A3B4A; color: #F5D9C8; }
-    .btn.itch:hover { background: #944A5A; }
-    .foot { text-align: center; color: #8A7A60; font-size: 13px; margin-top: 46px; border-top: 1px solid #4A3520; padding-top: 20px; }
-    .foot a { color: #D4AF37; }
-    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+    .btn:hover { transform: translateY(-2px); }
+    .btn.android { background: #3a5a40; color: #eef4e8; }
+    .btn.ios { background: #35424a; color: #e8eff4; }
+    .btn.web { background: linear-gradient(135deg, var(--gold-hi), var(--gold)); color: #140c06; }
+    .btn.itch { background: #7a3b4a; color: #f5d9c8; }
+
+    /* ===== 列表 ===== */
+    .list { max-width: 720px; margin: 0 auto; text-align: left; }
+    .list li { color: var(--ink-muted); font-size: 15.5px; margin: 10px 0; list-style: none; padding-left: 26px; position: relative; }
+    .list li::before { content: "◆"; color: var(--gold); position: absolute; left: 0; font-size: 11px; top: 5px; }
+
+    /* ===== 收尾 CTA ===== */
+    .final {
+      margin-top: 90px; text-align: center; padding: 54px 30px; border-radius: 18px;
+      background: linear-gradient(160deg, rgba(74,53,32,0.5), rgba(30,19,11,0.8));
+      border: 1px solid var(--panel-border); border-top: 2px solid var(--gold-lo);
+    }
+    .final h2 { font-family: var(--display); color: var(--gold-hi); font-size: clamp(22px, 3.4vw, 30px); letter-spacing: 1.5px; margin-bottom: 14px; }
+    .final p { color: var(--ink-muted); margin-bottom: 26px; }
+
+    /* ===== 页脚 ===== */
+    .foot { text-align: center; color: var(--ink-dim); font-size: 13px; margin-top: 56px; border-top: 1px solid var(--panel-border); padding-top: 24px; }
+    .foot a { color: var(--gold); text-decoration: none; margin: 0 6px; }
+    .foot a:hover { color: var(--gold-hi); }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 900px) {
+      .schools, .plat-grid { grid-template-columns: repeat(2, 1fr); }
+      .feat-grid { grid-template-columns: 1fr 1fr; }
+      .hero-arch { flex-wrap: wrap; }
+    }
+    @media (max-width: 560px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .feat-grid { grid-template-columns: 1fr; }
+      .schools, .plat-grid { grid-template-columns: 1fr; }
+      .langbar { top: 10px; right: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -97,67 +237,145 @@
 
 <div class="wrap">
 
-  <div class="brand">
-    <h1>Warring States Card</h1>
-    <div class="sub">FREE TO PLAY · WEB CARD BATTLER · 战国题材卡牌对战</div>
-  </div>
-
-  <div class="hero">
-    <h2 data-i18n="heroTitle">The Seven Warring States. A Hundred Schools. History in your hands.</h2>
-    <p data-i18n="heroSub">7 schools = 7 playstyles · 196 cards · 21 legendary heroes · a match in 3 minutes</p>
+  <header class="hero">
+    <div class="hero-kicker">Free to Play · Web Card Battler</div>
+    <h1 class="hero-title">WARRING STATES<br>CARD</h1>
+    <div class="hero-tagline" data-i18n="heroTitle">The Seven Warring States. A Hundred Schools of Thought. History in your hands.</div>
+    <p class="hero-sub" data-i18n="heroSub">7 schools = 7 playstyles · 196 cards · 21 legendary heroes · a match in 3 minutes</p>
     <div class="btn-row">
-      <a class="cta play" href="https://wscard.games/" data-i18n="ctaPlay">▶ Play Now</a>
+      <a class="cta play" href="https://wscard.games/" data-i18n="ctaPlay">▶ Play Now — It's Free</a>
       <a class="cta dl" href="https://wscard.games/download.html" data-i18n="ctaDownload">📱 Download the App</a>
     </div>
+
+    <!-- 英雄拱门墙：七大学派代表 -->
+    <div class="hero-arch">
+      <div class="arch-fig"><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/sunbin.webp" alt="Sun Bin"><div class="name zh" data-i18n-h="sunbin">孙膑</div></div>
+      <div class="arch-fig"><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/shangyang.webp" alt="Shang Yang"><div class="name zh" data-i18n-h="shangyang">商鞅</div></div>
+      <div class="arch-fig"><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/kongzi.webp" alt="Confucius"><div class="name zh" data-i18n-h="kongzi">孔子</div></div>
+      <div class="arch-fig"><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/laozi.webp" alt="Laozi"><div class="name zh" data-i18n-h="laozi">老子</div></div>
+      <div class="arch-fig"><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/mozi.webp" alt="Mozi"><div class="name zh" data-i18n-h="mozi">墨子</div></div>
+      <div class="arch-fig"><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/zouyan.webp" alt="Zou Yan"><div class="name zh" data-i18n-h="zouyan">邹衍</div></div>
+      <div class="arch-fig"><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/guiguzi.webp" alt="Guiguzi"><div class="name zh" data-i18n-h="guiguzi">鬼谷子</div></div>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><span class="num">7</span><div class="lbl" data-i18n="sSchools">Schools</div></div>
+    <div class="stat"><span class="num">196</span><div class="lbl" data-i18n="sCards">Cards</div></div>
+    <div class="stat"><span class="num">21</span><div class="lbl" data-i18n="sHeroes">Heroes</div></div>
+    <div class="stat"><span class="num">3</span><div class="lbl" data-i18n="sMin">Min a Match</div></div>
   </div>
 
-  <h2 class="sect" data-i18n="whatTitle">What is Warring States Card?</h2>
-  <p data-i18n="whatBody"><b>Warring States: Card Battles</b> is a free, instant-to-play <b>card battle game</b>. It turns the <b>Hundred Schools of Thought</b> of China's Warring States period into playable card archetypes: Military, Legalist, Confucian, Daoist, Mohist, Yin-Yang, and Strategist — each a distinct way to play. Play instantly in your <b>browser</b> or <b>download the client</b> and battle anywhere.</p>
+  <section class="sect">
+    <div class="sect-eyebrow">The Hundred Schools</div>
+    <h2 class="sect-title" data-i18n="schoolsTitle">Seven Schools, Seven Ways to Win</h2>
+    <div class="sect-line"></div>
 
-  <h2 class="sect" data-i18n="featuresTitle">Game Features</h2>
-  <div class="grid">
-    <div class="card"><h3 data-i18n="f1t">⚔️ 7 Schools = 7 Playstyles</h3><p data-i18n="f1d">Military aggression, Legalist control, Daoist sustain, Mohist siege engines… choose your school, define your tactics.</p></div>
-    <div class="card"><h3 data-i18n="f2t">🃏 196 Unique Cards</h3><p data-i18n="f2d">74 common, 69 rare, 36 epic, 17 legendary. Build the deck that is yours.</p></div>
-    <div class="card"><h3 data-i18n="f3t">👑 21 Legendary Heroes</h3><p data-i18n="f3d">Sun Tzu, Confucius, Laozi, Mozi, Guiguzi… let the masters of the Warring States fight for you.</p></div>
-    <div class="card"><h3 data-i18n="f4t">🌐 Online Matches</h3><p data-i18n="f4d">Battle real players in real time and climb the leaderboard on skill.</p></div>
-    <div class="card"><h3 data-i18n="f5t">🧠 Real Strategy</h3><p data-i18n="f5d">Combos, control, and turning the tables. 3-minute matches with real depth.</p></div>
-    <div class="card"><h3 data-i18n="f6t">🆓 Free, No Barriers</h3><p data-i18n="f6d">No gambling, no pay-to-win traps. Pure strategy, free on every platform.</p></div>
+    <div class="schools">
+      <div class="school">
+        
+<div class="fig"><span class="ic">🏹</span><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/sunbin.webp" alt="Military"></div>
+          <div class="nm" data-i18n="schMilNm">Military</div>
+          <div class="de" data-i18n="schMilDe">Aggression &amp; speed</div>
+          <div class="hero-lbl" data-i18n="schMilHero">Sun Bin · Wu Qi · Lian Po</div>
+        </div>
+      <div class="school">
+        
+<div class="fig"><span class="ic">⚖️</span><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/shangyang.webp" alt="Legalist"></div>
+          <div class="nm" data-i18n="schLegNm">Legalist</div>
+          <div class="de" data-i18n="schLegDe">Control &amp; law</div>
+          <div class="hero-lbl" data-i18n="schLegHero">Shang Yang · Han Fei · Shen Buhai</div>
+        </div>
+      <div class="school">
+        
+<div class="fig"><span class="ic">📖</span><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/kongzi.webp" alt="Confucian"></div>
+          <div class="nm" data-i18n="schConNm">Confucian</div>
+          <div class="de" data-i18n="schConDe">Growth &amp; rites</div>
+          <div class="hero-lbl" data-i18n="schConHero">Confucius · Mencius · Xunzi</div>
+        </div>
+      <div class="school">
+        
+<div class="fig"><span class="ic">☯️</span><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/laozi.webp" alt="Daoist"></div>
+          <div class="nm" data-i18n="schDaoNm">Daoist</div>
+          <div class="de" data-i18n="schDaoDe">Sustain &amp; nature</div>
+          <div class="hero-lbl" data-i18n="schDaoHero">Laozi · Zhuangzi · Liezi</div>
+        </div>
+      <div class="school">
+        
+<div class="fig"><span class="ic">🔧</span><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/mozi.webp" alt="Mohist"></div>
+          <div class="nm" data-i18n="schMohNm">Mohist</div>
+          <div class="de" data-i18n="schMohDe">Siege engines</div>
+          <div class="hero-lbl" data-i18n="schMohHero">Mozi · Gongshuban · Qin Guali</div>
+        </div>
+      <div class="school">
+        
+<div class="fig"><span class="ic">🌓</span><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/zouyan.webp" alt="Yin-Yang"></div>
+          <div class="nm" data-i18n="schYinNm">Yin-Yang</div>
+          <div class="de" data-i18n="schYinDe">Five elements</div>
+          <div class="hero-lbl" data-i18n="schYinHero">Zou Yan · Gan De · Shi Shen</div>
+        </div>
+      <div class="school">
+        
+<div class="fig"><span class="ic">🌐</span><img src="https://wscard.games/assets/assets/fantasy_rpg/heroes/guiguzi.webp" alt="Strategist"></div>
+          <div class="nm" data-i18n="schStrNm">Strategist</div>
+          <div class="de" data-i18n="schStrDe">Alliance &amp; schemes</div>
+          <div class="hero-lbl" data-i18n="schStrHero">Guiguzi · Su Qin · Zhang Yi</div>
+        </div>
+      <div class="school">
+        
+<div class="fig"><span class="ic">🃏</span><img src="https://wscard.games/assets/assets/fantasy_rpg/minions/weiwuzu.webp" alt="Neutral"></div>
+          <div class="nm" data-i18n="schNeuNm">Neutral</div>
+          <div class="de" data-i18n="schNeuDe">Universal utility</div>
+          <div class="hero-lbl" data-i18n="schNeuHero">196 cards to collect</div>
+        </div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-eyebrow">Why You'll Love It</div>
+    <h2 class="sect-title" data-i18n="featuresTitle">Game Features</h2>
+    <div class="sect-line"></div>
+    <div class="feat-grid">
+      <div class="feat"><div class="ic">⚔️</div><h3 data-i18n="f1t">7 Schools = 7 Playstyles</h3><p data-i18n="f1d">Military aggression, Legalist control, Daoist sustain, Mohist siege engines… choose your school, define your tactics.</p></div>
+      <div class="feat"><div class="ic">🃏</div><h3 data-i18n="f2t">196 Unique Cards</h3><p data-i18n="f2d">74 common, 69 rare, 36 epic, 17 legendary. Build the deck that is yours.</p></div>
+      <div class="feat"><div class="ic">👑</div><h3 data-i18n="f3t">21 Legendary Heroes</h3><p data-i18n="f3d">Sun Tzu, Confucius, Laozi, Mozi, Guiguzi… let the masters of the Warring States fight for you.</p></div>
+      <div class="feat"><div class="ic">🌐</div><h3 data-i18n="f4t">Online Matches</h3><p data-i18n="f4d">Battle real players in real time and climb the leaderboard on skill.</p></div>
+      <div class="feat"><div class="ic">🧠</div><h3 data-i18n="f5t">Real Strategy</h3><p data-i18n="f5d">Combos, control, and turning the tables. 3-minute matches with real depth.</p></div>
+      <div class="feat"><div class="ic">🆓</div><h3 data-i18n="f6t">Free, No Barriers</h3><p data-i18n="f6d">No gambling, no pay-to-win traps. Pure strategy, free on every platform.</p></div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-eyebrow">Everywhere You Play</div>
+    <h2 class="sect-title" data-i18n="platformTitle">Choose Your Platform</h2>
+    <div class="sect-line"></div>
+    <div class="plat-grid">
+      <div class="plat"><div class="ic">🌐</div><div class="name" data-i18n="pWebName">Web (Recommended)</div><div class="desc" data-i18n="pWebDesc">No download needed. Play in your browser on desktop or mobile.</div><a class="btn web" href="https://wscard.games/" data-i18n="pWebBtn">Play Now</a></div>
+      <div class="plat"><div class="ic">🤖</div><div class="name" data-i18n="pAndName">Android App</div><div class="desc" data-i18n="pAndDesc">Install on your phone for smooth, offline-ready battles.</div><a class="btn android" href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk" data-i18n="pAndBtn">Download APK</a></div>
+      <div class="plat"><div class="ic">🍎</div><div class="name" data-i18n="pIosName">iOS App</div><div class="desc" data-i18n="pIosDesc">Coming soon to the App Store.</div><a class="btn ios" href="https://wscard.games/download.html" data-i18n="pIosBtn">Coming Soon</a></div>
+      <div class="plat"><div class="ic">🌍</div><div class="name" data-i18n="pItchName">Overseas</div><div class="desc" data-i18n="pItchDesc">Buy, support, and download on itch.io.</div><a class="btn itch" href="https://guoyuli.itch.io/warring-states-card/purchase" data-i18n="pItchBtn">itch.io Download</a></div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-eyebrow">Platforms &amp; Languages</div>
+    <h2 class="sect-title" data-i18n="supportTitle">Everywhere You Play</h2>
+    <div class="sect-line"></div>
+    <ul class="list">
+      <li><b class="hl" data-i18n="supPlatLbl">Platforms:</b> <span data-i18n="supPlatVal">Web browser (desktop &amp; mobile), Android app, iOS app</span></li>
+      <li><b class="hl" data-i18n="supLangLbl">Languages:</b> <span data-i18n="supLangVal">简体中文, 繁體中文, English, 日本語, Français, Deutsch, Español, Русский, ไทย, Melayu, Filipino</span></li>
+      <li><b class="hl" data-i18n="supModeLbl">Modes:</b> <span data-i18n="supModeVal">Online matchmaking, single-player adventure, daily quests, hero progression, card collection</span></li>
+    </ul>
+  </section>
+
+  <div class="final">
+    <h2 data-i18n="finalTitle">The masters of a Hundred Schools await your call.</h2>
+    <p data-i18n="finalBody">Free to play. Play instantly or download the app. Join the battle today.</p>
+    <div class="btn-row">
+      <a class="cta play" href="https://wscard.games/" data-i18n="ctaPlay2">▶ Play Now</a>
+      <a class="cta dl" href="https://wscard.games/download.html" data-i18n="ctaDownload2">📱 Download the App</a>
+    </div>
   </div>
-
-  <h2 class="sect" data-i18n="platformTitle">Choose Your Platform</h2>
-  <div class="grid">
-    <div class="dlcard">
-      <div class="ic">🌐</div>
-      <div class="name" data-i18n="pWebName">Web (Recommended)</div>
-      <div class="desc" data-i18n="pWebDesc">No download needed. Play in your browser on desktop or mobile.</div>
-      <a class="btn web" href="https://wscard.games/" data-i18n="pWebBtn">Play Now</a>
-    </div>
-    <div class="dlcard">
-      <div class="ic">🤖</div>
-      <div class="name" data-i18n="pAndName">Android App</div>
-      <div class="desc" data-i18n="pAndDesc">Install on your phone for smooth, offline-ready battles.</div>
-      <a class="btn android" href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk" data-i18n="pAndBtn">Download APK</a>
-    </div>
-    <div class="dlcard">
-      <div class="ic">🍎</div>
-      <div class="name" data-i18n="pIosName">iOS App</div>
-      <div class="desc" data-i18n="pIosDesc">Coming soon to the App Store.</div>
-      <a class="btn ios" href="https://wscard.games/download.html" data-i18n="pIosBtn">Coming Soon</a>
-    </div>
-    <div class="dlcard">
-      <div class="ic">🌍</div>
-      <div class="name" data-i18n="pItchName">Overseas</div>
-      <div class="desc" data-i18n="pItchDesc">Buy, support, and download on itch.io.</div>
-      <a class="btn itch" href="https://guoyuli.itch.io/warring-states-card/purchase" data-i18n="pItchBtn">itch.io Download</a>
-    </div>
-  </div>
-
-  <h2 class="sect" data-i18n="supportTitle">Platforms & Languages</h2>
-  <ul>
-    <li><b data-i18n="supPlatLbl">Platforms:</b> <span data-i18n="supPlatVal">Web browser (desktop & mobile), Android app, iOS app</span></li>
-    <li><b data-i18n="supLangLbl">Languages:</b> <span data-i18n="supLangVal">简体中文, 繁體中文, English, 日本語, Français, Deutsch, Español, Русский, ไทย, Melayu, Filipino</span></li>
-    <li><b data-i18n="supModeLbl">Modes:</b> <span data-i18n="supModeVal">Online matchmaking, single-player adventure, daily quests, hero progression, card collection</span></li>
-  </ul>
 
   <div class="foot">
     <a href="https://wscard.games/" data-i18n="footHome">Back to Game Home</a> ·
@@ -173,19 +391,27 @@
 (function () {
   var I18N = {
     en: {
-      heroTitle: "The Seven Warring States. A Hundred Schools. History in your hands.",
+      heroTitle: "The Seven Warring States. A Hundred Schools of Thought. History in your hands.",
       heroSub: "7 schools = 7 playstyles · 196 cards · 21 legendary heroes · a match in 3 minutes",
-      ctaPlay: "▶ Play Now",
+      ctaPlay: "▶ Play Now — It's Free",
       ctaDownload: "📱 Download the App",
-      whatTitle: "What is Warring States Card?",
-      whatBody: "<b>Warring States: Card Battles</b> is a free, instant-to-play <b>card battle game</b>. It turns the <b>Hundred Schools of Thought</b> of China's Warring States period into playable card archetypes: Military, Legalist, Confucian, Daoist, Mohist, Yin-Yang, and Strategist — each a distinct way to play. Play instantly in your <b>browser</b> or <b>download the client</b> and battle anywhere.",
+      sSchools: "Schools", sCards: "Cards", sHeroes: "Heroes", sMin: "Min a Match",
+      schoolsTitle: "Seven Schools, Seven Ways to Win",
+      schMilNm: "Military", schMilDe: "Aggression & speed", schMilHero: "Sun Bin · Wu Qi · Lian Po",
+      schLegNm: "Legalist", schLegDe: "Control & law", schLegHero: "Shang Yang · Han Fei · Shen Buhai",
+      schConNm: "Confucian", schConDe: "Growth & rites", schConHero: "Confucius · Mencius · Xunzi",
+      schDaoNm: "Daoist", schDaoDe: "Sustain & nature", schDaoHero: "Laozi · Zhuangzi · Liezi",
+      schMohNm: "Mohist", schMohDe: "Siege engines", schMohHero: "Mozi · Gongshuban · Qin Guali",
+      schYinNm: "Yin-Yang", schYinDe: "Five elements", schYinHero: "Zou Yan · Gan De · Shi Shen",
+      schStrNm: "Strategist", schStrDe: "Alliance & schemes", schStrHero: "Guiguzi · Su Qin · Zhang Yi",
+      schNeuNm: "Neutral", schNeuDe: "Universal utility", schNeuHero: "196 cards to collect",
       featuresTitle: "Game Features",
-      f1t: "⚔️ 7 Schools = 7 Playstyles", f1d: "Military aggression, Legalist control, Daoist sustain, Mohist siege engines… choose your school, define your tactics.",
-      f2t: "🃏 196 Unique Cards", f2d: "74 common, 69 rare, 36 epic, 17 legendary. Build the deck that is yours.",
-      f3t: "👑 21 Legendary Heroes", f3d: "Sun Tzu, Confucius, Laozi, Mozi, Guiguzi… let the masters of the Warring States fight for you.",
-      f4t: "🌐 Online Matches", f4d: "Battle real players in real time and climb the leaderboard on skill.",
-      f5t: "🧠 Real Strategy", f5d: "Combos, control, and turning the tables. 3-minute matches with real depth.",
-      f6t: "🆓 Free, No Barriers", f6d: "No gambling, no pay-to-win traps. Pure strategy, free on every platform.",
+      f1t: "7 Schools = 7 Playstyles", f1d: "Military aggression, Legalist control, Daoist sustain, Mohist siege engines… choose your school, define your tactics.",
+      f2t: "196 Unique Cards", f2d: "74 common, 69 rare, 36 epic, 17 legendary. Build the deck that is yours.",
+      f3t: "21 Legendary Heroes", f3d: "Sun Tzu, Confucius, Laozi, Mozi, Guiguzi… let the masters of the Warring States fight for you.",
+      f4t: "Online Matches", f4d: "Battle real players in real time and climb the leaderboard on skill.",
+      f5t: "Real Strategy", f5d: "Combos, control, and turning the tables. 3-minute matches with real depth.",
+      f6t: "Free, No Barriers", f6d: "No gambling, no pay-to-win traps. Pure strategy, free on every platform.",
       platformTitle: "Choose Your Platform",
       pWebName: "Web (Recommended)", pWebDesc: "No download needed. Play in your browser on desktop or mobile.", pWebBtn: "Play Now",
       pAndName: "Android App", pAndDesc: "Install on your phone for smooth, offline-ready battles.", pAndBtn: "Download APK",
@@ -195,22 +421,36 @@
       supPlatLbl: "Platforms:", supPlatVal: "Web browser (desktop & mobile), Android app, iOS app",
       supLangLbl: "Languages:", supLangVal: "简体中文, 繁體中文, English, 日本語, Français, Deutsch, Español, Русский, ไทย, Melayu, Filipino",
       supModeLbl: "Modes:", supModeVal: "Online matchmaking, single-player adventure, daily quests, hero progression, card collection",
-      footHome: "Back to Game Home", footDownload: "Download", footAbout: "About", footPrivacy: "Privacy"
+      finalTitle: "The masters of a Hundred Schools await your call.",
+      finalBody: "Free to play. Play instantly or download the app. Join the battle today.",
+      ctaPlay2: "▶ Play Now",
+      ctaDownload2: "📱 Download the App",
+      footHome: "Back to Game Home", footDownload: "Download", footAbout: "About", footPrivacy: "Privacy",
+      sunbin: "Sun Bin", shangyang: "Shang Yang", kongzi: "Confucius", laozi: "Laozi",
+      mozi: "Mozi", zouyan: "Zou Yan", guiguzi: "Guiguzi"
     },
     zh: {
       heroTitle: "战国七雄，百家争鸣。这一次，历史在你手中。",
       heroSub: "7 大学派 = 7 种玩法 · 196 张卡牌 · 21 位传奇英雄 · 3 分钟一局",
-      ctaPlay: "🎮 立即开始游戏",
+      ctaPlay: "🎮 立即开始游戏（免费）",
       ctaDownload: "📱 下载客户端",
-      whatTitle: "什么是《战国卡牌》？",
-      whatBody: "<b>《战国卡牌》（Warring States: Card Battles）</b>是一款免费、即时可玩的<b>卡牌对战游戏</b>。它将中国古代战国时期的<b>诸子百家</b>思想化作可玩的卡牌流派：兵家、法家、儒家、道家、墨家、阴阳家、纵横家——每一家都是一种截然不同的打法。你既可以<b>浏览器即点即玩</b>，也可以<b>下载客户端</b>，随时随地开战。",
+      sSchools: "大学派", sCards: "张卡牌", sHeroes: "位英雄", sMin: "分钟一局",
+      schoolsTitle: "七大学派，七种取胜之道",
+      schMilNm: "兵家", schMilDe: "冲锋速攻", schMilHero: "孙膑 · 吴起 · 廉颇",
+      schLegNm: "法家", schLegDe: "严法控场", schLegHero: "商鞅 · 韩非 · 申不害",
+      schConNm: "儒家", schConDe: "教化成长", schConHero: "孔子 · 孟子 · 荀子",
+      schDaoNm: "道家", schDaoDe: "自然续航", schDaoHero: "老子 · 庄子 · 列子",
+      schMohNm: "墨家", schMohDe: "器械攻城", schMohHero: "墨子 · 公输班 · 禽滑厘",
+      schYinNm: "阴阳家", schYinDe: "五行法术", schYinHero: "邹衍 · 甘德 · 石申",
+      schStrNm: "纵横家", schStrDe: "连横合纵", schStrHero: "鬼谷子 · 苏秦 · 张仪",
+      schNeuNm: "中立", schNeuDe: "通用辅助", schNeuHero: "196 张卡牌等你收集",
       featuresTitle: "游戏特色",
-      f1t: "⚔️ 7 大学派 = 7 种打法", f1d: "兵家冲锋、法家控场、道家续航、墨家造攻城器械……选择你的学派，定义你的战术。",
-      f2t: "🃏 196 张独特卡牌", f2d: "74 张普通、69 张稀有、36 张史诗、17 张传说，构筑属于你的卡组。",
-      f3t: "👑 21 位传奇英雄", f3d: "孙子、孔子、老子、墨子、鬼谷子……让战国名士为你而战。",
-      f4t: "🌐 在线匹配对战", f4d: "与来自各地的真实玩家实时对战，凭实力登上排行榜。",
-      f5t: "🧠 真正的策略博弈", f5d: "连招、控场、以弱胜强。3 分钟一局，快节奏里见深度。",
-      f6t: "🆓 免费无门槛", f6d: "无氪金陷阱，无赌博玩法，纯粹的策略乐趣，全平台免费畅玩。",
+      f1t: "7 大学派 = 7 种打法", f1d: "兵家冲锋、法家控场、道家续航、墨家造攻城器械……选择你的学派，定义你的战术。",
+      f2t: "196 张独特卡牌", f2d: "74 张普通、69 张稀有、36 张史诗、17 张传说，构筑属于你的卡组。",
+      f3t: "21 位传奇英雄", f3d: "孙子、孔子、老子、墨子、鬼谷子……让战国名士为你而战。",
+      f4t: "在线匹配对战", f4d: "与来自各地的真实玩家实时对战，凭实力登上排行榜。",
+      f5t: "真正的策略博弈", f5d: "连招、控场、以弱胜强。3 分钟一局，快节奏里见深度。",
+      f6t: "免费无门槛", f6d: "无氪金陷阱，无赌博玩法，纯粹的策略乐趣，全平台免费畅玩。",
       platformTitle: "选择你的平台",
       pWebName: "网页版（推荐）", pWebDesc: "无需下载，浏览器即点即玩，桌面端 / 移动端均可", pWebBtn: "立即开始",
       pAndName: "Android 客户端", pAndDesc: "安装到手机，离线流畅体验，随时开战", pAndBtn: "下载 APK",
@@ -220,22 +460,36 @@
       supPlatLbl: "平台：", supPlatVal: "网页浏览器（桌面端与移动端）、Android 客户端、iOS 客户端",
       supLangLbl: "语言：", supLangVal: "简体中文、繁體中文、English、日本語、Français、Deutsch、Español、Русский、ไทย、Melayu、Filipino",
       supModeLbl: "模式：", supModeVal: "在线匹配对战、单人冒险、每日任务、英雄养成、卡牌收集",
-      footHome: "返回游戏首页", footDownload: "下载客户端", footAbout: "关于游戏", footPrivacy: "隐私政策"
+      finalTitle: "百家名士，静候你的召唤。",
+      finalBody: "免费畅玩。即点即玩或下载客户端，今日加入对战。",
+      ctaPlay2: "🎮 立即开始游戏",
+      ctaDownload2: "📱 下载客户端",
+      footHome: "返回游戏首页", footDownload: "下载客户端", footAbout: "关于游戏", footPrivacy: "隐私政策",
+      sunbin: "孙膑", shangyang: "商鞅", kongzi: "孔子", laozi: "老子",
+      mozi: "墨子", zouyan: "邹衍", guiguzi: "鬼谷子"
     },
     ja: {
       heroTitle: "戦国七雄、百家争鳴。いま、歴史はあなたの手の中に。",
       heroSub: "7 学派 = 7 の戦術 · 196 枚のカード · 21 人の伝説の英雄 · 1 戦 3 分",
-      ctaPlay: "▶ 今すぐプレイ",
+      ctaPlay: "▶ 今すぐプレイ（無料）",
       ctaDownload: "📱 アプリをダウンロード",
-      whatTitle: "『戦国カード』とは？",
-      whatBody: "<b>『戦国カード』(Warring States: Card Battles)</b>は、無料ですぐに遊べる<b>カードバトルゲーム</b>です。中国戦国時代の<b>諸子百家</b>の思想を、遊べるカード流派に変えました。兵家・法家・儒家・道家・墨家・陰陽家・縦横家——それぞれがまったく異なる戦術です。<b>ブラウザですぐに遊べる</b>ほか、<b>アプリをダウンロード</b>していつでもどこでも対戦できます。",
+      sSchools: "学派", sCards: "枚のカード", sHeroes: "人の英雄", sMin: "分 1 戦",
+      schoolsTitle: "七つの学派、七つの勝ち方",
+      schMilNm: "兵家", schMilDe: "突撃・速攻", schMilHero: "孫臏・呉起・廉頗",
+      schLegNm: "法家", schLegDe: "制圧・法治", schLegHero: "商鞅・韓非・申不害",
+      schConNm: "儒家", schConDe: "教化・成長", schConHero: "孔子・孟子・荀子",
+      schDaoNm: "道家", schDaoDe: "自然・持久", schDaoHero: "老子・荘子・列子",
+      schMohNm: "墨家", schMohDe: "攻城兵器", schMohHero: "墨子・公輸班・禽滑釐",
+      schYinNm: "陰陽家", schYinDe: "五行・方術", schYinHero: "鄒衍・甘徳・石申",
+      schStrNm: "縦横家", schStrDe: "連衡・合従", schStrHero: "鬼谷子・蘇秦・張儀",
+      schNeuNm: "中立", schNeuDe: "汎用・補助", schNeuHero: "収集できるカードは196枚",
       featuresTitle: "ゲームの特徴",
-      f1t: "⚔️ 7 学派 = 7 の戦術", f1d: "兵家の突撃、法家の制圧、道家の持久、墨家の攻城兵器……学派を選び、戦術を極めよう。",
-      f2t: "🃏 196 枚のカード", f2d: "コモン74・レア69・エピック36・レジェンド17。自分だけのデッキを構築しよう。",
-      f3t: "👑 21 人の伝説の英雄", f3d: "孫子、孔子、老子、墨子、鬼谷子……戦国の名士があなたのために戦う。",
-      f4t: "🌐 オンライン対戦", f4d: "世界中のプレイヤーとリアルタイムで対戦し、実力でランキングを目指せ。",
-      f5t: "🧠 本格的な戦略", f5d: "コンボ、制圧、逆転。3 分 1 戦のハイテンポに深みあり。",
-      f6t: "🆓 無料・敷居なし", f6d: "ギャンブルなし、課金トラップなし。純粋な戦略の面白さを全プラットフォームで無料提供。",
+      f1t: "7 学派 = 7 の戦術", f1d: "兵家の突撃、法家の制圧、道家の持久、墨家の攻城兵器……学派を選び、戦術を極めよう。",
+      f2t: "196 枚のカード", f2d: "コモン74・レア69・エピック36・レジェンド17。自分だけのデッキを構築しよう。",
+      f3t: "21 人の伝説の英雄", f3d: "孫子、孔子、老子、墨子、鬼谷子……戦国の名士があなたのために戦う。",
+      f4t: "オンライン対戦", f4d: "世界中のプレイヤーとリアルタイムで対戦し、実力でランキングを目指せ。",
+      f5t: "本格的な戦略", f5d: "コンボ、制圧、逆転。3 分 1 戦のハイテンポに深みあり。",
+      f6t: "無料・敷居なし", f6d: "ギャンブルなし、課金トラップなし。純粋な戦略の面白さを全プラットフォームで無料提供。",
       platformTitle: "プラットフォームを選ぶ",
       pWebName: "ウェブ版（推奨）", pWebDesc: "ダウンロード不要。ブラウザでデスクトップ・モバイルとも即プレイ", pWebBtn: "今すぐプレイ",
       pAndName: "Android アプリ", pAndDesc: "スマホにインストールして、スムーズにオフラインでも対戦", pAndBtn: "APK をDL",
@@ -245,7 +499,13 @@
       supPlatLbl: "プラットフォーム：", supPlatVal: "ウェブブラウザ（PC・モバイル）、Android アプリ、iOS アプリ",
       supLangLbl: "言語：", supLangVal: "简体中文、繁體中文、English、日本語、Français、Deutsch、Español、Русский、ไทย、Melayu、Filipino",
       supModeLbl: "モード：", supModeVal: "オンラインマッチ、シングルアドベンチャー、デイリークエスト、ヒーロー育成、カード収集",
-      footHome: "ゲームトップへ", footDownload: "ダウンロード", footAbout: "ゲーム紹介", footPrivacy: "プライバシー"
+      finalTitle: "百家の名士があなたの呼びかけを待っている。",
+      finalBody: "無料でプレイ。即プレイまたはアプリのダウンロードで、今日から対戦に参加しよう。",
+      ctaPlay2: "▶ 今すぐプレイ",
+      ctaDownload2: "📱 アプリをダウンロード",
+      footHome: "ゲームトップへ", footDownload: "ダウンロード", footAbout: "ゲーム紹介", footPrivacy: "プライバシー",
+      sunbin: "孫臏", shangyang: "商鞅", kongzi: "孔子", laozi: "老子",
+      mozi: "墨子", zouyan: "鄒衍", guiguzi: "鬼谷子"
     }
   };
   var CODES = ['en', 'zh', 'ja'];
@@ -254,7 +514,7 @@
     var p = new URLSearchParams(location.search).get('lang');
     if (p && CODES.indexOf(p) > -1) return p;
     try { var s = localStorage.getItem('wscard_lang'); if (s && CODES.indexOf(s) > -1) return s; } catch (e) {}
-    return 'en'; // 英文为主
+    return 'en';
   }
 
   function apply(lang) {
@@ -263,6 +523,13 @@
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var key = el.getAttribute('data-i18n');
       if (d[key] !== undefined) el.innerHTML = d[key];
+    });
+    // 英雄名：切换字形（zh 用中文名，其他用罗马音）
+    document.querySelectorAll('[data-i18n-h]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-h');
+      if (lang === 'zh') { el.textContent = d[key]; el.className = 'name zh'; }
+      else if (lang === 'ja') { el.textContent = d[key]; el.className = 'name ja'; }
+      else { el.textContent = d[key]; el.className = 'name'; }
     });
     document.querySelectorAll('.langbar button').forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-lang') === lang);
