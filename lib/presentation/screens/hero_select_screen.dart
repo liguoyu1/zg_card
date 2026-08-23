@@ -36,6 +36,9 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
   @override
   void initState() {
     super.initState();
+    // 进入对局/PK 选择英雄时，把全部英雄素材按需检查加入全局预加载队列，
+    // 没有加载的立即加载，保证英雄头像/立绘完整显示，不因排队靠后而缺失。
+    AssetPreloadQueue.I.queueAll(CardImageService.getAllHeroPaths());
     dataVersionNotifier.addListener(_load);
     _load(syncFirst: true);
   }

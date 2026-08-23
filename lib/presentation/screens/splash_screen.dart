@@ -57,8 +57,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // 预初始化音频（非阻塞）
     _initAudio();
 
-    // 启动全局预加载：全部英雄 + 卡牌素材进入队列（后台 3 并发，进度可观察）
-    AssetPreloadQueue.I.queueAll(CardImageService.getAllImagePaths());
+    // 启动全局预加载：全部英雄 + 前一半卡牌进入队列（后台 3 并发，进度可观察）。
+    // 不一次加载全部卡牌，避免启动带宽压力；剩余卡牌由卡牌页进入时按展示顺序补齐。
+    AssetPreloadQueue.I.queueAll(const []);
 
     // 进入首页策略：素材加载达标(90%) 或 超时(8秒) 才进入，避免固定秒数闪屏。
     _enterTimer = Timer(const Duration(seconds: 8), _goHome);

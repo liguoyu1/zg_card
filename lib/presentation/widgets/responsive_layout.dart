@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/locale_service.dart';
+import '../../data/card_image_service.dart';
 import '../../shared/widgets/ad_slot_scope.dart';
+import '../../shared/widgets/queued_asset_image.dart';
 import '../screens/achievement_screen.dart';
 import '../screens/card_library_screen.dart';
 import '../screens/home_screen.dart';
@@ -51,7 +53,16 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
 
   void _onNav(int i) {
     setState(() => _currentIndex = i);
+    if (i == 1) _fillCardLibrary();
     GoRouter.of(context).go(_tabPaths[i]);
+  }
+
+  /// 卡牌页补齐：把尚未加载的卡牌按展示顺序全部加入全局预加载队列，
+  /// 由后台 3 并发继续并行加载，直到全部加载完（不依赖下滑才触发）。
+  void _fillCardLibrary() {
+    for (final p in CardImageService.getAllCardPathsByDisplayOrder()) {
+      AssetPreloadQueue.I.ensure(p);
+    }
   }
 
   @override
@@ -69,6 +80,7 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
     }
 
     _currentIndex = _indexForPath(path);
+    if (path.startsWith('/collection')) _fillCardLibrary();
     final width = MediaQuery.sizeOf(context).width;
 
     // 每个 Tab 注入自己的 AdSlotScope（仅影响广告何时加载，不改布局）。

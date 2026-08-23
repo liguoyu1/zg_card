@@ -313,15 +313,36 @@ class CardImageService {
     ..._weaponImageMap.map((k, v) => MapEntry(k, '$_baseWeapons$v')),
   };
 
-  /// 全部素材路径（英雄 + 卡牌），供启动全局预加载
-  static List<String> getAllImagePaths() {
-    final paths = <String>[
+  /// 全部英雄素材路径，供启动预加载首屏
+  static List<String> getAllHeroPaths() {
+    return [
       for (final v in _heroImageMap.values)
         if (v.isNotEmpty) '$_baseHeroes$v',
-      for (final v in _imageMap.values)
-        if (v.isNotEmpty) v,
     ];
+  }
+
+  /// 全部卡牌素材路径（随从+法术+武器），按卡牌图鉴展示顺序
+  /// （CardDataProvider.getAllCards() 学派分组顺序：兵/法/儒/道/墨/阴阳/纵横/中立）。
+  /// 供卡牌页进入时按展示顺序补齐加载。
+  static List<String> getAllCardPathsByDisplayOrder() {
+    final paths = <String>[];
+    for (final c in CardDataProvider.getAllCards()) {
+      final p = getImageByType(c.id, c.type.name);
+      if (p.isNotEmpty && !paths.contains(p)) paths.add(p);
+    }
     return paths;
+  }
+
+  /// 启动预加载组合：全部英雄 + 前一半卡牌（按展示顺序）。
+  /// 避免一次加载全部 220 张造成带宽压力；剩余卡牌由卡牌页进入时按展示顺序补齐。
+  static List<String> getStartupPreloadPaths() {
+    final cards = getAllCardPathsByDisplayOrder();
+    return [...getAllHeroPaths(), ...cards.take((cards.length / 2).ceil())];
+  }
+
+  /// 全部素材路径（英雄 + 卡牌），保留给需要完整列表的调用方
+  static List<String> getAllImagePaths() {
+    return [...getAllHeroPaths(), ...getAllCardPathsByDisplayOrder()];
   }
 
   /// 资源路径 → 中文显示名（卡牌名或英雄名），供加载页展示"正在加载什么"

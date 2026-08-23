@@ -24,3 +24,4 @@ web/out
 assets/style_samples
 *.log
 *.tmp
+build

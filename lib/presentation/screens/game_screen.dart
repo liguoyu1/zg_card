@@ -109,6 +109,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   final Map<String, domain.Card> _dyingCards = {};
   /// AI 回合阶段文字
   String _aiPhaseText = LocaleService.I.t('game.opponent_turn');
+  /// 战场准备门控
+  bool _battlePreparing = true;
+  double _battlePrepProgress = 0;
 
   @override
   void initState() {
@@ -303,7 +306,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _initializeGame() {
-    _preloadBattleAssets();
+    // 仅本地对局（单机 AI / 冒险）需要"先加载全所需卡牌再开战"的门控；
+    // 真联机非 host 端等待轮询到 start 动作后再初始化状态。
+    final startFirstTurnOnReady = !widget.isOnline || widget.isHost;
     if (widget.isOnline) {
       // 真联机：由 aiGameProvider 确定性引擎驱动（本地演化 + 网络提交）。
       ref.read(aiGameProvider.notifier).startOnlineGame(
@@ -317,15 +322,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       // 非 host 不启动回合：等待轮询到 host 的 start_turn 后再行动。
       if (widget.isHost) {
         // host 恒为 player1，先手启动本地回合。
-        ref.read(aiGameProvider.notifier).startTurn(widget.playerId);
-        AudioManager.I.manaCrystal();
-        _isPlayerTurn = true;
         _wasMyTurn = true;
-        _startTurnTimer();
       }
-      return;
-    }
-    if (widget.runHp != null && widget.opponentHero != null) {
+    } else if (widget.runHp != null && widget.opponentHero != null) {
       ref.read(aiGameProvider.notifier).startMissionGame(
         playerId: widget.playerId,
         playerHero: widget.playerHero,
@@ -340,27 +339,101 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         difficulty: widget.difficulty,
       );
     }
-    // 立即开始第一回合
-    if (mounted) {
-      ref.read(aiGameProvider.notifier).startTurn(widget.playerId);
-      AudioManager.I.manaCrystal();
-      _isPlayerTurn = true;
-      _startTurnTimer();
-    }
+
+    // 战场准备：收集所需卡牌与英雄，进入"战场准备"进度条，达标或超时后开战。
+    _beginBattlePrep(startFirstTurnOnReady: startFirstTurnOnReady);
   }
 
-  /// 对战前预加载双方英雄与全卡池素材（队列 3 并发，从前到后）
-  void _preloadBattleAssets() {
+  /// 收集本局所需素材（双方英雄 + 双方牌组/手牌/战场的卡牌），
+  /// 用 queueAll 入队以便跟踪进度，加载完（或超时）后才开始首回合。
+  void _beginBattlePrep({required bool startFirstTurnOnReady}) {
+    final gs = ref.read(aiGameProvider);
+    if (gs == null) {
+      // 联机非 host：状态尚缺，不 gate，交由轮询/回合检测自然开始。
+      _battlePreparing = false;
+      return;
+    }
+    final paths = <String>{};
+    for (final p in [gs.player1, gs.player2]) {
+      final hp = CardImageService.getHeroImageAsset(p.hero.id);
+      if (hp.isNotEmpty) paths.add(hp);
+      for (final c in [...p.hand, ...p.deck, ...p.board]) {
+        final img = CardImageService.getImageAsset(c.id);
+        if (img.isNotEmpty) paths.add(img);
+      }
+    }
+    AssetPreloadQueue.I.queueAll(paths);
+    setState(() => _battlePreparing = true);
     final q = AssetPreloadQueue.I;
-    for (final hd in [widget.playerHero, widget.opponentHero]) {
-      if (hd == null) continue;
-      final p = CardImageService.getHeroImageAsset(hd.id);
-      if (p.isNotEmpty) q.ensure(p);
-    }
-    for (final c in CardDataProvider.getAllCards()) {
-      final p = CardImageService.getImageAsset(c.id);
-      if (p.isNotEmpty) q.ensure(p);
-    }
+    final deadline = DateTime.now().add(const Duration(seconds: 3));
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (!mounted) return false;
+      final allDone = q.targetCount > 0 && q.targetLoaded >= q.targetCount;
+      final timedOut = DateTime.now().isAfter(deadline);
+      setState(() => _battlePrepProgress = q.targetCount == 0
+          ? 1
+          : q.targetLoaded / q.targetCount);
+      if (allDone || timedOut) {
+        _finishBattlePrep(startFirstTurnOnReady: startFirstTurnOnReady);
+        return false;
+      }
+      return true;
+    });
+  }
+
+  void _finishBattlePrep({required bool startFirstTurnOnReady}) {
+    if (!mounted) return;
+    setState(() {
+      _battlePreparing = false;
+      _battlePrepProgress = 1;
+    });
+    if (startFirstTurnOnReady) _startFirstTurn();
+  }
+
+  /// 开始首回合（本地单机/冒险，以及联机 host 端在素材就绪后调用）
+  void _startFirstTurn() {
+    if (!mounted) return;
+    ref.read(aiGameProvider.notifier).startTurn(widget.playerId);
+    AudioManager.I.manaCrystal();
+    _isPlayerTurn = true;
+    _startTurnTimer();
+  }
+
+  /// 首回合开始前，战场准备进度条 UI
+  Widget _buildBattlePrepOverlay() {
+    return Positioned.fill(
+      child: Container(
+        color: AppTheme.bgDark,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              LocaleService.I.t('game.deploying'),
+              style: TextStyle(color: AppTheme.parchment, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: 200,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: LinearProgressIndicator(
+                  value: _battlePrepProgress,
+                  minHeight: 10,
+                  backgroundColor: Colors.white12,
+                  valueColor: const AlwaysStoppedAnimation(AppTheme.goldAccent),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '${(_battlePrepProgress * 100).toInt()}%',
+              style: TextStyle(color: AppTheme.parchment.withAlpha(180), fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -398,6 +471,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     return Stack(
       children: [
         _buildGameContent(gameState),
+        // 战场准备门控：素材加载完毕前显示进度条，遮住底层棋盘
+        if (_battlePreparing) _buildBattlePrepOverlay(),
         // 伤害数字覆盖层
         ..._buildDamageOverlays(),
         // 施法浮动文字

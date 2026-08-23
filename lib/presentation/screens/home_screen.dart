@@ -84,6 +84,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // 启动全局预加载：全部英雄 + 前一半卡牌（按展示顺序）进入后台队列（3 并发），
+    // 避免启动时一次性加载全部卡牌造成带宽压力；剩余卡牌由卡牌页/对局按需补齐。
+    AssetPreloadQueue.I.queueAll(CardImageService.getStartupPreloadPaths());
     _init();
   }
 
