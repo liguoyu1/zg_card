@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>战国卡牌 · 免费网页卡牌对战 | 立即开始游戏 & 下载客户端</title>
-  <meta name="description" content="战国卡牌（Warring States: Card Battles）— 免费网页卡牌对战游戏。7 大学派、196 张卡牌、21 位传奇英雄，浏览器即点即玩；同时提供 Android / iOS 客户端下载。立即开始或下载客户端。">
-  <meta name="keywords" content="战国卡牌,卡牌对战,网页卡牌游戏,免费卡牌游戏,战国游戏,诸子百家,卡牌手游,Android下载,ios下载,Warring States card game">
+  <title>Warring States Card · Free Web Card Battler | Play Now & Download</title>
+  <meta name="description" content="Warring States: Card Battles — a free web card battle game. 7 schools, 196 cards, 21 legendary heroes. Play instantly in your browser, or download the Android / iOS client.">
+  <meta name="keywords" content="Warring States card game, card battle, free web card game, strategy card game, Warring States, hundred schools of thought, Android download, iOS download">
   <meta name="robots" content="index, follow">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="战国卡牌">
-  <meta property="og:title" content="战国卡牌 · 免费网页卡牌对战游戏">
-  <meta property="og:description" content="集结诸子百家与战国武将，7 大学派、196 张卡牌、21 位传奇英雄。免费网页卡牌对战，浏览器即点即玩，也可下载客户端。">
+  <meta property="og:site_name" content="Warring States Card">
+  <meta property="og:title" content="Warring States Card · Free Web Card Battler">
+  <meta property="og:description" content="Gather the Hundred Schools and Warring States generals. 7 schools, 196 cards, 21 legendary heroes. Free card battles, play in your browser or download the client.">
   <meta property="og:url" content="https://wscard.games/landing.html">
   <meta property="og:image" content="https://wscard.games/icons/Icon-512.png">
   <link rel="canonical" href="https://wscard.games/landing.html">
@@ -22,7 +22,21 @@
       line-height: 1.8;
     }
     .wrap { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
-    .brand { text-align: center; margin-bottom: 30px; }
+
+    /* 语言切换器 */
+    .langbar {
+      position: fixed; top: 14px; right: 14px; z-index: 100;
+      display: flex; gap: 6px; background: rgba(20,12,6,0.72);
+      border: 1px solid #4A3520; border-radius: 20px; padding: 5px;
+      backdrop-filter: blur(4px);
+    }
+    .langbar button {
+      background: transparent; color: #C9BBA0; border: none; border-radius: 16px;
+      padding: 5px 12px; font-size: 13px; cursor: pointer; transition: all 0.15s;
+    }
+    .langbar button.active { background: #D4AF37; color: #1a0f0a; font-weight: 700; }
+
+    .brand { text-align: center; margin-bottom: 30px; padding-top: 20px; }
     .brand h1 { color: #D4AF37; font-size: 34px; margin: 0 0 6px; letter-spacing: 2px; }
     .brand .sub { color: #8A7A60; font-size: 14px; letter-spacing: 1px; }
     .hero {
@@ -75,78 +89,196 @@
   </style>
 </head>
 <body>
+<div class="langbar">
+  <button data-lang="en">English</button>
+  <button data-lang="zh">中文</button>
+  <button data-lang="ja">日本語</button>
+</div>
+
 <div class="wrap">
 
   <div class="brand">
-    <h1>战国卡牌 · Warring States</h1>
+    <h1>Warring States Card</h1>
     <div class="sub">FREE TO PLAY · WEB CARD BATTLER · 战国题材卡牌对战</div>
   </div>
 
   <div class="hero">
-    <h2>战国七雄，百家争鸣。这一次，历史在你手中。</h2>
-    <p>7 大学派 = 7 种玩法 · 196 张卡牌 · 21 位传奇英雄 · 3 分钟一局</p>
+    <h2 data-i18n="heroTitle">The Seven Warring States. A Hundred Schools. History in your hands.</h2>
+    <p data-i18n="heroSub">7 schools = 7 playstyles · 196 cards · 21 legendary heroes · a match in 3 minutes</p>
     <div class="btn-row">
-      <a class="cta play" href="https://wscard.games/">🎮 立即开始游戏</a>
-      <a class="cta dl" href="https://wscard.games/download.html">📱 下载客户端</a>
+      <a class="cta play" href="https://wscard.games/" data-i18n="ctaPlay">▶ Play Now</a>
+      <a class="cta dl" href="https://wscard.games/download.html" data-i18n="ctaDownload">📱 Download the App</a>
     </div>
   </div>
 
-  <h2 class="sect">什么是《战国卡牌》？</h2>
-  <p><b>《战国卡牌》（Warring States: Card Battles）</b>是一款免费、即时可玩的<b>卡牌对战游戏</b>。它将中国古代战国时期的<b>诸子百家</b>思想化作可玩的卡牌流派：兵家、法家、儒家、道家、墨家、阴阳家、纵横家——每一家都是一种截然不同的打法。你既可以<b>浏览器即点即玩</b>，也可以<b>下载客户端</b>，随时随地开战。</p>
+  <h2 class="sect" data-i18n="whatTitle">What is Warring States Card?</h2>
+  <p data-i18n="whatBody"><b>Warring States: Card Battles</b> is a free, instant-to-play <b>card battle game</b>. It turns the <b>Hundred Schools of Thought</b> of China's Warring States period into playable card archetypes: Military, Legalist, Confucian, Daoist, Mohist, Yin-Yang, and Strategist — each a distinct way to play. Play instantly in your <b>browser</b> or <b>download the client</b> and battle anywhere.</p>
 
-  <h2 class="sect">游戏特色</h2>
+  <h2 class="sect" data-i18n="featuresTitle">Game Features</h2>
   <div class="grid">
-    <div class="card"><h3>⚔️ 7 大学派 = 7 种打法</h3><p>兵家冲锋、法家控场、道家续航、墨家造攻城器械……选择你的学派，定义你的战术。</p></div>
-    <div class="card"><h3>🃏 196 张独特卡牌</h3><p>74 张普通、69 张稀有、36 张史诗、17 张传说，构筑属于你的卡组。</p></div>
-    <div class="card"><h3>👑 21 位传奇英雄</h3><p>孙子、孔子、老子、墨子、鬼谷子……让战国名士为你而战。</p></div>
-    <div class="card"><h3>🌐 在线匹配对战</h3><p>与来自各地的真实玩家实时对战，凭实力登上排行榜。</p></div>
-    <div class="card"><h3>🧠 真正的策略博弈</h3><p>连招、控场、以弱胜强。3 分钟一局，快节奏里见深度。</p></div>
-    <div class="card"><h3>🆓 免费无门槛</h3><p>无氪金陷阱，无赌博玩法，纯粹的策略乐趣，全平台免费畅玩。</p></div>
+    <div class="card"><h3 data-i18n="f1t">⚔️ 7 Schools = 7 Playstyles</h3><p data-i18n="f1d">Military aggression, Legalist control, Daoist sustain, Mohist siege engines… choose your school, define your tactics.</p></div>
+    <div class="card"><h3 data-i18n="f2t">🃏 196 Unique Cards</h3><p data-i18n="f2d">74 common, 69 rare, 36 epic, 17 legendary. Build the deck that is yours.</p></div>
+    <div class="card"><h3 data-i18n="f3t">👑 21 Legendary Heroes</h3><p data-i18n="f3d">Sun Tzu, Confucius, Laozi, Mozi, Guiguzi… let the masters of the Warring States fight for you.</p></div>
+    <div class="card"><h3 data-i18n="f4t">🌐 Online Matches</h3><p data-i18n="f4d">Battle real players in real time and climb the leaderboard on skill.</p></div>
+    <div class="card"><h3 data-i18n="f5t">🧠 Real Strategy</h3><p data-i18n="f5d">Combos, control, and turning the tables. 3-minute matches with real depth.</p></div>
+    <div class="card"><h3 data-i18n="f6t">🆓 Free, No Barriers</h3><p data-i18n="f6d">No gambling, no pay-to-win traps. Pure strategy, free on every platform.</p></div>
   </div>
 
-  <h2 class="sect">选择你的平台</h2>
+  <h2 class="sect" data-i18n="platformTitle">Choose Your Platform</h2>
   <div class="grid">
     <div class="dlcard">
       <div class="ic">🌐</div>
-      <div class="name">网页版（推荐）</div>
-      <div class="desc">无需下载，浏览器即点即玩，桌面端 / 移动端均可</div>
-      <a class="btn web" href="https://wscard.games/">立即开始</a>
+      <div class="name" data-i18n="pWebName">Web (Recommended)</div>
+      <div class="desc" data-i18n="pWebDesc">No download needed. Play in your browser on desktop or mobile.</div>
+      <a class="btn web" href="https://wscard.games/" data-i18n="pWebBtn">Play Now</a>
     </div>
     <div class="dlcard">
       <div class="ic">🤖</div>
-      <div class="name">Android 客户端</div>
-      <div class="desc">安装到手机，离线流畅体验，随时开战</div>
-      <a class="btn android" href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk">下载 APK</a>
+      <div class="name" data-i18n="pAndName">Android App</div>
+      <div class="desc" data-i18n="pAndDesc">Install on your phone for smooth, offline-ready battles.</div>
+      <a class="btn android" href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk" data-i18n="pAndBtn">Download APK</a>
     </div>
     <div class="dlcard">
       <div class="ic">🍎</div>
-      <div class="name">iOS 客户端</div>
-      <div class="desc">App Store 审核中，即将上线</div>
-      <a class="btn ios" href="https://wscard.games/download.html">即将上线</a>
+      <div class="name" data-i18n="pIosName">iOS App</div>
+      <div class="desc" data-i18n="pIosDesc">Coming soon to the App Store.</div>
+      <a class="btn ios" href="https://wscard.games/download.html" data-i18n="pIosBtn">Coming Soon</a>
     </div>
     <div class="dlcard">
       <div class="ic">🌍</div>
-      <div class="name">海外平台</div>
-      <div class="desc">itch.io 亦可购买/支持与下载</div>
-      <a class="btn itch" href="https://guoyuli.itch.io/warring-states-card/purchase">itch.io 下载</a>
+      <div class="name" data-i18n="pItchName">Overseas</div>
+      <div class="desc" data-i18n="pItchDesc">Buy, support, and download on itch.io.</div>
+      <a class="btn itch" href="https://guoyuli.itch.io/warring-states-card/purchase" data-i18n="pItchBtn">itch.io Download</a>
     </div>
   </div>
 
-  <h2 class="sect">支持平台与语言</h2>
+  <h2 class="sect" data-i18n="supportTitle">Platforms & Languages</h2>
   <ul>
-    <li><b>平台</b>：网页浏览器（桌面端与移动端）、Android 客户端、iOS 客户端</li>
-    <li><b>语言</b>：简体中文、繁體中文、English、日本語、Français、Deutsch、Español、Русский、ไทย、Melayu、Filipino</li>
-    <li><b>模式</b>：在线匹配对战、单人冒险、每日任务、英雄养成、卡牌收集</li>
+    <li><b data-i18n="supPlatLbl">Platforms:</b> <span data-i18n="supPlatVal">Web browser (desktop & mobile), Android app, iOS app</span></li>
+    <li><b data-i18n="supLangLbl">Languages:</b> <span data-i18n="supLangVal">简体中文, 繁體中文, English, 日本語, Français, Deutsch, Español, Русский, ไทย, Melayu, Filipino</span></li>
+    <li><b data-i18n="supModeLbl">Modes:</b> <span data-i18n="supModeVal">Online matchmaking, single-player adventure, daily quests, hero progression, card collection</span></li>
   </ul>
 
   <div class="foot">
-    <a href="https://wscard.games/">返回游戏首页</a> ·
-    <a href="https://wscard.games/download.html">下载客户端</a> ·
-    <a href="https://wscard.games/about.html">关于游戏</a> ·
-    <a href="https://wscard.games/privacy.html">隐私政策</a><br>
-    © 2026 战国卡牌 Warring States Card Battles · zgfylgy@163.com
+    <a href="https://wscard.games/" data-i18n="footHome">Back to Game Home</a> ·
+    <a href="https://wscard.games/download.html" data-i18n="footDownload">Download</a> ·
+    <a href="https://wscard.games/about.html" data-i18n="footAbout">About</a> ·
+    <a href="https://wscard.games/privacy.html" data-i18n="footPrivacy">Privacy</a><br>
+    © 2026 Warring States Card Battles · zgfylgy@163.com
   </div>
 
 </div>
+
+<script>
+(function () {
+  var I18N = {
+    en: {
+      heroTitle: "The Seven Warring States. A Hundred Schools. History in your hands.",
+      heroSub: "7 schools = 7 playstyles · 196 cards · 21 legendary heroes · a match in 3 minutes",
+      ctaPlay: "▶ Play Now",
+      ctaDownload: "📱 Download the App",
+      whatTitle: "What is Warring States Card?",
+      whatBody: "<b>Warring States: Card Battles</b> is a free, instant-to-play <b>card battle game</b>. It turns the <b>Hundred Schools of Thought</b> of China's Warring States period into playable card archetypes: Military, Legalist, Confucian, Daoist, Mohist, Yin-Yang, and Strategist — each a distinct way to play. Play instantly in your <b>browser</b> or <b>download the client</b> and battle anywhere.",
+      featuresTitle: "Game Features",
+      f1t: "⚔️ 7 Schools = 7 Playstyles", f1d: "Military aggression, Legalist control, Daoist sustain, Mohist siege engines… choose your school, define your tactics.",
+      f2t: "🃏 196 Unique Cards", f2d: "74 common, 69 rare, 36 epic, 17 legendary. Build the deck that is yours.",
+      f3t: "👑 21 Legendary Heroes", f3d: "Sun Tzu, Confucius, Laozi, Mozi, Guiguzi… let the masters of the Warring States fight for you.",
+      f4t: "🌐 Online Matches", f4d: "Battle real players in real time and climb the leaderboard on skill.",
+      f5t: "🧠 Real Strategy", f5d: "Combos, control, and turning the tables. 3-minute matches with real depth.",
+      f6t: "🆓 Free, No Barriers", f6d: "No gambling, no pay-to-win traps. Pure strategy, free on every platform.",
+      platformTitle: "Choose Your Platform",
+      pWebName: "Web (Recommended)", pWebDesc: "No download needed. Play in your browser on desktop or mobile.", pWebBtn: "Play Now",
+      pAndName: "Android App", pAndDesc: "Install on your phone for smooth, offline-ready battles.", pAndBtn: "Download APK",
+      pIosName: "iOS App", pIosDesc: "Coming soon to the App Store.", pIosBtn: "Coming Soon",
+      pItchName: "Overseas", pItchDesc: "Buy, support, and download on itch.io.", pItchBtn: "itch.io Download",
+      supportTitle: "Platforms & Languages",
+      supPlatLbl: "Platforms:", supPlatVal: "Web browser (desktop & mobile), Android app, iOS app",
+      supLangLbl: "Languages:", supLangVal: "简体中文, 繁體中文, English, 日本語, Français, Deutsch, Español, Русский, ไทย, Melayu, Filipino",
+      supModeLbl: "Modes:", supModeVal: "Online matchmaking, single-player adventure, daily quests, hero progression, card collection",
+      footHome: "Back to Game Home", footDownload: "Download", footAbout: "About", footPrivacy: "Privacy"
+    },
+    zh: {
+      heroTitle: "战国七雄，百家争鸣。这一次，历史在你手中。",
+      heroSub: "7 大学派 = 7 种玩法 · 196 张卡牌 · 21 位传奇英雄 · 3 分钟一局",
+      ctaPlay: "🎮 立即开始游戏",
+      ctaDownload: "📱 下载客户端",
+      whatTitle: "什么是《战国卡牌》？",
+      whatBody: "<b>《战国卡牌》（Warring States: Card Battles）</b>是一款免费、即时可玩的<b>卡牌对战游戏</b>。它将中国古代战国时期的<b>诸子百家</b>思想化作可玩的卡牌流派：兵家、法家、儒家、道家、墨家、阴阳家、纵横家——每一家都是一种截然不同的打法。你既可以<b>浏览器即点即玩</b>，也可以<b>下载客户端</b>，随时随地开战。",
+      featuresTitle: "游戏特色",
+      f1t: "⚔️ 7 大学派 = 7 种打法", f1d: "兵家冲锋、法家控场、道家续航、墨家造攻城器械……选择你的学派，定义你的战术。",
+      f2t: "🃏 196 张独特卡牌", f2d: "74 张普通、69 张稀有、36 张史诗、17 张传说，构筑属于你的卡组。",
+      f3t: "👑 21 位传奇英雄", f3d: "孙子、孔子、老子、墨子、鬼谷子……让战国名士为你而战。",
+      f4t: "🌐 在线匹配对战", f4d: "与来自各地的真实玩家实时对战，凭实力登上排行榜。",
+      f5t: "🧠 真正的策略博弈", f5d: "连招、控场、以弱胜强。3 分钟一局，快节奏里见深度。",
+      f6t: "🆓 免费无门槛", f6d: "无氪金陷阱，无赌博玩法，纯粹的策略乐趣，全平台免费畅玩。",
+      platformTitle: "选择你的平台",
+      pWebName: "网页版（推荐）", pWebDesc: "无需下载，浏览器即点即玩，桌面端 / 移动端均可", pWebBtn: "立即开始",
+      pAndName: "Android 客户端", pAndDesc: "安装到手机，离线流畅体验，随时开战", pAndBtn: "下载 APK",
+      pIosName: "iOS 客户端", pIosDesc: "App Store 审核中，即将上线", pIosBtn: "即将上线",
+      pItchName: "海外平台", pItchDesc: "itch.io 亦可购买/支持与下载", pItchBtn: "itch.io 下载",
+      supportTitle: "支持平台与语言",
+      supPlatLbl: "平台：", supPlatVal: "网页浏览器（桌面端与移动端）、Android 客户端、iOS 客户端",
+      supLangLbl: "语言：", supLangVal: "简体中文、繁體中文、English、日本語、Français、Deutsch、Español、Русский、ไทย、Melayu、Filipino",
+      supModeLbl: "模式：", supModeVal: "在线匹配对战、单人冒险、每日任务、英雄养成、卡牌收集",
+      footHome: "返回游戏首页", footDownload: "下载客户端", footAbout: "关于游戏", footPrivacy: "隐私政策"
+    },
+    ja: {
+      heroTitle: "戦国七雄、百家争鳴。いま、歴史はあなたの手の中に。",
+      heroSub: "7 学派 = 7 の戦術 · 196 枚のカード · 21 人の伝説の英雄 · 1 戦 3 分",
+      ctaPlay: "▶ 今すぐプレイ",
+      ctaDownload: "📱 アプリをダウンロード",
+      whatTitle: "『戦国カード』とは？",
+      whatBody: "<b>『戦国カード』(Warring States: Card Battles)</b>は、無料ですぐに遊べる<b>カードバトルゲーム</b>です。中国戦国時代の<b>諸子百家</b>の思想を、遊べるカード流派に変えました。兵家・法家・儒家・道家・墨家・陰陽家・縦横家——それぞれがまったく異なる戦術です。<b>ブラウザですぐに遊べる</b>ほか、<b>アプリをダウンロード</b>していつでもどこでも対戦できます。",
+      featuresTitle: "ゲームの特徴",
+      f1t: "⚔️ 7 学派 = 7 の戦術", f1d: "兵家の突撃、法家の制圧、道家の持久、墨家の攻城兵器……学派を選び、戦術を極めよう。",
+      f2t: "🃏 196 枚のカード", f2d: "コモン74・レア69・エピック36・レジェンド17。自分だけのデッキを構築しよう。",
+      f3t: "👑 21 人の伝説の英雄", f3d: "孫子、孔子、老子、墨子、鬼谷子……戦国の名士があなたのために戦う。",
+      f4t: "🌐 オンライン対戦", f4d: "世界中のプレイヤーとリアルタイムで対戦し、実力でランキングを目指せ。",
+      f5t: "🧠 本格的な戦略", f5d: "コンボ、制圧、逆転。3 分 1 戦のハイテンポに深みあり。",
+      f6t: "🆓 無料・敷居なし", f6d: "ギャンブルなし、課金トラップなし。純粋な戦略の面白さを全プラットフォームで無料提供。",
+      platformTitle: "プラットフォームを選ぶ",
+      pWebName: "ウェブ版（推奨）", pWebDesc: "ダウンロード不要。ブラウザでデスクトップ・モバイルとも即プレイ", pWebBtn: "今すぐプレイ",
+      pAndName: "Android アプリ", pAndDesc: "スマホにインストールして、スムーズにオフラインでも対戦", pAndBtn: "APK をDL",
+      pIosName: "iOS アプリ", pIosDesc: "App Store に近日公開予定", pIosBtn: "近日公開",
+      pItchName: "海外版", pItchDesc: "itch.io で購入・支援・ダウンロード", pItchBtn: "itch.io でDL",
+      supportTitle: "対応プラットフォームと言語",
+      supPlatLbl: "プラットフォーム：", supPlatVal: "ウェブブラウザ（PC・モバイル）、Android アプリ、iOS アプリ",
+      supLangLbl: "言語：", supLangVal: "简体中文、繁體中文、English、日本語、Français、Deutsch、Español、Русский、ไทย、Melayu、Filipino",
+      supModeLbl: "モード：", supModeVal: "オンラインマッチ、シングルアドベンチャー、デイリークエスト、ヒーロー育成、カード収集",
+      footHome: "ゲームトップへ", footDownload: "ダウンロード", footAbout: "ゲーム紹介", footPrivacy: "プライバシー"
+    }
+  };
+  var CODES = ['en', 'zh', 'ja'];
+
+  function detectLang() {
+    var p = new URLSearchParams(location.search).get('lang');
+    if (p && CODES.indexOf(p) > -1) return p;
+    try { var s = localStorage.getItem('wscard_lang'); if (s && CODES.indexOf(s) > -1) return s; } catch (e) {}
+    return 'en'; // 英文为主
+  }
+
+  function apply(lang) {
+    var d = I18N[lang];
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang === 'ja' ? 'ja' : 'en';
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (d[key] !== undefined) el.innerHTML = d[key];
+    });
+    document.querySelectorAll('.langbar button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+  }
+
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var lang = b.getAttribute('data-lang');
+      try { localStorage.setItem('wscard_lang', lang); } catch (e) {}
+      apply(lang);
+    });
+  });
+
+  apply(detectLang());
+})();
+</script>
 </body>
 </html>

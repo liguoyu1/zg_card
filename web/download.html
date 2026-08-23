@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>下载客户端 · 战国卡牌 | Android APK · iOS · itch.io · 网页版</title>
-  <meta name="description" content="下载《战国卡牌》客户端：Android APK 直接下载、iOS App Store 即将上线、itch.io 海外渠道，以及浏览器即点即玩的网页版。免费卡牌对战游戏。">
-  <meta name="keywords" content="战国卡牌下载,战国卡牌apk,卡牌游戏下载,Android卡牌游戏,ios卡牌游戏,itch.io,网页卡牌游戏">
+  <title>Download · Warring States Card | Android APK · iOS · itch.io · Web</title>
+  <meta name="description" content="Download Warring States Card: Android APK direct, iOS coming soon on the App Store, itch.io overseas, and instant-play web version. Free card battle game.">
+  <meta name="keywords" content="Warring States Card download, card game APK, Android card game, iOS card game, itch.io, web card game">
   <meta name="robots" content="index, follow">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="战国卡牌">
-  <meta property="og:title" content="下载客户端 · 战国卡牌">
-  <meta property="og:description" content="Android APK 直接下载、iOS 即将上线、itch.io 海外渠道、浏览器即点即玩网页版。免费卡牌对战游戏。">
+  <meta property="og:site_name" content="Warring States Card">
+  <meta property="og:title" content="Download · Warring States Card">
+  <meta property="og:description" content="Android APK direct download, iOS coming soon, itch.io overseas, and instant-play web version. Free card battle game.">
   <meta property="og:url" content="https://wscard.games/download.html">
   <meta property="og:image" content="https://wscard.games/icons/Icon-512.png">
   <link rel="canonical" href="https://wscard.games/download.html">
@@ -22,7 +22,20 @@
       line-height: 1.7;
     }
     .wrap { max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
-    .brand { text-align: center; margin-bottom: 26px; }
+
+    .langbar {
+      position: fixed; top: 14px; right: 14px; z-index: 100;
+      display: flex; gap: 6px; background: rgba(20,12,6,0.72);
+      border: 1px solid #4A3520; border-radius: 20px; padding: 5px;
+      backdrop-filter: blur(4px);
+    }
+    .langbar button {
+      background: transparent; color: #C9BBA0; border: none; border-radius: 16px;
+      padding: 5px 12px; font-size: 13px; cursor: pointer; transition: all 0.15s;
+    }
+    .langbar button.active { background: #D4AF37; color: #1a0f0a; font-weight: 700; }
+
+    .brand { text-align: center; margin-bottom: 26px; padding-top: 20px; }
     .brand h1 { color: #D4AF37; font-size: 30px; margin: 0 0 6px; letter-spacing: 2px; }
     .brand .sub { color: #8A7A60; font-size: 14px; letter-spacing: 1px; }
     .notice {
@@ -63,75 +76,200 @@
   </style>
 </head>
 <body>
+<div class="langbar">
+  <button data-lang="en">English</button>
+  <button data-lang="zh">中文</button>
+  <button data-lang="ja">日本語</button>
+</div>
+
 <div class="wrap">
 
   <div class="brand">
-    <h1>战国卡牌 · 下载中心</h1>
-    <div class="sub">选择你喜欢的平台，立即开始对战</div>
+    <h1>Warring States Card</h1>
+    <div class="sub" data-i18n="sub">Download Center · Pick your platform</div>
   </div>
 
   <div class="notice">
-    <p>🎮 不想下载？<a class="btn web" href="https://wscard.games/" style="padding:6px 16px;font-size:13.5px;">直接开始网页版</a></p>
+    <p><span data-i18n="noticeNoDl">🎮 Don't want to download?</span>
+    <a class="btn web" href="https://wscard.games/" style="padding:6px 16px;font-size:13.5px;" data-i18n="noticeBtn">Play the Web Version</a></p>
   </div>
 
-  <h2>📱 Android 客户端</h2>
+  <h2 data-i18n="hAndroid">📱 Android App</h2>
   <div class="channel">
     <div class="ic">🤖</div>
     <div class="info">
-      <div class="name">Android APK（推荐）</div>
-      <div class="desc">安装到安卓手机 / 平板，流畅畅玩 · v1.0.0 · 约 83 MB</div>
+      <div class="name" data-i18n="andName">Android APK (Recommended)</div>
+      <div class="desc" data-i18n="andDesc">Install on your Android phone / tablet for smooth play · v1.0.0 · ~83 MB</div>
     </div>
-    <a class="btn android" href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk">下载 APK</a>
+    <a class="btn android" href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk" data-i18n="andBtn">Download APK</a>
   </div>
   <p class="meta">
-    💡 适用于 64 位安卓设备（ARM64）。若提示"未知来源"请在设置中允许安装。<br>
-    📦 历史版本：
+    <span data-i18n="andTip1">💡 For 64-bit Android (ARM64). If prompted about "unknown sources", allow installation in settings.</span><br>
+    <span data-i18n="andHistoryLbl">📦 Previous versions:</span>
     <a href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release-1.0.0-20260817.apk">v1.0.0 (2026-08-17)</a>
   </p>
 
-  <h2>🍎 iOS 客户端</h2>
+  <h2 data-i18n="hIos">🍎 iOS App</h2>
   <div class="channel">
     <div class="ic">🍎</div>
     <div class="info">
-      <div class="name">iOS（App Store）</div>
-      <div class="desc">App Store 审核中，即将上线，敬请期待</div>
+      <div class="name" data-i18n="iosName">iOS (App Store)</div>
+      <div class="desc" data-i18n="iosDesc">Under review on the App Store. Coming soon.</div>
     </div>
-    <a class="btn ios" href="https://wscard.games/download.html">即将上线</a>
+    <a class="btn ios" href="https://wscard.games/download.html" data-i18n="iosBtn">Coming Soon</a>
   </div>
 
-  <h2>🌍 海外渠道</h2>
+  <h2 data-i18n="hOverseas">🌍 Overseas</h2>
   <div class="channel">
     <div class="ic">🌐</div>
     <div class="info">
-      <div class="name">itch.io</div>
-      <div class="desc">海外玩家可通过 itch.io 购买 / 支持 / 下载</div>
+      <div class="name" data-i18n="itchName">itch.io</div>
+      <div class="desc" data-i18n="itchDesc">Players overseas can buy, support, and download on itch.io.</div>
     </div>
-    <a class="btn itch" href="https://guoyuli.itch.io/warring-states-card/purchase">前往 itch.io</a>
+    <a class="btn itch" href="https://guoyuli.itch.io/warring-states-card/purchase" data-i18n="itchBtn">Go to itch.io</a>
   </div>
 
-  <h2>🌐 网页版</h2>
+  <h2 data-i18n="hWeb">🌐 Web Version</h2>
   <div class="channel">
     <div class="ic">💻</div>
     <div class="info">
-      <div class="name">浏览器即点即玩</div>
-      <div class="desc">无需下载，电脑 / 手机浏览器直接开战</div>
+      <div class="name" data-i18n="webName">Play in Your Browser</div>
+      <div class="desc" data-i18n="webDesc">No download needed. Play on your computer or phone browser.</div>
     </div>
-    <a class="btn web" href="https://wscard.games/">立即开始</a>
+    <a class="btn web" href="https://wscard.games/" data-i18n="webBtn">Play Now</a>
   </div>
 
   <div class="tip">
-    <p><b>系统要求：</b>Android 8.0 及以上（64 位）；网页版支持 Chrome / Edge / Safari 等主流浏览器。</p>
-    <p><b>账号互通：</b>客户端与网页版数据互通，登录同一账号即可同步进度。</p>
-    <p><b>问题反馈：</b>zgfylgy@163.com</p>
+    <p data-i18n="tipReq"><b>System requirements:</b> Android 8.0+ (64-bit); web version supports Chrome, Edge, Safari and other major browsers.</p>
+    <p data-i18n="tipSync"><b>Account sync:</b> Progress is shared between the app and web version — log in with the same account.</p>
+    <p data-i18n="tipContact"><b>Feedback:</b> zgfylgy@163.com</p>
   </div>
 
   <div class="foot">
-    <a href="https://wscard.games/">返回游戏首页</a> ·
-    <a href="https://wscard.games/landing.html">游戏介绍</a> ·
-    <a href="https://wscard.games/privacy.html">隐私政策</a><br>
-    © 2026 战国卡牌 Warring States Card Battles · zgfylgy@163.com
+    <a href="https://wscard.games/" data-i18n="footHome">Back to Game Home</a> ·
+    <a href="https://wscard.games/landing.html" data-i18n="footAbout">About</a> ·
+    <a href="https://wscard.games/privacy.html" data-i18n="footPrivacy">Privacy</a><br>
+    © 2026 Warring States Card Battles · zgfylgy@163.com
   </div>
 
 </div>
+
+<script>
+(function () {
+  var I18N = {
+    en: {
+      sub: "Download Center · Pick your platform",
+      noticeNoDl: "🎮 Don't want to download?",
+      noticeBtn: "Play the Web Version",
+      hAndroid: "📱 Android App",
+      andName: "Android APK (Recommended)",
+      andDesc: "Install on your Android phone / tablet for smooth play · v1.0.0 · ~83 MB",
+      andBtn: "Download APK",
+      andTip1: "💡 For 64-bit Android (ARM64). If prompted about \"unknown sources\", allow installation in settings.",
+      andHistoryLbl: "📦 Previous versions:",
+      hIos: "🍎 iOS App",
+      iosName: "iOS (App Store)",
+      iosDesc: "Under review on the App Store. Coming soon.",
+      iosBtn: "Coming Soon",
+      hOverseas: "🌍 Overseas",
+      itchName: "itch.io",
+      itchDesc: "Players overseas can buy, support, and download on itch.io.",
+      itchBtn: "Go to itch.io",
+      hWeb: "🌐 Web Version",
+      webName: "Play in Your Browser",
+      webDesc: "No download needed. Play on your computer or phone browser.",
+      webBtn: "Play Now",
+      tipReq: "<b>System requirements:</b> Android 8.0+ (64-bit); web version supports Chrome, Edge, Safari and other major browsers.",
+      tipSync: "<b>Account sync:</b> Progress is shared between the app and web version — log in with the same account.",
+      tipContact: "<b>Feedback:</b> zgfylgy@163.com",
+      footHome: "Back to Game Home", footAbout: "About", footPrivacy: "Privacy"
+    },
+    zh: {
+      sub: "下载中心 · 选择你的平台",
+      noticeNoDl: "🎮 不想下载？",
+      noticeBtn: "直接开始网页版",
+      hAndroid: "📱 Android 客户端",
+      andName: "Android APK（推荐）",
+      andDesc: "安装到安卓手机 / 平板，流畅畅玩 · v1.0.0 · 约 83 MB",
+      andBtn: "下载 APK",
+      andTip1: "💡 适用于 64 位安卓设备（ARM64）。若提示\"未知来源\"请在设置中允许安装。",
+      andHistoryLbl: "📦 历史版本：",
+      hIos: "🍎 iOS 客户端",
+      iosName: "iOS（App Store）",
+      iosDesc: "App Store 审核中，即将上线，敬请期待",
+      iosBtn: "即将上线",
+      hOverseas: "🌍 海外渠道",
+      itchName: "itch.io",
+      itchDesc: "海外玩家可通过 itch.io 购买 / 支持 / 下载",
+      itchBtn: "前往 itch.io",
+      hWeb: "🌐 网页版",
+      webName: "浏览器即点即玩",
+      webDesc: "无需下载，电脑 / 手机浏览器直接开战",
+      webBtn: "立即开始",
+      tipReq: "<b>系统要求：</b>Android 8.0 及以上（64 位）；网页版支持 Chrome / Edge / Safari 等主流浏览器。",
+      tipSync: "<b>账号互通：</b>客户端与网页版数据互通，登录同一账号即可同步进度。",
+      tipContact: "<b>问题反馈：</b>zgfylgy@163.com",
+      footHome: "返回游戏首页", footAbout: "游戏介绍", footPrivacy: "隐私政策"
+    },
+    ja: {
+      sub: "ダウンロードセンター · プラットフォームを選ぶ",
+      noticeNoDl: "🎮 ダウンロード不要？",
+      noticeBtn: "ウェブ版をプレイ",
+      hAndroid: "📱 Android アプリ",
+      andName: "Android APK（推奨）",
+      andDesc: "Android スマホ / タブレットにインストールして快適にプレイ · v1.0.0 · 約83MB",
+      andBtn: "APK をDL",
+      andTip1: "💡 64 ビット Android（ARM64）向け。\"不明な提供元\"と表示されたら設定でインストールを許可してください。",
+      andHistoryLbl: "📦 過去バージョン：",
+      hIos: "🍎 iOS アプリ",
+      iosName: "iOS（App Store）",
+      iosDesc: "App Store で審査中。近日公開予定です。",
+      iosBtn: "近日公開",
+      hOverseas: "🌍 海外版",
+      itchName: "itch.io",
+      itchDesc: "海外プレイヤーは itch.io で購入・支援・ダウンロードできます。",
+      itchBtn: "itch.io へ",
+      hWeb: "🌐 ウェブ版",
+      webName: "ブラウザで即プレイ",
+      webDesc: "ダウンロード不要。PC / スマホのブラウザですぐに対戦。",
+      webBtn: "今すぐプレイ",
+      tipReq: "<b>動作環境：</b>Android 8.0 以上（64 ビット）。ウェブ版は Chrome / Edge / Safari などの主要ブラウザに対応。",
+      tipSync: "<b>アカウント同期：</b>アプリとウェブ版はデータ共通。同じアカウントでログインすれば進行状況が同期されます。",
+      tipContact: "<b>フィードバック：</b>zgfylgy@163.com",
+      footHome: "ゲームトップへ", footAbout: "ゲーム紹介", footPrivacy: "プライバシー"
+    }
+  };
+  var CODES = ['en', 'zh', 'ja'];
+
+  function detectLang() {
+    var p = new URLSearchParams(location.search).get('lang');
+    if (p && CODES.indexOf(p) > -1) return p;
+    try { var s = localStorage.getItem('wscard_lang'); if (s && CODES.indexOf(s) > -1) return s; } catch (e) {}
+    return 'en';
+  }
+
+  function apply(lang) {
+    var d = I18N[lang];
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang === 'ja' ? 'ja' : 'en';
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (d[key] !== undefined) el.innerHTML = d[key];
+    });
+    document.querySelectorAll('.langbar button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+  }
+
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var lang = b.getAttribute('data-lang');
+      try { localStorage.setItem('wscard_lang', lang); } catch (e) {}
+      apply(lang);
+    });
+  });
+
+  apply(detectLang());
+})();
+</script>
 </body>
 </html>
