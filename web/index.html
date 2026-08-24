@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="战国卡牌 - 免费网页卡牌对战游戏，集结诸子百家、战国武将，搭配卡组、挑战天下。在线匹配对战、单人冒险、每日任务，浏览器即点即玩。">
+  <meta name="description" content="免费战国卡牌对战游戏，游戏灵感源自战国百家争鸣。集结兵家、纵横家、道家诸子百家与战国武将，打造专属卡组，在线匹配对战、挑战单人冒险、完成每日任务，浏览器即点即玩，无需下载。">
   <meta name="keywords" content="战国卡牌,战国,卡牌对战,Warring States,卡牌游戏,网页游戏,三国杀,炉石,免费卡牌">
   <meta name="theme-color" content="#2C1810">
   <meta name="robots" content="index, follow">
@@ -151,6 +152,34 @@
       inset: 0;
       display: block;
     }
+    /* SEO 正文：常驻 DOM，供爬虫索引（含 JS 渲染后仍然存在，画布/loading
+       按绘制层序覆盖，纯用户不可见）。position:static → 绘制序在
+       absolute 定位的 flutter-view 之后挂载的画布之下，永不遮挡游戏。 */
+    .seo-content {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+      color: #E8DCC0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+    }
+    .seo-content h1 {
+      color: #D4AF37;
+      font-size: 28px;
+      border-bottom: 2px solid #4A3520;
+      padding-bottom: 12px;
+    }
+    .seo-content h2 {
+      color: #D4AF37;
+      font-size: 20px;
+      margin-top: 28px;
+    }
+    .seo-content p, .seo-content li {
+      color: #C9BBA0;
+      font-size: 15px;
+    }
+    .seo-content a { color: #D4AF37; }
+    .seo-content ul { padding-left: 22px; }
   </style>
 
   <!-- ============================================================ -->
@@ -166,9 +195,34 @@
        的「翻倍金币」Smart Link 广告。 -->
 </head>
 <body>
+  <!-- SEO: 游戏概述正文（JS 加载后既被加载动画覆盖，也被 Flutter 画布覆盖，
+       但对爬虫/无 JS 环境始终可见，避免仅靠 canvas 导致正文不可索引） -->
+  <section class="seo-content" aria-label="游戏介绍">
+    <h1>战国卡牌 · 免费网页卡牌对战游戏</h1>
+    <p>《战国卡牌》是一款免费的战国题材策略卡牌对战网页游戏。以战国百家争鸣为背景，集结兵家、纵横家、道家、儒家、法家、墨家、阴阳家七大学派与历代战国名将，收藏卡牌、组建卡组，与全球玩家在线对战，或挑战单人冒险关卡。浏览器即点即玩，无需下载安装。</p>
+    <h2>游戏特色</h2>
+    <ul>
+      <li><b>七大学派，七种打法</b>：兵家速攻、法家压制、墨家攻城、道家续航……每一种学派都有独特的战术体系。</li>
+      <li><b>196 张独特卡牌</b>：普通、稀有、史诗、传说四级稀有度，收藏与构筑深度十足。</li>
+      <li><b>21 位传奇英雄</b>：孙武、白起、王翦、孙膑、鬼谷子、孔子、老子、墨子等历史名人登场。</li>
+      <li><b>3 分钟一局</b>：快节奏对战，策略与运气的平衡较量。</li>
+      <li><b>全平台支持</b>：桌面与手机浏览器直接游玩，多语言界面。</li>
+    </ul>
+    <h2>免费畅玩</h2>
+    <p>核心玩法完全免费。可选内购钻石用于解锁外观与加速成长，拒绝付费碾压，胜负取决于策略。</p>
+    <h2>相关页面</h2>
+    <nav aria-label="站点导航">
+      <a href="/about.html">游戏介绍</a> ·
+      <a href="/landing.html">英文介绍页</a> ·
+      <a href="/blog/getting-started-guide.html">新手入门攻略</a> ·
+      <a href="/blog/seven-schools-guide.html">七大学派详解</a> ·
+      <a href="/download.html">下载</a> ·
+      <a href="/privacy.html">隐私政策</a>
+    </nav>
+  </section>
   <!-- SEO: 爬虫可见的游戏描述（JS 启动后由 Flutter 覆盖隐藏） -->
   <noscript>
-    <h1>战国卡牌 · 免费网页卡牌对战游戏</h1>
+    <h2>战国卡牌 · 免费网页卡牌对战游戏</h2>
     <p>战国卡牌是一款免费的战国题材卡牌对战网页游戏。集结诸子百家与战国名将——白起、王翦、孙膑、鬼谷子等英杰，打造你的专属卡组，与天下高手在线对决。</p>
     <ul>
       <li>在线匹配对战：与真实玩家实时卡牌对决</li>
@@ -183,7 +237,7 @@
     <div class="loading-symbol">
       <span>戰</span>
     </div>
-    <div class="loading-title">战国卡牌</div>
+    <h1 class="loading-title">战国卡牌</h1>
     <div class="loading-subtitle">WARRING STATES</div>
     <div class="loading-bar-container">
       <div class="loading-bar"></div>
@@ -191,7 +245,7 @@
   </div>
 
   <script>
-    // 隐藏加载动画
+    // 隐藏加载动画（SEO 正文常驻 DOM 供爬虫索引，Flutter 画布绘制序覆盖它）
     window.addEventListener('flutter-first-frame', function() {
       setTimeout(function() {
         var loading = document.getElementById('loading');

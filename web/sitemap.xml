@@ -3,141 +3,142 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://wscard.games/</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+
   <url>
     <loc>https://wscard.games/about.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://wscard.games/privacy.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
 
+  <!-- landing 集群：en=landing.html(唯一英文), zh=?lang=zh, ja=landing-jp.html, ko=landing-kr.html -->
   <url>
     <loc>https://wscard.games/landing.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/landing.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/landing.html"/>
     <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/landing.html?lang=zh"/>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/landing.html?lang=ja"/>
-  </url>
-  <url>
-    <loc>https://wscard.games/landing.html?lang=en</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/landing-jp.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wscard.games/landing-kr.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/landing.html"/>
   </url>
   <url>
     <loc>https://wscard.games/landing.html?lang=zh</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/landing.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/landing.html?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/landing-jp.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wscard.games/landing-kr.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/landing.html"/>
   </url>
-  <url>
-    <loc>https://wscard.games/landing.html?lang=ja</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
   <url>
     <loc>https://wscard.games/landing-jp.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/landing.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/landing.html?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/landing-jp.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wscard.games/landing-kr.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/landing.html"/>
   </url>
   <url>
     <loc>https://wscard.games/landing-kr.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/landing.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/landing.html?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/landing-jp.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wscard.games/landing-kr.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/landing.html"/>
   </url>
-  <url>
-    <loc>https://wscard.games/landing-eu.html</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://wscard.games/landing-sea.html</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
+
   <url>
     <loc>https://wscard.games/blog/seven-schools-guide.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://wscard.games/blog/getting-started-guide.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://wscard.games/download.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/download.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/download.html"/>
     <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/download.html?lang=zh"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/download.html?lang=ja"/>
-  </url>
-  <url>
-    <loc>https://wscard.games/download.html?lang=en</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/download.html"/>
   </url>
   <url>
     <loc>https://wscard.games/download.html?lang=zh</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/download.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/download.html?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/download.html?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/download.html"/>
   </url>
   <url>
     <loc>https://wscard.games/download.html?lang=ja</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/download.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/download.html?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/download.html?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/download.html"/>
   </url>
 
   <url>
     <loc>https://wscard.games/promo.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/promo.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/promo.html"/>
     <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/promo.html?lang=zh"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/promo.html?lang=ja"/>
-  </url>
-  <url>
-    <loc>https://wscard.games/promo.html?lang=en</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/promo.html"/>
   </url>
   <url>
     <loc>https://wscard.games/promo.html?lang=zh</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/promo.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/promo.html?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/promo.html?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/promo.html"/>
   </url>
   <url>
     <loc>https://wscard.games/promo.html?lang=ja</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wscard.games/promo.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wscard.games/promo.html?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wscard.games/promo.html?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wscard.games/promo.html"/>
   </url>
 </urlset>
