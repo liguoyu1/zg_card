@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warring States: Card Battles Beginner's Guide — How to Play in 3 Minutes</title>
+<meta name="description" content="Learn to play Warring States: Card Battles in 3 minutes. Turn structure, card types, key keywords (Taunt, Charge, Divine Shield), hero powers, and 5 essential tips for new players.">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Warring States: Card Battles">
+<meta property="og:title" content="How to Play Warring States: Card Battles — Beginner's Guide">
+<meta property="og:description" content="Turn structure, card types, keywords, and 5 essential tips. Your first match is under a minute away.">
+<meta property="og:url" content="https://wscard.games/blog/getting-started-guide.html">
+<meta property="og:image" content="https://wscard.games/screens/cover.webp">
+<meta property="article:published_time" content="2026-08-23">
+<link rel="canonical" href="https://wscard.games/blog/getting-started-guide.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How to Play Warring States: Card Battles — Beginner's Guide",
+  "description": "Learn the turn structure, card types, and keywords in 3 minutes.",
+  "image": "https://wscard.games/screens/cover.webp",
+  "author": {"@type": "Organization", "name": "Warring States: Card Battles"},
+  "publisher": {"@type": "Organization", "name": "Warring States: Card Battles"},
+  "datePublished": "2026-08-23",
+  "mainEntityOfPage": "https://wscard.games/blog/getting-started-guide.html"
+}
+</script>
+<style>
+  :root{
+    --bg:#F7F4EE; --surface:#FFFFFF; --ink:#2B2A26; --muted:#6E6A60;
+    --accent:#C9A86A; --border:#E4DED2;
+    --disp:'Archivo',sans-serif; --body:'Noto Sans',sans-serif; --cjk:'Noto Serif SC',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.75;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .container{max-width:820px;margin:0 auto;padding:0 24px}
+
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(247,244,238,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .topbar-in{max-width:980px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-family:var(--disp);font-weight:800;font-size:15px;letter-spacing:.02em}
+  .brand em{font-style:normal;color:var(--accent)}
+  .topbar nav{display:flex;align-items:center;gap:16px}
+  .topbar nav a{font-size:13px;color:var(--muted)}
+  .topbar nav a:hover{color:var(--ink)}
+  .langbar{display:flex;gap:4px}
+  .langbar button{font-family:var(--body);font-size:12px;font-weight:600;background:transparent;color:var(--muted);border:1px solid transparent;border-radius:6px;padding:6px 10px;cursor:pointer}
+  .langbar button.active{color:var(--ink);border-color:var(--border);background:#fff}
+
+  .article{padding:56px 0 72px}
+  .kicker{font-family:var(--disp);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;font-weight:700}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(28px,4.5vw,42px);line-height:1.12;letter-spacing:-.01em;max-width:16ch}
+  .byline{display:flex;align-items:center;gap:14px;margin:22px 0 34px;padding-bottom:26px;border-bottom:1px solid var(--border)}
+  .byline .avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;color:#fff;font-size:16px}
+  .byline .who{font-size:13px;color:var(--ink)}
+  .byline .when{font-size:12px;color:var(--muted)}
+  .hero-img{border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-bottom:40px}
+  .hero-img img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover}
+
+  .lead{font-size:19px;line-height:1.6;color:#38362F;margin-bottom:28px}
+  h2{font-family:var(--disp);font-weight:700;font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
+  h2 .num{color:var(--accent);font-weight:800;margin-right:10px}
+  p{color:#4A473E;margin-bottom:18px;font-size:16px}
+  ul,ol{padding-left:24px;margin-bottom:18px}
+  li{margin-bottom:8px;color:#4A473E;font-size:16px}
+  strong{color:var(--ink)}
+
+  .toc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px 28px;margin:0 0 40px}
+  .toc h3{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc a{display:block;font-size:14.5px;color:#4A473E;padding:6px 0;border-bottom:1px solid var(--border)}
+  .toc a:last-child{border-bottom:none}
+  .toc a:hover{color:var(--accent)}
+
+  .step{display:flex;gap:18px;margin-bottom:26px}
+  .step .badge{flex:0 0 44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--disp);font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center}
+  .step .body{flex:1}
+  .step .body h3{font-family:var(--disp);font-weight:700;font-size:19px;margin-bottom:6px}
+  .step .body p{font-size:15.5px;margin-bottom:10px}
+
+  .factbox{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:8px;padding:20px 24px;margin:18px 0 26px}
+  .factbox b{font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:8px}
+  .factbox p{font-size:14.5px;margin-bottom:8px;color:#4A473E}
+  .factbox p:last-child{margin-bottom:0}
+
+  .kw-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:16px 0 22px}
+  .kw{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
+  .kw b{font-family:var(--disp);font-size:14px;display:block;margin-bottom:4px}
+  .kw span{font-size:13px;color:var(--muted)}
+
+  .types{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 22px}
+  .type{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;text-align:center}
+  .type .ic{font-size:24px;margin-bottom:8px}
+  .type b{font-family:var(--disp);font-size:14.5px;display:block;margin-bottom:4px}
+  .type span{font-size:12.5px;color:var(--muted)}
+
+  .tip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start}
+  .tip .tnum{font-family:var(--disp);font-weight:800;color:var(--accent);font-size:15px;flex:0 0 22px}
+  .tip .ttext{font-size:15px;color:#4A473E}
+  .tip .ttext b{color:var(--ink)}
+
+  .cta{background:var(--ink);color:#F7F4EE;border-radius:12px;padding:36px;text-align:center;margin:48px 0 0}
+  .cta h2{color:#fff;font-size:22px;margin-bottom:10px}
+  .cta p{color:#C9C4B8;margin-bottom:22px;font-size:15px}
+  .cta a{display:inline-block;background:var(--accent);color:var(--ink);font-family:var(--disp);font-weight:700;padding:14px 30px;border-radius:8px;font-size:15px}
+  .cta a:hover{background:#D8B97A}
+
+  .related{border-top:1px solid var(--border);margin-top:48px;padding-top:28px}
+  .related h3{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+  .related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .rel{border:1px solid var(--border);border-radius:8px;padding:18px;background:var(--surface)}
+  .rel b{font-family:var(--disp);font-size:14.5px;display:block;margin-bottom:6px}
+  .rel span{font-size:12.5px;color:var(--muted)}
+
+  footer{padding:36px 0 48px;border-top:1px solid var(--border);color:var(--muted);font-size:13px}
+  footer .foot-in{max-width:980px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+
+  @media(max-width:700px){
+    .kw-grid,.types,.related-grid{grid-template-columns:1fr}
+    .topbar nav a.only{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="https://wscard.games/">Warring States <em>Card</em></a>
+    <nav>
+      <a class="only" href="https://wscard.games/landing.html">Play Free</a>
+      <a class="only" href="https://wscard.games/blog/seven-schools-guide.html">7 Schools</a>
+      <a class="only" href="https://wscard.games/blog/getting-started-guide.html" style="color:var(--ink)">Guide</a>
+      <div class="langbar">
+        <button data-lang="en" class="active">EN</button>
+        <button data-lang="zh">中文</button>
+        <button data-lang="ja">日本語</button>
+        <button data-lang="ko">한국어</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<article class="article">
+  <div class="container">
+
+    <div class="kicker" data-tr="kicker">Beginner's Guide</div>
+    <h1 data-tr="h1">How to Play Warring States Card Battles in 3 Minutes</h1>
+    <div class="byline">
+      <div class="avatar">W</div>
+      <div>
+        <div class="who" data-tr="byline">By the Warring States Team · Game Guide</div>
+        <div class="when">Aug 23, 2026 · <span data-tr="readtime">5 min read</span></div>
+      </div>
+    </div>
+
+    <div class="hero-img"><img src="https://wscard.games/screens/battle.webp" alt="Warring States Card Battles battle screen"></div>
+
+    <p class="lead" data-tr="lead">Warring States: Card Battles is a fast strategy card game set in ancient China. Two heroes fight to reduce each other's health from 30 to 0. You play creatures, cast spells, and swing weapons — all driven by the philosophy of the school you chose. Here is everything you need for your first match.</p>
+
+    <nav class="toc">
+      <h3 data-tr="toc-title">On this page</h3>
+      <a href="#goal" data-tr="toc1">1 · The goal: 30 to 0</a>
+      <a href="#turn" data-tr="toc2">2 · A turn, step by step</a>
+      <a href="#types" data-tr="toc3">3 · The three card types</a>
+      <a href="#keywords" data-tr="toc4">4 · Keywords that matter</a>
+      <a href="#tips" data-tr="toc5">5 · Five tips for new players</a>
+      <a href="#next" data-tr="toc6">6 · Where to go next</a>
+    </nav>
+
+    <!-- ===== GOAL ===== -->
+    <h2 id="goal"><span class="num">01</span><span data-tr="goal-h">The goal: reduce their hero to 0</span></h2>
+    <p data-tr="goal-p1">Each player controls a <strong data-tr="goal-b1">hero</strong> with <strong>30 health</strong>. You win by dropping the enemy hero to 0 — either by attacking directly, or by letting them run out of cards and take <strong data-tr="goal-b2">fatigue</strong> damage. Your hero also has a unique <strong data-tr="goal-b3">power</strong> from its school that you can use each turn.</p>
+    <div class="factbox">
+      <b data-tr="fact-h">Core numbers</b>
+      <p data-tr="fact1">Health: 30 · Starting hand: 4 cards · Draw: 1 per turn</p>
+      <p data-tr="fact2">Mana: up to 10 per turn · Board: max 7 minions</p>
+    </div>
+
+    <!-- ===== TURN ===== -->
+    <h2 id="turn"><span class="num">02</span><span data-tr="turn-h">A turn, step by step</span></h2>
+    <div class="step"><div class="badge">1</div><div class="body">
+      <h3 data-tr="s1-h">Draw a card</h3>
+      <p data-tr="s1-p">At the start of your turn you draw one card. If your deck is empty, you take fatigue damage instead — so avoid over-drawing.</p>
+    </div></div>
+    <div class="step"><div class="badge">2</div><div class="body">
+      <h3 data-tr="s2-h">Gain mana</h3>
+      <p data-tr="s2-p">Your maximum mana grows by one each turn, up to 10. Mana is the currency you spend to play cards — the higher the card's cost, the later you can afford it.</p>
+    </div></div>
+    <div class="step"><div class="badge">3</div><div class="body">
+      <h3 data-tr="s3-h">Play cards</h3>
+      <p data-tr="s3-p">Play minions onto your board, cast spells, and equip weapons. Each costs mana.</p>
+    </div></div>
+    <div class="step"><div class="badge">4</div><div class="body">
+      <h3 data-tr="s4-h">Attack</h3>
+      <p data-tr="s4-p">Minions can attack once per turn (unless they have <strong data-tr="s4-b">Charge</strong> or <strong data-tr="s4-b2">Windfury</strong>). They can hit the enemy hero or enemy minions. Your hero can attack with its equipped weapon.</p>
+    </div></div>
+    <div class="step"><div class="badge">5</div><div class="body">
+      <h3 data-tr="s5-h">Use your hero power &amp; end</h3>
+      <p data-tr="s5-p">Your school's hero power costs a little mana. When you're done, end your turn and pass to your opponent.</p>
+    </div></div>
+
+    <!-- ===== TYPES ===== -->
+    <h2 id="types"><span class="num">03</span><span data-tr="types-h">The three card types</span></h2>
+    <div class="types">
+      <div class="type"><div class="ic">⚔️</div><b data-tr="t1">Minion</b><span data-tr="t1d">A creature on the board</span></div>
+      <div class="type"><div class="ic">✨</div><b data-tr="t2">Spell</b><span data-tr="t2d">One-time effect</span></div>
+      <div class="type"><div class="ic">🛡️</div><b data-tr="t3">Weapon</b><span data-tr="t3d">Attack with your hero</span></div>
+    </div>
+    <p data-tr="types-p">Minions fight for you and stay on the board. Spells deal damage, heal, or buff instantly. Weapons give your hero attack power you can swing at enemies — but each swing costs durability.</p>
+
+    <!-- ===== KEYWORDS ===== -->
+    <h2 id="keywords"><span class="num">04</span><span data-tr="kw-h">Keywords that matter most</span></h2>
+    <div class="kw-grid">
+      <div class="kw"><b data-tr="k1">Taunt</b><span data-tr="k1d">Enemies must attack this first</span></div>
+      <div class="kw"><b data-tr="k2">Divine Shield</b><span data-tr="k2d">Blocks the first hit</span></div>
+      <div class="kw"><b data-tr="k3">Charge</b><span data-tr="k3d">Can attack the turn it's played</span></div>
+      <div class="kw"><b data-tr="k4">Windfury</b><span data-tr="k4d">Attacks twice per turn</span></div>
+      <div class="kw"><b data-tr="k5">Poisonous</b><span data-tr="k5d">Destroys any minion it damages</span></div>
+      <div class="kw"><b data-tr="k6">Lifesteal</b><span data-tr="k6d">Damage heals your hero</span></div>
+    </div>
+    <p data-tr="kw-p">Taunts protect your hero and other minions — break them first. Divine Shield absorbs one hit for free. Charge lets an aggressive minion strike immediately. Learning these few will carry you through most matches.</p>
+
+    <!-- ===== TIPS ===== -->
+    <h2 id="tips"><span class="num">05</span><span data-tr="tips-h">Five tips for new players</span></h2>
+    <div class="tip"><div class="tnum">1</div><div class="ttext" data-tr="tip1">Keep your mana curve even — don't fill your deck only with expensive cards you can't play early.</div></div>
+    <div class="tip"><div class="tnum">2</div><div class="ttext" data-tr="tip2">Clear enemy taunts before attacking the hero — an unexpected taunt can cost you the game.</div></div>
+    <div class="tip"><div class="tnum">3</div><div class="ttext" data-tr="tip3">Trade minions wisely: attacking an enemy minion saves your health for the long game.</div></div>
+    <div class="tip"><div class="tnum">4</div><div class="ttext" data-tr="tip4">Don't hoard spells — a removal used at the right moment is worth more than a perfect combo.</div></div>
+    <div class="tip"><div class="tnum">5</div><div class="ttext" data-tr="tip5">Start with an aggressive school like Military to learn fast, then branch out.</div></div>
+
+    <!-- ===== NEXT ===== -->
+    <h2 id="next"><span class="num">06</span><span data-tr="next-h">Where to go next</span></h2>
+    <p data-tr="next-p">Now that you know the basics, pick your school of thought. Each of the seven schools plays completely differently — read the full breakdown to find the one that matches your playstyle.</p>
+
+    <div class="cta">
+      <h2 data-tr="cta-h">Your first match is a minute away</h2>
+      <p data-tr="cta-p">Free to play in your browser — no download, no account.</p>
+      <a href="https://wscard.games/" data-tr="cta-btn">Play Free Now</a>
+    </div>
+
+    <div class="related">
+      <h3 data-tr="rel-title">More guides</h3>
+      <div class="related-grid">
+        <a class="rel" href="https://wscard.games/blog/seven-schools-guide.html"><b data-tr="rel1">7 Schools Explained</b><span data-tr="rel1d">Pick your philosophy</span></a>
+        <a class="rel" href="https://wscard.games/blog/getting-started-guide.html"><b data-tr="rel2">Getting Started</b><span data-tr="rel2d">This guide</span></a>
+        <a class="rel" href="https://wscard.games/landing.html"><b data-tr="rel3">Play Free</b><span data-tr="rel3d">Jump into the game</span></a>
+      </div>
+    </div>
+
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <div>© 2026 Warring States: Card Battles</div>
+    <nav style="display:flex;gap:20px">
+      <a href="https://wscard.games/">Game</a>
+      <a href="https://wscard.games/blog/getting-started-guide.html">Guide</a>
+      <a href="https://wscard.games/privacy.html">Privacy</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var CODES=['en','zh','ja','ko'];
+  function detect(){
+    var p=new URLSearchParams(location.search).get('lang');
+    if(p&&CODES.indexOf(p)>-1)return p;
+    try{var s=localStorage.getItem('wscard_lang');if(s&&CODES.indexOf(s)>-1)return s;}catch(e){}
+    return 'en';
+  }
+  var I18N={
+    en:{
+      kicker:"Beginner's Guide",
+      h1:"How to Play Warring States Card Battles in 3 Minutes",
+      byline:"By the Warring States Team · Game Guide",
+      readtime:"5 min read",
+      lead:"Warring States: Card Battles is a fast strategy card game set in ancient China. Two heroes fight to reduce each other's health from 30 to 0. You play creatures, cast spells, and swing weapons — all driven by the philosophy of the school you chose.",
+      "toc-title":"On this page","toc1":"1 · The goal: 30 to 0","toc2":"2 · A turn, step by step","toc3":"3 · The three card types","toc4":"4 · Keywords that matter","toc5":"5 · Five tips for new players","toc6":"6 · Where to go next",
+      "goal-h":"The goal: reduce their hero to 0",
+      "goal-p1":"Each player controls a hero with 30 health. You win by dropping the enemy hero to 0 — either by attacking directly, or by letting them run out of cards and take fatigue damage. Your hero also has a unique power from its school that you can use each turn.",
+      "goal-b1":"hero","goal-b2":"fatigue","goal-b3":"power",
+      "fact-h":"Core numbers","fact1":"Health: 30 · Starting hand: 4 cards · Draw: 1 per turn","fact2":"Mana: up to 10 per turn · Board: max 7 minions",
+      "turn-h":"A turn, step by step",
+      "s1-h":"Draw a card","s1-p":"At the start of your turn you draw one card. If your deck is empty, you take fatigue damage instead — so avoid over-drawing.",
+      "s2-h":"Gain mana","s2-p":"Your maximum mana grows by one each turn, up to 10. Mana is the currency you spend to play cards — the higher the card's cost, the later you can afford it.",
+      "s3-h":"Play cards","s3-p":"Play minions onto your board, cast spells, and equip weapons. Each costs mana.",
+      "s4-h":"Attack","s4-p":"Minions can attack once per turn (unless they have Charge or Windfury). They can hit the enemy hero or enemy minions. Your hero can attack with its equipped weapon.",
+      "s4-b":"Charge","s4-b2":"Windfury",
+      "s5-h":"Use your hero power & end","s5-p":"Your school's hero power costs a little mana. When you're done, end your turn and pass to your opponent.",
+      "types-h":"The three card types",
+      "t1":"Minion","t1d":"A creature on the board","t2":"Spell","t2d":"One-time effect","t3":"Weapon","t3d":"Attack with your hero",
+      "types-p":"Minions fight for you and stay on the board. Spells deal damage, heal, or buff instantly. Weapons give your hero attack power you can swing at enemies — but each swing costs durability.",
+      "kw-h":"Keywords that matter most",
+      "k1":"Taunt","k1d":"Enemies must attack this first","k2":"Divine Shield","k2d":"Blocks the first hit","k3":"Charge","k3d":"Can attack the turn it's played","k4":"Windfury","k4d":"Attacks twice per turn","k5":"Poisonous","k5d":"Destroys any minion it damages","k6":"Lifesteal","k6d":"Damage heals your hero",
+      "kw-p":"Taunts protect your hero and other minions — break them first. Divine Shield absorbs one hit for free. Charge lets an aggressive minion strike immediately. Learning these few will carry you through most matches.",
+      "tips-h":"Five tips for new players",
+      "tip1":"Keep your mana curve even — don't fill your deck only with expensive cards you can't play early.",
+      "tip2":"Clear enemy taunts before attacking the hero — an unexpected taunt can cost you the game.",
+      "tip3":"Trade minions wisely: attacking an enemy minion saves your health for the long game.",
+      "tip4":"Don't hoard spells — a removal used at the right moment is worth more than a perfect combo.",
+      "tip5":"Start with an aggressive school like Military to learn fast, then branch out.",
+      "next-h":"Where to go next",
+      "next-p":"Now that you know the basics, pick your school of thought. Each of the seven schools plays completely differently — read the full breakdown to find the one that matches your playstyle.",
+      "cta-h":"Your first match is a minute away","cta-p":"Free to play in your browser — no download, no account.","cta-btn":"Play Free Now",
+      "rel-title":"More guides","rel1":"7 Schools Explained","rel1d":"Pick your philosophy","rel2":"Getting Started","rel2d":"This guide","rel3":"Play Free","rel3d":"Jump into the game"
+    },
+    zh:{
+      kicker:"新手入门",
+      h1:"《战国卡牌》3 分钟上手玩法",
+      byline:"战国卡牌团队 · 游戏攻略",
+      readtime:"约5分钟阅读",
+      lead:"《战国卡牌》是一款发生在古代中国的快节奏策略卡牌游戏。两位英雄各把对方 30 点生命打到 0 即可获胜。你召唤随从、施放法术、挥动武器——一切都由你选择的学派哲学驱动。这篇攻略让你 3 分钟上手。",
+      "toc-title":"本页目录","toc1":"一、目标:把对手打到 0","toc2":"二、一回合的流程","toc3":"三、三大卡牌类型","toc4":"四、关键关键词","toc5":"五、新手五个小贴士","toc6":"六、下一步",
+      "goal-h":"目标:把对手英雄打到 0",
+      "goal-p1":"每位玩家操控一位拥有 30 点生命值的英雄。把敌方英雄打到 0 即可获胜——可以直接攻击,也可以耗光对方牌库让其受到疲劳伤害。你的英雄还拥有来自学派、每回合可用的独特技能。",
+      "goal-b1":"英雄","goal-b2":"疲劳","goal-b3":"技能",
+      "fact-h":"核心数据","fact1":"生命 30 · 起手 4 张 · 每回合抽 1 张","fact2":"法力最高 10 · 战场上限 7 个随从",
+      "turn-h":"一回合的流程",
+      "s1-h":"抽一张牌","s1-p":"回合开始时抽一张牌。牌库抽空后改为受到疲劳伤害,所以别过度抽牌。",
+      "s2-h":"获得法力","s2-p":"每回合法力上限 +1,最高 10。法力是出牌的货币——卡牌费用越高,越晚才出得起。",
+      "s3-h":"打出卡牌","s3-p":"在战场召唤随从、施放法术、装备武器,每张都消耗法力。",
+      "s4-h":"攻击","s4-p":"随从每回合攻击一次(除非拥有冲锋或风怒)。可以攻击敌方英雄或敌方随从。装备武器后你的英雄也能攻击。",
+      "s4-b":"冲锋","s4-b2":"风怒",
+      "s5-h":"使用英雄技能并结束回合","s5-p":"学派的英雄技能消耗少量法力。操作完后结束回合,把主动权交给对手。",
+      "types-h":"三大卡牌类型",
+      "t1":"随从","t1d":"站在战场的生物","t2":"法术","t2d":"一次性效果","t3":"武器","t3d":"英雄用它攻击",
+      "types-p":"随从为你作战并留在战场。法术即时造成伤害、治疗或增益。武器赋予英雄攻击力去攻击敌人——但每次挥砍都会消耗耐久。",
+      "kw-h":"关键关键词",
+      "k1":"嘲讽","k1d":"敌人必须先攻击它","k2":"圣盾","k2d":"抵挡第一次伤害","k3":"冲锋","k3d":"出场的当回合即可攻击","k4":"风怒","k4d":"每回合攻击两次","k5":"剧毒","k5d":"伤害到的随从直接摧毁","k6":"吸血","k6d":"造成的伤害治疗你的英雄",
+      "kw-p":"嘲讽保护你的英雄和其他随从——先拆掉它。圣盾免费挡一次伤害。冲锋让攻击型随从立刻出手。掌握这几个就能应付大部分对局。",
+      "tips-h":"新手五个小贴士",
+      "tip1":"保持法力曲线均衡——别只带前期出不了的高费卡。",
+      "tip2":"攻击英雄前先清掉敌方嘲讽——一个意外嘲讽可能让你满盘皆输。",
+      "tip3":"聪明换怪:攻击敌方随从能为长远对局保住血量。",
+      "tip4":"别囤法术——在正确时机使用解场,比憋一个大招更有价值。",
+      "tip5":"先选兵家这类进攻性学派快速上手,再拓展其他流派。",
+      "next-h":"下一步",
+      "next-p":"掌握基础后,去选择你的思想流派吧。七大流派打法截然不同——阅读完整解析,找到最合你口味的那一个。",
+      "cta-h":"你的第一局不到一分钟","cta-p":"浏览器即玩即玩,无需下载、无需账号。","cta-btn":"立即免费游玩",
+      "rel-title":"更多攻略","rel1":"七大流派解析","rel1d":"选择你的哲学","rel2":"新手入门","rel2d":"本篇攻略","rel3":"立即游玩","rel3d":"进入游戏"
+    },
+    ja:{
+      kicker:"初心者ガイド",
+      h1:"『戦国カードバトル』3分で始める遊び方",
+      byline:"戦国カードバトルチーム · 攻略",
+      readtime:"約5分で読めます",
+      lead:"『戦国カードバトル』は古代中国を舞台にしたテンポ重視の戦略カードゲーム。二人の英雄が互いの30の体力を0にするまで戦います。随従を召喚し、呪文を使い、武器を振るう——すべては選んだ学派の哲学が導きます。3分で始められる完全入門ガイドです。",
+      "toc-title":"このページの目次","toc1":"1. 目標:ヒーローを0にする","toc2":"2. ターンの流れ","toc3":"3. 三つのカードタイプ","toc4":"4. 重要なキーワード","toc5":"5. 初心者向け5つのコツ","toc6":"6. 次のステップ",
+      "goal-h":"目標:敵ヒーローを0にする",
+      "goal-p1":"各プレイヤーは30の体力を持つヒーローを操作します。敵ヒーローを0にするか、相手の山札を枯らしてファティーグダメージで倒せば勝利です。また、学派から得た固有のヒーローパワーを毎ターン使えます。",
+      "goal-b1":"ヒーロー","goal-b2":"ファティーグ","goal-b3":"パワー",
+      "fact-h":"基本データ","fact1":"体力30 · 初期手札4枚 · 1ターン1枚ドロー","fact2":"マナ最大10 · 盤面上限7体",
+      "turn-h":"ターンの流れ",
+      "s1-h":"カードを引く","s1-p":"ターン開始時に1枚ドロー。山札が尽きると代わりにファティーグダメージを受けるので、過剰ドローは避けましょう。",
+      "s2-h":"マナを得る","s2-p":"毎ターン最大マナが1ずつ増え、最大10。マナはカードを出すための通貨。コストが高いカードほど後半にしか出せません。",
+      "s3-h":"カードを出す","s3-p":"盤面に随従を召喚し、呪文を使い、武器を装備します。それぞれマナを消費します。",
+      "s4-h":"攻撃する","s4-p":"随従は毎ターン1回攻撃できます(チャージや疾風怒濤があれば別)。敵ヒーローか敵随従を狙えます。武器を装備すればヒーローも攻撃できます。",
+      "s4-b":"チャージ","s4-b2":"疾風怒濤",
+      "s5-h":"ヒーローパワーを使って終了","s5-p":"学派のヒーローパワーは少しマナを消費します。操作が終わったらターンを終え、相手に渡します。",
+      "types-h":"三つのカードタイプ",
+      "t1":"随従","t1d":"盤面に立つクリーチャー","t2":"呪文","t2d":"一回限りの効果","t3":"武器","t3d":"ヒーローが攻撃する",
+      "types-p":"随従はあなたのために戦い盤面に残ります。呪文はダメージ・回復・強化を即座に発動。武器はヒーローに攻撃力を与えますが、振るうたびに耐久を消費します。",
+      "kw-h":"重要なキーワード",
+      "k1":"挑発","k1d":"敵はこれを先に攻撃しなければならない","k2":"聖なる盾","k2d":"最初の一撃を防ぐ","k3":"突撃","k3d":"出したターンに攻撃できる","k4":"疾風怒濤","k4d":"1ターンに2回攻撃","k5":"猛毒","k5d":"ダメージを与えた随従を破壊","k6":"生命奪取","k6d":"与えたダメージで回復",
+      "kw-p":"挑発はヒーローと味方を守るので先に壊しましょう。聖なる盾は一撃を無料で防ぎます。突撃は攻撃型随従を即座に動かせます。この数個で多くの対局を乗り切れます。",
+      "tips-h":"初心者向け5つのコツ",
+      "tip1":"マナカーブを均等に——序盤に出せない高コストだらけにしない。",
+      "tip2":"ヒーローを狙う前に敵の挑発を処理——想定外の挑発が命取りになります。",
+      "tip3":"賢くトレード:敵随従を攻撃すれば長期戦の体力を守れます。",
+      "tip4":"呪文をため込まない——完璧なコンボより、適切なタイミングの除去の方が価値があります。",
+      "tip5":"まず兵家のような攻撃的な学派で速く学び、それから広げましょう。",
+      "next-h":"次のステップ",
+      "next-p":"基礎を覚えたら、思想流派を選びましょう。七つの学派は全く違う動きをします——完全解説を読んで、自分に合うものを見つけてください。",
+      "cta-h":"最初の対戦は1分もかかりません","cta-p":"ブラウザで無料プレイ、ダウンロードもアカウントも不要。","cta-btn":"今すぐ無料プレイ",
+      "rel-title":"他の攻略","rel1":"七つの学派解説","rel1d":"哲学を選ぶ","rel2":"はじめに","rel2d":"本ガイド","rel3":"今すぐプレイ","rel3d":"ゲームを始める"
+    },
+    ko:{
+      kicker:"초보자 가이드",
+      h1:"《전국 카드 배틀》 3분 만에 배우는 플레이법",
+      byline:"전국 카드 배틀 팀 · 게임 공략",
+      readtime:"약 5분 소요",
+      lead:"《전국 카드 배틀》은 고대 중국을 배경으로 한 빠른 전략 카드 게임입니다. 두 영웅이 서로의 체력 30을 0으로 만드는 승부. 하수인을 소환하고 주문을 쓰고 무기를 휘두르세요 — 모든 것은 당신이 고른 학파의 철학이 이끕니다. 3분 만에 시작하는 완전 입문 가이드입니다.",
+      "toc-title":"이 페이지 목차","toc1":"1. 목표: 영웅을 0으로","toc2":"2. 턴의 흐름","toc3":"3. 세 가지 카드 타입","toc4":"4. 핵심 키워드","toc5":"5. 초보자 팁 5가지","toc6":"6. 다음 단계",
+      "goal-h":"목표: 적 영웅을 0으로",
+      "goal-p1":"각 플레이어는 체력 30의 영웅을 조종합니다. 적 영웅을 0으로 만들거나, 상대의 덱을 말려 피로 피해로 이기면 승리입니다. 또한 학파에서 얻은 고유 영웅 스킬을 매 턴 쓸 수 있습니다.",
+      "goal-b1":"영웅","goal-b2":"피로","goal-b3":"스킬",
+      "fact-h":"핵심 수치","fact1":"체력 30 · 시작 패 4장 · 턴당 1장 드로우","fact2":"마나 최대 10 · 필드 하수인 7체",
+      "turn-h":"턴의 흐름",
+      "s1-h":"카드 드로우","s1-p":"턴 시작 시 카드를 1장 뽑습니다. 덱이 비면 대신 피로 피해를 받으므로 과도한 드로우는 피하세요.",
+      "s2-h":"마나 획득","s2-p":"매 턴 최대 마나가 1씩 늘어 최대 10. 마나는 카드를 내는 화폐로, 비용이 높을수록 나중에 내야 합니다.",
+      "s3-h":"카드 사용","s3-p":"필드에 하수인을 소환하고 주문을 쓰고 무기를 장착합니다. 각각 마나를 소모합니다.",
+      "s4-h":"공격","s4-p":"하수인은 매 턴 1회 공격합니다(돌진이나 질풍이 있으면 다르게). 적 영웅이나 적 하수인을 노릴 수 있습니다. 무기를 장착하면 영웅도 공격합니다.",
+      "s4-b":"돌진","s4-b2":"질풍",
+      "s5-h":"영웅 스킬 사용 & 종료","s5-p":"학파의 영웅 스킬은 약간의 마나를 소모합니다. 행동이 끝나면 턴을 마치고 상대에게 넘깁니다.",
+      "types-h":"세 가지 카드 타입",
+      "t1":"하수인","t1d":"필드에 서는 생물","t2":"주문","t2d":"일회성 효과","t3":"무기","t3d":"영웅이 공격함",
+      "types-p":"하수인은 당신을 위해 싸우며 필드에 남습니다. 주문은 즉시 피해·회복·강화를 발휘합니다. 무기는 영웅에 공격력을 주지만 휘두를 때마다 내구도를 소모합니다.",
+      "kw-h":"핵심 키워드",
+      "k1":"도발","k1d":"적은 이를 먼저 공격해야 함","k2":"천상의 보호막","k2d":"첫 공격을 막음","k3":"돌진","k3d":"낸 턴에 공격 가능","k4":"질풍","k4d":"턴당 2회 공격","k5":"독성","k5d":"피해 입힌 하수인 파괴","k6":"생명 흡수","k6d":"피해가 영웅을 회복",
+      "kw-p":"도발은 영웅과 아군을 지키므로 먼저 부수세요. 천상의 보호막은 한 방을 무료로 막습니다. 돌진은 공격형 하수인을 즉시 움직입니다. 이 몇 개만 알아도 대부분의 대전을 넘길 수 있습니다.",
+      "tips-h":"초보자 팁 5가지",
+      "tip1":"마나 커브를 고르게 — 초반에 못 내는 고비용 카드만 넣지 말 것.",
+      "tip2":"영웅을 노리기 전에 적 도발을 처리 — 예상 밖의 도발이 패배를 부릅니다.",
+      "tip3":"현명하게 트레이드: 적 하수인을 공격하면 장기전 체력을 지킵니다.",
+      "tip4":"주문을 아끼지 말 것 — 완벽한 콤보보다 적절한 타이밍의 제거가 더 가치 있습니다.",
+      "tip5":"병가 같은 공격적 학파로 빠르게 익히고, 그 다음 넓혀 가세요.",
+      "next-h":"다음 단계",
+      "next-p":"기본을 익혔다면 사상 학파를 고르세요. 일곱 학파는 완전히 다른 방식으로 움직입니다 — 완전 해설을 읽고 자신에게 맞는 것을 찾으세요.",
+      "cta-h":"첫 대전은 1분도 걸리지 않습니다","cta-p":"브라우저에서 무료 플레이, 다운로드도 계정도 필요 없습니다.","cta-btn":"지금 무료 플레이",
+      "rel-title":"다른 공략","rel1":"일곱 학파 해설","rel1d":"철학을 고르세요","rel2":"입문 가이드","rel2d":"본 가이드","rel3":"지금 플레이","rel3d":"게임 시작하기"
+    }
+  };
+  function apply(lang){
+    document.documentElement.lang=lang;
+    var t=I18N[lang]||I18N.en;
+    document.querySelectorAll('[data-tr]').forEach(function(el){
+      var key=el.getAttribute('data-tr');
+      if(t[key]!==undefined)el.textContent=t[key];
+    });
+    document.querySelectorAll('.langbar button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lang')===lang);});
+    try{localStorage.setItem('wscard_lang',lang);}catch(e){}
+  }
+  document.querySelectorAll('.langbar button').forEach(function(b){
+    b.addEventListener('click',function(){apply(this.getAttribute('data-lang'));});
+  });
+  apply(detect());
+})();
+</script>
+</body>
+</html>
