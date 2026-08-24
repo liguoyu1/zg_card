@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warring States: Card Battles — Free Card Game, Play on Your Phone</title>
+<meta name="description" content="A free card battle game for your phone. 196 cards, 21 heroes, quick 3-minute matches. Free to play in your browser — no download needed.">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Warring States: Card Battles">
+<meta property="og:title" content="Warring States: Card Battles — Free Card Game, Play on Your Phone">
+<meta property="og:description" content="Quick 3-minute card battles. 196 cards, 21 heroes. Free to play on your phone — no download.">
+<meta property="og:url" content="https://wscard.games/landing-sea.html">
+<meta property="og:image" content="https://wscard.games/screens/cover.webp">
+<link rel="canonical" href="https://wscard.games/landing-sea.html">
+<link rel="alternate" hreflang="en" href="https://wscard.games/landing-sea.html">
+<link rel="alternate" hreflang="ja" href="https://wscard.games/landing-jp.html">
+<link rel="alternate" hreflang="ko" href="https://wscard.games/landing-kr.html">
+<link rel="alternate" hreflang="en" href="https://wscard.games/landing-eu.html">
+<link rel="alternate" hreflang="en" href="https://wscard.games/landing.html">
+<link rel="alternate" hreflang="x-default" href="https://wscard.games/landing.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F1E6; --surface:#FFFFFF; --surface-2:#FBF7EF;
+    --border:#E6DAC6; --text:#261C11; --text-muted:#6B5A44; --text-dim:#9C8A70;
+    --accent:#E2720A; --accent-ink:#FFF; --accent-soft:#FCE9D2;
+    --green:#1F9D55; --green-soft:#E3F6EA; --free:#7C3AED; --free-soft:#F0EAFE;
+    --r-lg:20px; --r-md:14px; --r-sm:10px;
+    --disp:'Nunito',sans-serif;
+    --body:'Inter',sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:#fff}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+  /* ===== Top bar ===== */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(247,241,230,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .topbar-in{max-width:1100px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .wordmark{font-family:var(--disp);font-weight:900;letter-spacing:-.01em;font-size:16px;color:var(--text)}
+  .wordmark em{font-style:normal;color:var(--accent)}
+  .langbar{display:flex;gap:4px}
+  .langbar a{font-family:var(--body);font-size:11px;font-weight:700;background:transparent;color:var(--text-muted);border:1px solid transparent;border-radius:8px;padding:6px 11px;transition:color .16s var(--ease),border-color .16s var(--ease),background .16s var(--ease)}
+  .langbar a:hover{color:var(--text)}
+  .langbar a.cur{color:var(--accent);border-color:var(--accent);background:#fff}
+
+  /* ===== Hero ===== */
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--border);background:var(--bg)}
+  .hero-in{position:relative;z-index:1;padding:56px 0 64px}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-soft);color:var(--green);font-weight:800;font-size:13px;padding:7px 14px;border-radius:100px;margin-bottom:20px}
+  .hero h1{font-family:var(--disp);font-weight:900;font-size:clamp(38px,8vw,64px);line-height:1.05;letter-spacing:-.02em;max-width:12ch}
+  .hero h1 .hl{color:var(--accent)}
+  .hero .lead{color:var(--text-muted);font-size:clamp(17px,2.4vw,20px);max-width:46ch;margin-top:20px}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--body);font-weight:700;font-size:17px;border-radius:var(--r-md);padding:17px 32px;border:1px solid transparent;cursor:pointer;transition:transform .16s var(--ease),box-shadow .16s var(--ease),background .16s var(--ease),border-color .16s var(--ease)}
+  .btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--accent);color:#fff;box-shadow:0 10px 24px rgba(226,114,10,.32)}
+  .btn.primary:hover{background:#EF7F16}
+  .btn.android{background:var(--green);color:#fff;box-shadow:0 10px 24px rgba(31,157,85,.3)}
+  .btn.android:hover{background:#24B25F}
+  .btn svg{width:18px;height:18px}
+
+  .free-tag{display:inline-flex;align-items:center;gap:8px;background:var(--free-soft);color:var(--free);font-weight:800;font-size:14px;padding:8px 16px;border-radius:100px;margin-top:22px}
+  .free-tag svg{width:16px;height:16px}
+
+  /* ===== Screenshots phone row ===== */
+  .phones{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:54px}
+  .phone{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 18px 40px rgba(38,28,17,.08)}
+  .phone .screen{aspect-ratio:9/16;overflow:hidden;background:var(--surface-2)}
+  .phone .screen img{width:100%;height:100%;object-fit:cover;display:block}
+  .phone figcaption{padding:14px 16px;border-top:1px solid var(--border);font-family:var(--body);font-weight:700;font-size:14px}
+  .phone figcaption span{display:block;color:var(--text-muted);font-weight:600;font-size:12.5px;margin-top:3px}
+
+  /* ===== Schools ===== */
+  section{padding:76px 0}
+  .sect-head{max-width:680px;margin-bottom:44px}
+  .sect-eyebrow{font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .sect-title{font-family:var(--disp);font-weight:900;font-size:clamp(28px,4.5vw,40px);line-height:1.08;letter-spacing:-.01em}
+  .sect-desc{color:var(--text-muted);font-size:16px;margin-top:14px;max-width:56ch}
+
+  .chips{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .chip{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:20px}
+  .chip .dot{width:26px;height:26px;border-radius:8px;margin-bottom:14px}
+  .chip .nm{font-weight:800;font-size:15px}
+  .chip .de{color:var(--text-muted);font-size:13px;margin-top:5px}
+
+  /* ===== Big stat strip ===== */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden}
+  .stat{background:var(--surface);padding:30px 22px;text-align:center}
+  .stat .num{font-family:var(--disp);font-weight:900;font-size:44px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:var(--text)}
+  .stat .num small{font-size:18px;color:var(--accent)}
+  .stat .lbl{color:var(--text-muted);font-size:13px;margin-top:6px;font-weight:600}
+
+  /* ===== Why (3 cards) ===== */
+  .why-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .why-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px}
+  .why-card .em{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:900;font-size:20px;color:#fff;margin-bottom:16px}
+  .why-card h3{font-family:var(--disp);font-weight:800;font-size:18px}
+  .why-card p{color:var(--text-muted);font-size:14px;margin-top:8px}
+
+  /* ===== Platforms ===== */
+  .plats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .plat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:22px;display:flex;flex-direction:column;gap:8px}
+  .plat b{font-weight:800;font-size:15px}
+  .plat .tag{color:var(--text-dim);font-size:12.5px}
+  .plat a{margin-top:12px;font-weight:800;font-size:14px;color:var(--accent);display:inline-flex;align-items:center;gap:6px}
+  .plat a.android-link{color:var(--green)}
+
+  /* ===== Final CTA ===== */
+  .final{position:relative;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);margin-bottom:60px}
+  .final img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .final::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(38,28,17,.94) 0%,rgba(38,28,17,.82) 55%,rgba(38,28,17,.6) 100%)}
+  .final-in{position:relative;z-index:1;padding:72px 52px;max-width:540px}
+  .final-in h2{font-family:var(--disp);font-weight:900;font-size:clamp(28px,4.2vw,38px);line-height:1.1;color:#fff}
+  .final-in p{color:#E9DCC8;font-size:16px;margin-top:16px}
+  .final-in .cta-row{margin-top:28px}
+
+  /* ===== Footer ===== */
+  footer{border-top:1px solid var(--border);padding:36px 0 52px;color:var(--text-dim);font-size:13px}
+  footer .foot-in{max-width:1100px;margin:0 auto;padding:0 20px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center}
+  footer nav{display:flex;gap:22px}
+  footer nav a{color:var(--text-muted);font-weight:600}
+  footer nav a:hover{color:var(--text)}
+
+  /* ===== Responsive ===== */
+  @media(max-width:900px){
+    .phones{grid-template-columns:1fr;max-width:320px;margin:54px auto 0}
+    .chips{grid-template-columns:repeat(2,1fr)}
+    .why-cards{grid-template-columns:1fr}
+    .plats{grid-template-columns:repeat(2,1fr)}
+    .stats{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:620px){
+    .chips{grid-template-columns:1fr 1fr}
+    .plats{grid-template-columns:1fr 1fr}
+    .final-in{padding:52px 30px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .btn{transition:none}
+  }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Warring States: Card Battles",
+  "inLanguage": "en",
+  "url": "https://wscard.games/landing-sea.html",
+  "description": "A free card battle game for your phone. 196 cards, 21 heroes, quick 3-minute matches. Free to play in your browser — no download needed.",
+  "genre": ["Card game", "Strategy", "Strategy Video Game"],
+  "gamePlatform": "Web",
+  "applicationCategory": "Game",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" },
+  "image": "https://wscard.games/screens/cover.webp"
+}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="wordmark" href="https://wscard.games/">Warring States <em>Card</em></a>
+    <div class="langbar">
+      <a href="https://wscard.games/landing-sea.html" class="cur">SEA</a>
+      <a href="https://wscard.games/landing-jp.html">日本語</a>
+      <a href="https://wscard.games/landing-kr.html">한국어</a>
+      <a href="https://wscard.games/landing-eu.html">EN</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-in">
+    <div class="wrap">
+      <div class="badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>100% FREE TO PLAY</div>
+      <h1>Quick card battles.<br>Big <span class="hl">strategy.</span></h1>
+      <p class="lead">3-minute matches, 196 cards, 21 legendary heroes. Jump into your first battle in under a minute — right in your browser, on your phone.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="https://wscard.games/">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play Free Now
+        </a>
+        <a class="btn android" href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>Get the App
+        </a>
+      </div>
+      <div class="free-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg>
+        No download. No account. No pay-to-win.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:10px">
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="sect-eyebrow">Real gameplay</div>
+      <h2 class="sect-title">See what you're about to play.</h2>
+      <p class="sect-desc">Real screenshots from the game — not concept art.</p>
+    </div>
+    <div class="phones">
+      <figure class="phone">
+        <div class="screen"><img src="https://wscard.games/screens/battle.webp" alt="Card battle on phone" loading="lazy"></div>
+        <figcaption>Real-time battles<span>Command your school's forces</span></figcaption>
+      </figure>
+      <figure class="phone">
+        <div class="screen"><img src="https://wscard.games/screens/heroes.webp" alt="Hero collection on phone" loading="lazy"></div>
+        <figcaption>Legendary heroes<span>21 masters to collect</span></figcaption>
+      </figure>
+      <figure class="phone">
+        <div class="screen"><img src="https://wscard.games/screens/collection.webp" alt="Card collection on phone" loading="lazy"></div>
+        <figcaption>Build your deck<span>196 cards, 4 rarities</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="sect-eyebrow">7 Schools = 7 Ways to Play</div>
+      <h2 class="sect-title">Pick a philosophy. Fight your way.</h2>
+    </div>
+    <div class="chips">
+      <div class="chip"><span class="dot" style="background:#D64545"></span><div class="nm">Military</div><div class="de">Fast, hard strikes</div></div>
+      <div class="chip"><span class="dot" style="background:#E2720A"></span><div class="nm">Legalist</div><div class="de">Control the board</div></div>
+      <div class="chip"><span class="dot" style="background:#2E9E5B"></span><div class="nm">Confucian</div><div class="de">Grow &amp; sustain</div></div>
+      <div class="chip"><span class="dot" style="background:#7C6BAF"></span><div class="nm">Daoist</div><div class="de">Patience wins</div></div>
+      <div class="chip"><span class="dot" style="background:#C2602A"></span><div class="nm">Mohist</div><div class="de">Siege &amp; overwhelm</div></div>
+      <div class="chip"><span class="dot" style="background:#2E8B7F"></span><div class="nm">Yin-Yang</div><div class="de">Magic &amp; elements</div></div>
+      <div class="chip"><span class="dot" style="background:#B8862F"></span><div class="nm">Strategist</div><div class="de">Alliance &amp; betrayal</div></div>
+      <div class="chip"><span class="dot" style="background:#8A8F8C"></span><div class="nm">Neutral</div><div class="de">Any deck, always</div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><div class="num">196<small></small></div><div class="lbl">Cards</div></div>
+      <div class="stat"><div class="num">21<small></small></div><div class="lbl">Heroes</div></div>
+      <div class="stat"><div class="num">7<small></small></div><div class="lbl">Schools</div></div>
+      <div class="stat"><div class="num">3<small>min</small></div><div class="lbl">Per match</div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:76px">
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="sect-eyebrow">Why you'll love it</div>
+      <h2 class="sect-title">Made for quick gaming on the go.</h2>
+    </div>
+    <div class="why-cards">
+      <div class="why-card">
+        <div class="em" style="background:var(--accent)">3m</div>
+        <h3>Short, sweet matches</h3>
+        <p>Each battle takes about 3 minutes. Perfect for a break, a commute, or a quick game before bed.</p>
+      </div>
+      <div class="why-card">
+        <div class="em" style="background:var(--green)">$0</div>
+        <h3>Free, really free</h3>
+        <p>No pay-to-win, no gambling, no traps. Victory comes from your decisions, not your wallet.</p>
+      </div>
+      <div class="why-card">
+        <div class="em" style="background:var(--free)">∞</div>
+        <h3>Sync everywhere</h3>
+        <p>Start on your phone, continue on your computer. Your progress follows you on every device.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="sect-eyebrow">Play anywhere</div>
+      <h2 class="sect-title">Your game, on your device.</h2>
+    </div>
+    <div class="plats">
+      <div class="plat">
+        <b>Browser</b><span class="tag">Play now, no install</span>
+        <a href="https://wscard.games/">Play free →</a>
+      </div>
+      <div class="plat">
+        <b>Android</b><span class="tag">APK · free download</span>
+        <a class="android-link" href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk">Get the app →</a>
+      </div>
+      <div class="plat">
+        <b>iOS</b><span class="tag">Coming soon</span>
+        <a href="https://wscard.games/download.html">Coming soon →</a>
+      </div>
+      <div class="plat">
+        <b>itch.io</b><span class="tag">Support us</span>
+        <a href="https://guoyuli.itch.io/warring-states-card/purchase">Visit →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:8px">
+  <div class="wrap">
+    <div class="final">
+      <img src="https://wscard.games/screens/collection.webp" alt="" loading="lazy">
+      <div class="final-in">
+        <h2>The Hundred Schools await your command.</h2>
+        <p>Free to play. Your first match is under a minute away.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="https://wscard.games/">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play Free Now
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-in">
+    <div>© 2026 Warring States: Card Battles</div>
+    <nav>
+      <a href="https://wscard.games/">Game</a>
+      <a href="https://wscard.games/download.html">Download</a>
+      <a href="https://wscard.games/promo.html">Promo</a>
+      <a href="https://wscard.games/privacy.html">Privacy</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
