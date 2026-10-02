@@ -161,12 +161,9 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
           icon: const Icon(Icons.star),
           label: Text(LocaleService.I.t('bp.unlock_premium')),
           onPressed: () async {
-            // 简单内购
-            final purchased = await PurchaseService.I.purchase('battle_pass_premium');
-            if (purchased.success) {
-              _bp.unlockPremium();
-              setState(() {});
-            }
+            // 高级战令免费解锁（不经 StoreKit；ASC 无 battle_pass_premium 商品）
+            _bp.unlockPremium();
+            setState(() {});
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.goldAccent,

@@ -989,57 +989,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildStarterBanner() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              AppTheme.goldAccent.withAlpha(40),
-              AppTheme.bgLight.withAlpha(200),
-              AppTheme.goldAccent.withAlpha(20)
-            ]),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-                color: AppTheme.goldAccent.withAlpha(120), width: 1.5)),
-        padding: const EdgeInsets.all(14),
-        child: Row(children: [
-          const Icon(Icons.card_giftcard, color: AppTheme.goldBright, size: 32),
-          const SizedBox(width: 12),
-          Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                Text(LocaleService.I.t('home.starter_title'),
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: AppTheme.textPrimary)),
-                Text(LocaleService.I.t('home.starter_desc'),
-                    style: const TextStyle(
-                        fontSize: 10, color: AppTheme.textMuted)),
-              ])),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () async {
-              final ok = await PurchaseService.I.purchase('starter_bundle');
-              if (!context.mounted) return;
-              if (ok.success)
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(LocaleService.I.t('home.purchase_success')),
-                    backgroundColor: AppTheme.healGreen));
-              setState(() {});
-            },
-            style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
-            child: const Text('\$0.99'),
-          ),
-        ]),
-      ),
-    );
-  }
-
   Widget _buildVersionText() {
     return Text(LocaleService.I.t('home.version'),
         style:
