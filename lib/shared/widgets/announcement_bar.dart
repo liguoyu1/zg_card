@@ -27,7 +27,9 @@ class _AnnouncementBarState extends State<AnnouncementBar> {
   @override
   void initState() {
     super.initState();
-    _lastActiveIndex = _readActiveIndex();
+    // 注意：这里不能读 AdSlotScope（inherited 依赖禁止在 initState 中注册），
+    // tab 归属统一在 didChangeDependencies 里读取。
+    _lastActiveIndex = null;
     _lastLocale = LocaleService.I.localeCode;
     _load();
     // 语言切换后重新拉取对应语言公告
