@@ -1632,5 +1632,11 @@
   "game.spell_condition_failed": "Syarat tidak dipenuhi, mantera tidak boleh dimainkan",
   "home.download_android_mirror": "Muat turun itch.io",
   "home.download_legacy": "Versi lama",
-  "home.download_versions": "{n} versi"
+  "home.download_versions": "{n} versi",
+  "home.delete_account": "Padam Akaun",
+  "home.delete_account_confirm_desc": "Akaun dan semua data awan (permata, kad, rekod perlawanan, simpanan) akan dipadam secara kekal. Tidak boleh dikembalikan. Padam akaun?",
+  "home.delete_account_again_title": "Sahkan Sekali Lagi",
+  "home.delete_account_again_desc": "Selepas pemadaman anda tidak dapat log masuk ke akaun ini lagi. Permata dan kad yang dibeli akan dipadam dan tidak boleh dipulihkan.",
+  "home.delete_account_confirm_btn": "Padam Secara Kekal",
+  "home.delete_account_success": "Akaun dipadam"
 }

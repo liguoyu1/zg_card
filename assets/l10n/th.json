@@ -1632,5 +1632,11 @@
   "game.spell_condition_failed": "ไม่เป็นไปตามเงื่อนไข ไม่สามารถใช้เวทมนตร์ได้",
   "home.download_android_mirror": "ดาวน์โหลด itch.io",
   "home.download_legacy": "เวอร์ชันเก่า",
-  "home.download_versions": "{n} เวอร์ชัน"
+  "home.download_versions": "{n} เวอร์ชัน",
+  "home.delete_account": "ลบบัญชี",
+  "home.delete_account_confirm_desc": "บัญชีและข้อมูลทั้งหมดบนคลาวด์ (อัญมณี การ์ด ประวัติการต่อสู้ ไฟล์เซฟ) จะถูกลบอย่างถาวร ไม่สามารถกู้คืนได้ ยืนยันการลบบัญชีหรือไม่?",
+  "home.delete_account_again_title": "ยืนยันอีกครั้ง",
+  "home.delete_account_again_desc": "หลังจากลบแล้วคุณจะไม่สามารถเข้าสู่ระบบบัญชีนี้ได้อีก อัญมณีและการ์ดที่ซื้อแล้วจะถูกลบและไม่สามารถกู้คืนได้",
+  "home.delete_account_confirm_btn": "ลบอย่างถาวร",
+  "home.delete_account_success": "ลบบัญชีแล้ว"
 }

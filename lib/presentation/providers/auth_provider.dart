@@ -53,6 +53,23 @@ class AuthNotifier extends StateNotifier<AuthState?> {
     return err;
   }
 
+  /// 设备登录（iOS 匿名 IAP 用）
+  Future<String?> deviceLogin(String deviceId) async {
+    final err = await _service.deviceLogin(deviceId);
+    if (err == null) { state = _service.state; _bindBalanceSync(); }
+    return err;
+  }
+
+  /// 删除账号（彻底删除云端数据并清除本地会话）
+  Future<String?> deleteAccount() async {
+    final err = await _service.deleteAccount();
+    if (err == null) {
+      state = null;
+      BalanceSyncService.clearSession();
+    }
+    return err;
+  }
+
   /// Xsolla 平台登录（服务端验证+邮箱合并）
   Future<String?> xsollaLogin(String accessToken) async {
     final err = await _service.xsollaLogin(accessToken);

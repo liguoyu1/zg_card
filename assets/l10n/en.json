@@ -1706,5 +1706,11 @@
   "hero_stats.damage": "Damage",
   "hero_stats.empty": "No match data yet, go battle!",
   "splash.loading_item": "Loading: {name}",
-  "splash.loading_count": "Loaded {done}/{total}"
+  "splash.loading_count": "Loaded {done}/{total}",
+  "home.delete_account": "Delete Account",
+  "home.delete_account_confirm_desc": "This will permanently delete your account and all cloud data (gems, cards, match history, saves). This cannot be undone. Delete your account?",
+  "home.delete_account_again_title": "Confirm Again",
+  "home.delete_account_again_desc": "After deletion you will no longer be able to sign in to this account. Purchased gems and cards will be removed and cannot be recovered.",
+  "home.delete_account_confirm_btn": "Permanently Delete",
+  "home.delete_account_success": "Account deleted"
 }

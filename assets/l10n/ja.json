@@ -1634,5 +1634,11 @@
   "home.download_legacy": "旧バージョン",
   "home.download_versions": "{n}個のバージョン",
   "splash.loading_item": "読み込み中：{name}",
-  "splash.loading_count": "読み込み済み {done}/{total}"
+  "splash.loading_count": "読み込み済み {done}/{total}",
+  "home.delete_account": "アカウント削除",
+  "home.delete_account_confirm_desc": "クラウド上のアカウントとすべてのデータ（ジェム・カード・戦績・セーブ）が完全に削除され、元に戻せません。削除しますか？",
+  "home.delete_account_again_title": "再確認",
+  "home.delete_account_again_desc": "削除後はこのアカウントにログインできなくなり、購入済みのジェムやカードも復元できません。",
+  "home.delete_account_confirm_btn": "完全に削除",
+  "home.delete_account_success": "アカウントを削除しました"
 }

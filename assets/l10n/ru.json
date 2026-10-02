@@ -1632,5 +1632,11 @@
   "game.spell_condition_failed": "Условие не выполнено — заклинание нельзя разыграть",
   "home.download_android_mirror": "Скачать itch.io",
   "home.download_legacy": "Предыдущая версия",
-  "home.download_versions": "{n} версий"
+  "home.download_versions": "{n} версий",
+  "home.delete_account": "Удалить аккаунт",
+  "home.delete_account_confirm_desc": "Ваш аккаунт и все облачные данные (кристаллы, карты, статистика, сохранения) будут безвозвратно удалены. Удалить аккаунт?",
+  "home.delete_account_again_title": "Подтвердите ещё раз",
+  "home.delete_account_again_desc": "После удаления вы не сможете войти в этот аккаунт. Купленные кристаллы и карты будут удалены без возможности восстановления.",
+  "home.delete_account_confirm_btn": "Удалить навсегда",
+  "home.delete_account_success": "Аккаунт удалён"
 }

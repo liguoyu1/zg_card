@@ -1,4 +1,4 @@
-import { guestLogin, register, login, platformLogin, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency, checkin, listAnnouncements, createAnnouncement } from '../../utils/database';
+import { guestLogin, deviceLogin, deleteAccount, register, login, platformLogin, verifyToken, getPlayerProfile, updatePlayerStats, getLeaderboard, getPlayerRank, getBalance, addGems, spendGems, addGold, spendGold, getTransactions, addGemsFromXsolla, verifyIAPReceipt, syncBalance, savePlayerArchive, getPlayerArchive, getPlayerSaveVersion, purchasePlayerAsset, exchangeCurrency, checkin, listAnnouncements, createAnnouncement } from '../../utils/database';
 import { joinMatchQueue, leaveMatchQueue, checkMatchStatus, submitGameAction, pollGameActions } from '../../utils/database';
 import { createSupportTicket, listSupportTickets, closeSupportTicket, prisma } from '../../utils/database';
 import { createPaymentToken, verifyWebhookSignature, handleUserValidation, resolveXsollaAmount, GEM_SKU_MAP, validateXsollaUserToken } from '../../utils/xsolla';
@@ -32,12 +32,28 @@ export default defineEventHandler(async (event) => {
       return await guestLogin(body.name || `玩家${Date.now() % 10000}`);
     }
 
+    // 设备登录（iOS 匿名 IAP）：device_id 幂等
+    if (path === '/api/auth/device' && method === 'POST') {
+      const { deviceId } = await readBody(event);
+      if (!deviceId || typeof deviceId !== 'string' || deviceId.length < 8) return { error: '无效的设备标识' };
+      return await deviceLogin(deviceId);
+    }
+
+    // 删除账号（彻底删除）：需登录
+    if (path === '/api/auth/delete' && method === 'POST') {
+      const auth = getRequestHeader(event, 'authorization');
+      if (!auth?.startsWith('Bearer ')) return { error: 'Unauthorized' };
+      const token = verifyToken(auth.slice(7));
+      if (!token) return { error: 'Invalid token' };
+      return await deleteAccount(token.playerId);
+    }
+
     if (path === '/api/auth/register' && method === 'POST') {
-      const { email, password, name, referrerId } = await readBody(event);
+      const { email, password, name, referrerId, migrateToken } = await readBody(event);
       if (!email || !password) return { error: '邮箱和密码不能为空' };
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: '邮箱格式不正确' };
       if (password.length < 6) return { error: '密码至少6位' };
-      return await register(email, password, name || email.split('@')[0], referrerId);
+      return await register(email, password, name || email.split('@')[0], referrerId, migrateToken);
     }
 
     if (path === '/api/auth/login' && method === 'POST') {

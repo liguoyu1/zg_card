@@ -18,6 +18,7 @@ import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/purchase_service.dart';
 import '../../data/xsolla_payment_service.dart';
 import '../../data/support_service.dart';
+import '../../data/device_id_store.dart' show ensureDeviceId;
 import '../../l10n/locale_service.dart';
 import '../providers/auth_provider.dart';
 
@@ -149,11 +150,24 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     return _promptAccount(LocaleService.I.t('shop.need_login_title'), LocaleService.I.t('shop.need_login_desc'));
   }
 
-  /// 游客禁止购买；仅注册且带有效邮箱的账号可支付
+  /// 游客禁止购买；仅注册且带有效邮箱的账号可支付（Web/Android Xsolla 通道保留）
   Future<bool> _requirePaidAccount() async {
     final auth = ref.read(authProvider);
     if (auth?.email?.isNotEmpty == true) return true;
     return _promptAccount(LocaleService.I.t('shop.need_account_title'), LocaleService.I.t('shop.need_account_desc'));
+  }
+
+  /// iOS 匿名购买会话：已登录直接用；未登录则静默设备登录（device_id 幂等，
+  /// 无需注册任何个人信息，Apple 5.1.1(v) 合规）。失败提示后返回 false。
+  Future<bool> _ensurePurchaseSession() async {
+    if (ref.read(authProvider) != null) return true;
+    final deviceId = await ensureDeviceId();
+    final err = await ref.read(authProvider.notifier).deviceLogin(deviceId);
+    if (err != null || !mounted) {
+      if (mounted) _snack(LocaleService.I.t('shop.buy_failed_generic'));
+      return false;
+    }
+    return true;
   }
 
   Future<bool> _promptAccount(String title, String message) async {
@@ -304,10 +318,16 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     });
   }
 
-  /// iOS → Apple IAP（合规）；Web → Xsolla；Android → Xsolla 优先，降级 IAP
+  /// iOS → Apple IAP（合规：无需注册，匿名设备账号即可购买）；Web → Xsolla；Android → Xsolla 优先，降级 IAP
   void _buyGem(int ga) async {
     try {
-      if (!await _requirePaidAccount()) return;
+      // iOS：5.1.1(v) 合规 — IAP 不得要求注册。未登录时静默创建设备账号（匿名，无个人信息），
+      // 购买仍走服务端 receipt 验证，钻石落到设备账号；用户随时可在登录页注册以跨设备同步。
+      if (!kIsWeb && Platform.isIOS) {
+        if (!await _ensurePurchaseSession()) return;
+      } else {
+        if (!await _requirePaidAccount()) return;
+      }
       final auth = ref.read(authProvider);
       if (auth == null) { _snack(LocaleService.I.t('shop.please_login')); return; }
       // iOS：强制 Apple IAP
@@ -415,6 +435,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 
   Future<void> _restorePurchases() async {
+    // iOS 未登录：先静默设备登录，确保恢复的购买能验证到设备账号
+    if (!kIsWeb && Platform.isIOS && ref.read(authProvider) == null) {
+      final deviceId = await ensureDeviceId();
+      await ref.read(authProvider.notifier).deviceLogin(deviceId);
+    }
     _initRestoreListener();
     final ok = await PurchaseService.I.restorePurchases();
     if (ok) {

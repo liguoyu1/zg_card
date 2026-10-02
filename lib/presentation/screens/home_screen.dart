@@ -492,6 +492,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             await ref.read(authProvider.notifier).logout();
             setState(() {});
             break;
+          case 'delete_account':
+            await _confirmDeleteAccount();
+            break;
         }
       },
       child: Container(
@@ -643,7 +646,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 visualDensity: VisualDensity.compact,
               )),
           const PopupMenuDivider(),
-          if (loggedIn)
+          if (loggedIn) ...[
             PopupMenuItem(
                 value: 'logout',
                 child: ListTile(
@@ -653,7 +656,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       style: const TextStyle(color: Colors.redAccent)),
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
-                ))
+                )),
+            // 删除账号（Apple 5.1.1(v)：支持账号创建必须提供账号删除）
+            PopupMenuItem(
+                value: 'delete_account',
+                child: ListTile(
+                  leading: const Icon(Icons.delete_forever,
+                      color: Colors.redAccent, size: 20),
+                  title: Text(LocaleService.I.t('home.delete_account'),
+                      style: const TextStyle(color: Colors.redAccent)),
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                )),
+          ]
           else
             PopupMenuItem(
                 value: 'login',
@@ -666,6 +681,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ];
       },
     );
+  }
+
+  /// 删除账号：二次确认 → 调用后端彻底删除 → 清除本地会话与存档
+  Future<void> _confirmDeleteAccount() async {
+    if (!mounted) return;
+    // 第一次确认：说明后果
+    final first = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.agedWood,
+        title: Text(LocaleService.I.t('home.delete_account'),
+            style: const TextStyle(color: AppTheme.healthRed, fontSize: 16)),
+        content: Text(LocaleService.I.t('home.delete_account_confirm_desc'),
+            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(LocaleService.I.t('shop.cancel'),
+                  style: const TextStyle(color: Colors.grey))),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.healthRed),
+              child: Text(LocaleService.I.t('home.delete_account'),
+                  style: const TextStyle(color: Colors.white))),
+        ],
+      ),
+    );
+    if (first != true || !mounted) return;
+    // 第二次确认：要求再次明确，防止误触
+    final second = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.agedWood,
+        title: Text(LocaleService.I.t('home.delete_account_again_title'),
+            style: const TextStyle(color: AppTheme.healthRed, fontSize: 16)),
+        content: Text(LocaleService.I.t('home.delete_account_again_desc'),
+            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(LocaleService.I.t('shop.cancel'),
+                  style: const TextStyle(color: Colors.grey))),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.healthRed),
+              child: Text(LocaleService.I.t('home.delete_account_confirm_btn'),
+                  style: const TextStyle(color: Colors.white))),
+        ],
+      ),
+    );
+    if (second != true || !mounted) return;
+
+    final err = await ref.read(authProvider.notifier).deleteAccount();
+    if (!mounted) return;
+    if (err != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+      return;
+    }
+    // 删除成功：清除本地存档（含设备账号后缀区）
+    await SaveManager.clearAll();
+    if (mounted) setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(LocaleService.I.t('home.delete_account_success'))));
   }
 
   /// 分享邀请：生成带 ?ref=<playerId> 的链接并复制，好友注册后双方得钻石

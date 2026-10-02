@@ -1632,5 +1632,11 @@
   "game.spell_condition_failed": "Hindi natugunan ang kundisyon, hindi maaaring gamitin ang spell",
   "home.download_android_mirror": "I-download sa itch.io",
   "home.download_legacy": "Lumang bersyon",
-  "home.download_versions": "{n} bersyon"
+  "home.download_versions": "{n} bersyon",
+  "home.delete_account": "Burahin ang Account",
+  "home.delete_account_confirm_desc": "Permanenteng buburahin ang account at lahat ng data sa cloud (gems, mga card, match history, save). Hindi na maibabalik. Burahin ang account?",
+  "home.delete_account_again_title": "Kumpirmahin Muli",
+  "home.delete_account_again_desc": "Pagkatapos ng pagbabura hindi ka na makakapag-sign in sa account na ito. Ang mga biniling gems at cards ay mabubura at hindi na maibabalik.",
+  "home.delete_account_confirm_btn": "Permanenteng Burahin",
+  "home.delete_account_success": "Na-delete ang account"
 }

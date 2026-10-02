@@ -1673,5 +1673,11 @@
   "hero_stats.damage": "總傷害",
   "hero_stats.empty": "暫無對局數據，快去對戰吧",
   "splash.loading_item": "正在載入：{name}",
-  "splash.loading_count": "已載入 {done}/{total} 個"
+  "splash.loading_count": "已載入 {done}/{total} 個",
+  "home.delete_account": "刪除帳號",
+  "home.delete_account_confirm_desc": "將永久刪除您的雲端帳號及全部資料（鑽石、卡牌、戰績、存檔），此操作不可恢復。確定要刪除嗎？",
+  "home.delete_account_again_title": "再次確認",
+  "home.delete_account_again_desc": "刪除後您將無法登入該帳號，已購買的鑽石與卡牌將一併清除且無法找回。",
+  "home.delete_account_confirm_btn": "永久刪除帳號",
+  "home.delete_account_success": "帳號已刪除"
 }

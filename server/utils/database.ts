@@ -208,9 +208,80 @@ export async function guestLogin(name: string) {
   return { token, player: { id: player.id, name: player.name, rank: player.rank } };
 }
 
-export async function register(email: string, password: string, name: string, referrerId?: string) {
+/** 设备登录：同一设备幂等返回同一账号（guestToken = dev_<deviceId>），
+ *  用于 iOS 匿名购买（Apple 5.1.1(v)：IAP 不得要求注册个人信息的账号）。 */
+export async function deviceLogin(deviceId: string) {
+  const guestToken = `dev_${deviceId}`;
+  const existing = await prisma.player.findUnique({ where: { guestToken } });
+  if (existing) {
+    const token = createToken({ playerId: existing.id, guestToken });
+    return { token, player: { id: existing.id, name: existing.name, rank: existing.rank } };
+  }
+  const player = await prisma.player.create({
+    data: { guestToken, name: `玩家${deviceId.slice(0, 4)}` },
+  });
+  await prisma.collection.create({ data: { playerId: player.id, cards: [] } });
+  const token = createToken({ playerId: player.id, guestToken });
+  return { token, player: { id: player.id, name: player.name, rank: player.rank } };
+}
+
+/** 删除账号：彻底删除 Player 及其全部关联数据（存档/卡组/流水/工单由外键级联，
+ *  Collection/Leaderboard 无外键需手动删）。成功后该 token 立即失效。 */
+export async function deleteAccount(playerId: string) {
+  try {
+    const player = await prisma.player.findUnique({ where: { id: playerId } });
+    if (!player) return { error: '账号不存在' };
+    await prisma.$transaction([
+      prisma.collection.deleteMany({ where: { playerId } }),
+      prisma.leaderboard.deleteMany({ where: { playerId } }),
+      prisma.player.delete({ where: { id: playerId } }), // 其余关联表级联删除
+    ]);
+    return { success: true };
+  } catch (e: any) {
+    return { error: e.message || '删除账号失败' };
+  }
+}
+
+export async function register(email: string, password: string, name: string, referrerId?: string, migrateToken?: string) {
   const existing = await prisma.player.findUnique({ where: { email } });
   if (existing) return { error: '邮箱已注册' };
+  // 匿名会话升级（Apple 5.1.1(v)）：设备/游客账号绑定邮箱密码，原 Player 保留，
+  // 已购钻石与进度自然延续；playerId 不变，客户端本地存档无需迁移。
+  if (migrateToken) {
+    const payload = verifyToken(migrateToken);
+    if (payload) {
+      const anon = await prisma.player.findUnique({ where: { id: payload.playerId } });
+      if (anon && !anon.email) {
+        const passwordHash = hashPassword(password);
+        const referrer = referrerId && referrerId !== anon.id
+            ? await prisma.player.findUnique({ where: { id: referrerId } })
+            : null;
+        // 邀请人必须是注册用户（且不能是自己），否则不绑定也不发奖励
+        const validReferrer = referrer && referrer.email ? referrer : null;
+        await prisma.player.update({
+          where: { id: anon.id },
+          data: {
+            email, passwordHash,
+            name: name || email.split('@')[0],
+            ...(validReferrer ? { referrerId: validReferrer.id } : {}),
+          },
+        });
+        if (validReferrer) {
+          await addGems(validReferrer.id, REFERRAL_BONUS_DIAMONDS, `邀请新用户奖励`).catch(() => {});
+          await addGems(anon.id, REFERRAL_BONUS_DIAMONDS, `受邀注册奖励`).catch(() => {});
+        }
+        const updated = await prisma.player.findUnique({ where: { id: anon.id } });
+        const token = createToken({ playerId: anon.id, guestToken: anon.guestToken });
+        return {
+          token,
+          player: {
+            id: anon.id, name: anon.name, rank: anon.rank, email,
+            gems: updated?.gems ?? 0, gold: updated?.gold ?? 0,
+          },
+        };
+      }
+    }
+  }
   const guestToken = crypto.randomUUID();
   const passwordHash = hashPassword(password);
   // 邀请人必须是注册用户（有邮箱）且不能是自己

@@ -1632,5 +1632,11 @@
   "game.spell_condition_failed": "Bedingung nicht erfüllt – Zauberspruch kann nicht gespielt werden",
   "home.download_android_mirror": "itch.io Download",
   "home.download_legacy": "Ältere Version",
-  "home.download_versions": "{n} Versionen"
+  "home.download_versions": "{n} Versionen",
+  "home.delete_account": "Konto löschen",
+  "home.delete_account_confirm_desc": "Dauerhafte Löschung deines Kontos und aller Cloud-Daten (Edelsteine, Karten, Spielverlauf, Spielstände). Dies kann nicht rückgängig gemacht werden. Konto löschen?",
+  "home.delete_account_again_title": "Erneut bestätigen",
+  "home.delete_account_again_desc": "Nach der Löschung kannst du dich nicht mehr bei diesem Konto anmelden. Gekaufte Edelsteine und Karten werden entfernt und können nicht wiederhergestellt werden.",
+  "home.delete_account_confirm_btn": "Endgültig löschen",
+  "home.delete_account_success": "Konto gelöscht"
 }

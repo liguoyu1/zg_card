@@ -126,6 +126,10 @@ class AuthService {
             'name': name,
             if (referrerId != null && referrerId.isNotEmpty)
               'referrerId': referrerId,
+            // 匿名会话（设备/游客账号）升级为邮箱账号：携带现 token，
+            // 服务端原地绑定邮箱，已购钻石与进度保留（Apple 5.1.1(v)）。
+            if (_state != null && (_state!.email?.isEmpty ?? true))
+              'migrateToken': _state!.token,
           }));
       if (resp.statusCode != 200) return '网络错误';
       final body = jsonDecode(resp.body);
@@ -177,6 +181,63 @@ class AuthService {
     }
   }
 
+  /// 设备登录（iOS 匿名 IAP 用）：device_id 幂等，同设备返回同一账号，无需注册
+  Future<String?> deviceLogin(String deviceId) async {
+    try {
+      final uri = Uri.parse('$_baseUrl/api/auth/device');
+      final resp = await http.post(uri,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'deviceId': deviceId}));
+      if (resp.statusCode != 200) return '网络错误';
+      final body = jsonDecode(resp.body);
+      if (body['error'] != null) return body['error'] as String;
+      if (!_parseAndSave(body)) return '解析响应失败';
+      await _persist();
+      return null;
+    } catch (e) {
+      debugPrint('AuthService deviceLogin error: $e');
+      return '网络连接失败';
+    }
+  }
+
+  /// 删除账号（彻底删除云端全部数据）。成功返回 null 并清除本地会话。
+  Future<String?> deleteAccount() async {
+    try {
+      final auth = _state;
+      if (auth == null) return '未登录';
+      final uri = Uri.parse('$_baseUrl/api/auth/delete');
+      final resp = await http.post(uri,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${auth.token}',
+          },
+          body: jsonEncode({}));
+      if (resp.statusCode != 200) return '网络错误';
+      final body = jsonDecode(resp.body);
+      if (body['error'] != null) return body['error'] as String;
+      if (body['success'] != true) return '删除失败';
+      await _clearLocalSession();
+      return null;
+    } catch (e) {
+      debugPrint('AuthService deleteAccount error: $e');
+      return '网络连接失败';
+    }
+  }
+
+  /// 登出
+  Future<void> logout() async {
+    await _clearLocalSession();
+  }
+
+  Future<void> _clearLocalSession() async {
+    _state = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tokenKey);
+    await prefs.remove(_playerIdKey);
+    await prefs.remove(_playerNameKey);
+    await prefs.remove(_avatarKey);
+  }
+
   /// Xsolla 平台登录：客户端拿到 access token 后交给服务端验证+合并账号
   Future<String?> xsollaLogin(String accessToken) async {
     try {
@@ -211,15 +272,5 @@ class AuthService {
     if (jwt == null) return null;
     debugPrint('AuthService: Xsolla 静默 JWT 获取成功，开始合并登录');
     return await xsollaLogin(jwt);
-  }
-
-  /// 登出
-  Future<void> logout() async {
-    _state = null;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
-    await prefs.remove(_playerIdKey);
-    await prefs.remove(_playerNameKey);
-    await prefs.remove(_avatarKey);
   }
 }

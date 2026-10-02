@@ -1632,5 +1632,11 @@
   "game.spell_condition_failed": "No se cumplen las condiciones: no se puede lanzar el hechizo",
   "home.download_android_mirror": "Descargar itch.io",
   "home.download_legacy": "Versión anterior",
-  "home.download_versions": "{n} versiones"
+  "home.download_versions": "{n} versiones",
+  "home.delete_account": "Eliminar cuenta",
+  "home.delete_account_confirm_desc": "Se eliminarán permanentemente tu cuenta y todos los datos en la nube (gemas, cartas, historial y partidas guardadas). No se puede deshacer. ¿Eliminar tu cuenta?",
+  "home.delete_account_again_title": "Confirmar de nuevo",
+  "home.delete_account_again_desc": "Tras la eliminación no podrás iniciar sesión en esta cuenta. Las gemas y cartas compradas se eliminarán y no se podrán recuperar.",
+  "home.delete_account_confirm_btn": "Eliminar permanentemente",
+  "home.delete_account_success": "Cuenta eliminada"
 }

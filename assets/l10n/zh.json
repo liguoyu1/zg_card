@@ -1706,5 +1706,11 @@
   "hero_stats.damage": "总伤害",
   "hero_stats.empty": "暂无对局数据，快去对战吧",
   "splash.loading_item": "正在加载：{name}",
-  "splash.loading_count": "已加载 {done}/{total} 个"
+  "splash.loading_count": "已加载 {done}/{total} 个",
+  "home.delete_account": "删除账号",
+  "home.delete_account_confirm_desc": "将永久删除您的云端账号及全部数据（钻石、卡牌、战绩、存档），此操作不可恢复。确定要删除吗？",
+  "home.delete_account_again_title": "再次确认",
+  "home.delete_account_again_desc": "删除后您将无法登录该账号，已购买的钻石与卡牌将一并清除且无法找回。",
+  "home.delete_account_confirm_btn": "永久删除账号",
+  "home.delete_account_success": "账号已删除"
 }
