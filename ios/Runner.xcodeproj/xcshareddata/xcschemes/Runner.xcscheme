@@ -87,8 +87,8 @@
          identifier = "com.apple.dt.IDEFoundation.CurrentLocationScenarioIdentifier"
          referenceType = "1">
       </LocationScenarioReference>
-   <StoreKitConfigurationFileReference
-      identifier = "../../Runner/Configuration.storekit">
+      <StoreKitConfigurationFileReference
+         identifier = "../../../Runner/Configuration.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
