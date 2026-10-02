@@ -92,16 +92,16 @@ registering later upgrades the same session so purchases are preserved.
 
 ## 四、重新提交前 Checklist
 
-- [ ] **后端已重新部署（Railway）**：`https://app-server-production-39d1.up.railway.app` 需包含
-      `/api/auth/device`（设备匿名登录）、`/api/auth/delete`（删除账号），
-      以及 `/api/auth/register` 的 `migrateToken` 参数（匿名会话原地升级为邮箱账号，购买不丢）。
-- [ ] 部署后自测（两条 curl）：
+- [x] **后端已重新部署**：`https://app-server-production-39d1.up.railway.app` 部署 `9cb47631`（2026-10-02 19:19）已 SUCCESS，
+      线上实测 `migrateToken` 原地升级生效（注册前后 playerId 一致）、`/api/auth/delete` 彻底删除可用。
+      ⚠️ 注意：app-server **不走 GitHub 自动部署**，改后端代码后必须在 `server/` 目录执行 `railway up --service app-server`。
+- [x] 部署后自测（已通过，测试账号已清理）：
 
 ```bash
 # 1) 匿名设备账号购买会话
 curl -s -X POST https://app-server-production-39d1.up.railway.app/api/auth/device \
   -H 'Content-Type: application/json' -d '{"deviceId":"<device-uuid>"}'
-# 2) 拿上一步 token 验证注册升级（player.id 应与上面一致，且 email 已绑定）
+# 2) 拿上一步 token 验证注册升级（返回的 player.id 应与第 1 步完全相同）
 curl -s -X POST https://app-server-production-39d1.up.railway.app/api/auth/register \
   -H 'Content-Type: application/json' \
   -d '{"email":"t@t.com","password":"123456","name":"T","migrateToken":"<上一步 token>"}'
