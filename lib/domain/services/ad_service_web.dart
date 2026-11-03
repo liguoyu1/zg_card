@@ -1,71 +1,130 @@
-// Web 专属实现：通过 dart:js_interop 调用 web/index.html 中暴露的 Adsterra 全局钩子。
-// 此文件仅通过 conditional import 在 Web 平台编译，原生平台不会包含。
+// Web 专属实现：dart:js_interop 调用 Poki Games SDK（window.PokiSDK）。
+//
+// SDK 由 web/index.html 的 <script src="https://game-cdn.poki.com/scripts/v2/poki-sdk.js">
+// 注入；本文件只负责调用，不注入脚本。此文件仅在 Web 编译，原生平台不包含。
 library;
 
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
+import '../../core/audio/audio_manager.dart';
 import 'ad_service.dart';
 
-class AdsterraWebAdService implements AdService {
-  AdsterraWebAdService();
+/// PokiSDK 的 JS 侧形状（只声明用到的部分）。
+extension type _PokiSDK._(JSObject _) implements JSObject {
+  external JSPromise<JSAny?> init();
+
+  external void gameLoadingFinished();
+
+  external void gameplayStart();
+
+  external void gameplayStop();
+
+  /// [onAdStarted] 在广告真正开始播放时被调用（没广告时可能不调用）。
+  external JSPromise<JSAny?> commercialBreak([JSFunction? onAdStarted]);
+
+  /// resolve(true) 表示可发奖（视频开始播放且看完/跳过）。
+  external JSPromise<JSAny?> rewardedBreak([JSFunction? onAdStarted]);
+}
+
+const String _bgmAsset = 'bgm.mp3';
+
+/// 是否在被 Poki 托管的页面里运行。
+///
+/// 判断依据与 SDK 内部一致：只要带 `?site_id=<n>` 或 `window.isPokiExternal`。
+/// 不在 Poki 里时 `commercialBreak()` 会空等约 7 秒（没有 CMP/广告填充），
+/// 所以本地/自有域名直接跳过商业化插播，只有激励视频照常调用（返回 false 不发奖）。
+bool get _hostedByPoki {
+  final siteId = int.tryParse(Uri.base.queryParameters['site_id'] ?? '');
+  if (siteId != null && siteId > 0) return true;
+  final ext = globalContext['isPokiExternal'];
+  return ext is JSBoolean && ext.toDart;
+}
+
+class PokiAdService implements AdService {
+  bool _mutedBeforeAd = false;
+  bool _bgmBeforeAd = false;
+
+  /// SDK 未加载（本地直开、被广告拦截插件屏蔽）时为 null，所有调用降级为空操作。
+  _PokiSDK? get _sdk {
+    final obj = globalContext['PokiSDK'];
+    if (obj == null || obj.isUndefinedOrNull) return null;
+    return _PokiSDK._(obj as JSObject);
+  }
 
   @override
-  bool get isInitialized => _hasGlobal('__adOpenSmartLink');
-
-  @override
-  Future<bool> initialize() async => isInitialized;
-
-  /// 检查全局是否挂载了指定钩子函数。
-  bool _hasGlobal(String name) {
+  Future<void> initialize() async {
+    final sdk = _sdk;
+    if (sdk == null) return;
     try {
-      return globalContext.has(name);
+      await sdk.init().toDart;
     } catch (_) {
-      return false;
+      // Poki 文档明确：init 失败也要照常加载游戏。
     }
   }
 
-  /// 调用全局钩子函数，传递零个参数，返回结果（或 null）。
-  JSAny? _callGlobal(String name) {
-    final fn = globalContext[name] as JSFunction?;
-    if (fn == null) return null;
-    return fn.callAsFunction(globalContext);
+  @override
+  void gameLoadingFinished() {
+    try {
+      _sdk?.gameLoadingFinished();
+    } catch (_) {}
   }
 
   @override
-  Future<bool> showRewardedAd({required String placementId}) async {
-    // 翻倍金币激励位：打开 Adsterra 智能链接（zone 30760816）。
-    // 智能链接无标准「观看完成」回调，业界做法为「成功打开即视为已观看」，
-    // 并施加最短展示时长保护，避免误触秒关。
-    if (!_hasGlobal('__adOpenSmartLink')) return false;
-    final opened = (_callGlobal('__adOpenSmartLink') as JSBoolean?)?.toDart ?? false;
-    if (!opened) return false;
-    // 最短展示时长保护（5 秒），保证广告有效曝光。
-    await Future<void>.delayed(const Duration(seconds: 5));
-    return true;
+  void gameplayStart() {
+    try {
+      _sdk?.gameplayStart();
+    } catch (_) {}
+  }
+
+  @override
+  void gameplayStop() {
+    try {
+      _sdk?.gameplayStop();
+    } catch (_) {}
   }
 
   @override
   Future<void> showInterstitialAd({required String placementId}) async {
-    // 插屏位：Popunder 全局脚本已移除（避免劫持任何点击跳广告），
-    // 此钩子受控打开 Smart Link，仅在游戏内主动调用时触发。
-    if (_hasGlobal('__adTriggerInterstitial')) {
-      _callGlobal('__adTriggerInterstitial');
+    final sdk = _sdk;
+    if (sdk == null || !_hostedByPoki) return;
+    try {
+      await sdk.commercialBreak(_onAdStarted.toJS).toDart;
+    } catch (_) {
+      // 广告失败不能阻塞游戏。
+    } finally {
+      _onAdFinished();
     }
-    // 给予广告新开页与渲染的缓冲时间。
-    await Future<void>.delayed(const Duration(milliseconds: 300));
   }
 
   @override
-  Future<void> showBannerAd({required String placementId, required bool show}) async {
-    // 卡牌页横幅现由内嵌的 HtmlElementView（ad_banner_slot_web.dart）渲染，
-    // 不再依赖全局钩子，此方法保留以维持 AdService 接口一致。
-    return;
+  Future<bool> showRewardedAd({required String placementId}) async {
+    final sdk = _sdk;
+    if (sdk == null) return false;
+    try {
+      final result = await sdk.rewardedBreak(_onAdStarted.toJS).toDart;
+      return (result as JSBoolean?)?.toDart ?? false;
+    } catch (_) {
+      return false;
+    } finally {
+      _onAdFinished();
+    }
   }
 
-  @override
-  void dispose() {}
+  /// 广告开播：Poki 要求期间静音，且此时游戏不该在跑。
+  void _onAdStarted() {
+    _mutedBeforeAd = AudioManager.I.isMuted;
+    _bgmBeforeAd = AudioManager.I.isMusicPlaying;
+    AudioManager.I.setMuted(true);
+    AudioManager.I.stopBGM();
+  }
+
+  void _onAdFinished() {
+    if (!_mutedBeforeAd) AudioManager.I.setMuted(false);
+    if (_bgmBeforeAd) AudioManager.I.playBGM(_bgmAsset);
+    _bgmBeforeAd = false;
+  }
 }
 
-/// 平台工厂函数：Web 下返回 Adsterra 实现。
-AdService createPlatformAdService() => AdsterraWebAdService();
+/// 平台工厂函数：Web 下返回 Poki 实现。
+AdService createPlatformAdService() => PokiAdService();

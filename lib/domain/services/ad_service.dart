@@ -1,62 +1,65 @@
-/// 广告服务抽象层 —— 为游戏内投放广告预留统一接口。
+/// 广告服务抽象层 —— Web 接入 Poki Games SDK，原生端零广告。
 ///
-/// 平台策略：
-/// - Web (H5) 构建：接入 Adsterra（智能链接 / Popunder / 原生横幅）。
-/// - iOS / Android 原生构建：不投放广告，使用 [NoOpAdService] 空实现（零广告、零崩溃）。
+/// Poki SDK 只提供两种广告：`commercialBreak()`（自然停顿处的视频广告）与
+/// `rewardedBreak()`（用户主动选择的激励视频），**没有横幅广告位**。
+/// 是否真的出广告由 Poki 服务端决定，游戏只管在正确时机上报事件。
 ///
-/// 通过 [getAdService] 工厂按运行平台返回对应实现，调用方无需关心平台差异。
+/// 事件时序（Poki 官方要求）：
+///   启动：gameLoadingFinished() → gameplayStart()
+///   开局：gameplayStop() → commercialBreak() → gameplayStart()
+///   结算：gameplayStop()
 library;
 
-/// 广告位标识，对应游戏内不同触发场景。
+/// 游戏内广告位标识，仅用于区分触发场景。
 class AdPlacement {
   AdPlacement._();
-  // 免费卡包（当前未启用）
-  static const String freePack = 'ad_free_pack';
-  // 金币加成 / 翻倍金币（激励视频位）
+
+  /// 战后「翻倍奖励」激励视频位
   static const String goldBonus = 'ad_gold_bonus';
-  // 战败复活（当前未启用）
-  static const String revive = 'ad_revive';
-  // 插屏广告（结算前）
+
+  /// 对局开始前的自然停顿（插屏位）
   static const String interstitial = 'ad_interstitial';
-  // 常驻横幅广告（卡牌页等界面底部，原生横幅位）
-  static const String banner = 'ad_banner';
 }
 
 /// 广告服务统一接口。
 abstract class AdService {
-  bool get isInitialized;
-  Future<bool> initialize();
+  /// 初始化 SDK。Poki 要求游戏启动时尽早调用一次。
+  Future<void> initialize();
 
-  /// 展示激励广告（如「翻倍金币」）。返回 true 表示用户已完成观看/互动，应发放奖励。
-  Future<bool> showRewardedAd({required String placementId});
+  /// 加载完成、玩家可交互 —— 对应 PokiSDK.gameLoadingFinished()。
+  void gameLoadingFinished();
 
-  /// 展示插屏广告（如「结算前」）。无需返回值。
+  /// 玩家进入实际操作（对局开始 / 复活后）。
+  void gameplayStart();
+
+  /// 玩家停下（结算 / 暂停 / 回主菜单）。
+  void gameplayStop();
+
+  /// 自然停顿处的视频广告。是否真出广告由 Poki 决定，游戏无需自己做频控。
   Future<void> showInterstitialAd({required String placementId});
 
-  /// 展示/隐藏常驻横幅广告（如卡牌页底部的原生横幅）。
-  /// [show] 为 true 时显示，false 时隐藏。
-  Future<void> showBannerAd({required String placementId, required bool show});
-
-  void dispose();
+  /// 激励视频。返回 true 表示完整观看，可以发奖。
+  Future<bool> showRewardedAd({required String placementId});
 }
 
-/// 默认空实现：不展示任何广告，所有激励调用均视为「已完成」（用于原生端或未接入时）。
+/// 空实现：原生（iOS/Android）零广告。
+/// 激励位视为「已观看」直接发奖，保持原生端既有体验。
 class NoOpAdService implements AdService {
   @override
-  bool get isInitialized => true;
+  Future<void> initialize() async {}
 
   @override
-  Future<bool> initialize() async => true;
+  void gameLoadingFinished() {}
 
   @override
-  Future<bool> showRewardedAd({required String placementId}) async => true;
+  void gameplayStart() {}
+
+  @override
+  void gameplayStop() {}
 
   @override
   Future<void> showInterstitialAd({required String placementId}) async {}
 
   @override
-  Future<void> showBannerAd({required String placementId, required bool show}) async {}
-
-  @override
-  void dispose() {}
+  Future<bool> showRewardedAd({required String placementId}) async => true;
 }

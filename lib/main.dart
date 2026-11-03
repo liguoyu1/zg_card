@@ -12,6 +12,7 @@ import 'data/persistence/save_manager.dart';
 import 'data/device_report_service.dart';
 import 'domain/services/battle_pass_service.dart';
 import 'domain/services/balance_sync_service.dart';
+import 'domain/services/ad_service_factory.dart';
 import 'domain/services/purchase_service.dart';
 import 'domain/services/quest_manager.dart';
 import 'l10n/locale_service.dart';
@@ -45,6 +46,12 @@ void main() async {
 
   // 先 runApp 显示界面，再后台初始化其他
   runApp(const ProviderScope(child: WarringStatesApp()));
+
+  // Poki 广告 SDK：尽早 init（失败也照常开游戏），首帧后上报加载完成。
+  // 之后的对局由 GameScreen 负责 gameplayStart / gameplayStop / 插播时序。
+  getAdService().initialize();
+  WidgetsBinding.instance
+      .addPostFrameCallback((_) => getAdService().gameLoadingFinished());
 
   // ── 后台异步初始化（不阻塞首帧） ──
   // 注意：新手 20 张赠送与本周试用已移至 HomeScreen._init，

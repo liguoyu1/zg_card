@@ -12,7 +12,6 @@ import '../../domain/services/balance_sync_service.dart';
 import '../../domain/services/card_pool.dart';
 import '../../domain/services/hero_data_provider.dart';
 import '../../presentation/providers/auth_provider.dart';
-import '../../shared/widgets/ad_banner_slot.dart';
 import '../../shared/widgets/queued_asset_image.dart';
 
 /// 卡牌库 — 全部卡牌按学派筛选，已拥有标记
@@ -121,8 +120,8 @@ class _CardLibraryScreenState extends ConsumerState<CardLibraryScreen>
         ),
       ),
       body: TabBarView(controller: _tc, children: [
-        _CardGridView(allCards: _all, owned: _owned, trial: _trial, fav: _fav, onRefresh: _load, showBanner: true),
-        _CardGridView(allCards: _all.where((c) => _owned.contains(c.id) || _trial.contains(c.id)).toList(), owned: _owned, trial: _trial, ownedOrdered: _ownedOrdered, fav: _fav, onRefresh: _load, showBanner: true),
+        _CardGridView(allCards: _all, owned: _owned, trial: _trial, fav: _fav, onRefresh: _load),
+        _CardGridView(allCards: _all.where((c) => _owned.contains(c.id) || _trial.contains(c.id)).toList(), owned: _owned, trial: _trial, ownedOrdered: _ownedOrdered, fav: _fav, onRefresh: _load),
         _WishlistView(cards: _all.where((c) => _fav.contains(c.id)).toList(), fav: _fav, onRefresh: _load),
       ]),
     );
@@ -131,10 +130,9 @@ class _CardLibraryScreenState extends ConsumerState<CardLibraryScreen>
 
 // ============ 卡牌网格（全部/已有共用） ============
 class _CardGridView extends StatefulWidget {
-  const _CardGridView({required this.allCards, required this.owned, required this.trial, this.ownedOrdered = const [], required this.fav, required this.onRefresh, this.showBanner = false});
+  const _CardGridView({required this.allCards, required this.owned, required this.trial, this.ownedOrdered = const [], required this.fav, required this.onRefresh});
   final List<cm.Card> allCards; final Set<String> owned; final Set<String> trial;
   final List<String> ownedOrdered; final List<String> fav; final VoidCallback onRefresh;
-  final bool showBanner; // 列表末尾追加 3:1 广告横幅（仅"全部卡牌"页）
   @override
   State<_CardGridView> createState() => _CardGridViewState();
 }
@@ -337,18 +335,10 @@ class _CardGridViewState extends State<_CardGridView> {
                 _ownChip('all', LocaleService.I.t('card_library.all')), _ownChip('owned', LocaleService.I.t('card_library.owned')),
                 _ownChip('trial', LocaleService.I.t('card_library.trial')), _ownChip('unowned', LocaleService.I.t('card_library.unowned')),
               ]))),
-      Expanded(child: cards.isEmpty && !widget.showBanner
+      Expanded(child: cards.isEmpty
           ? Center(child: Text(LocaleService.I.t('card_library.no_cards'), style: TextStyle(color: AppTheme.parchment.withAlpha(128))))
           : Padding(padding: const EdgeInsets.all(8),
               child: CustomScrollView(slivers: [
-                if (widget.showBanner)
-                  // 所有卡牌之前：全宽横幅（Adsterra 横幅素材按自身宽高比完整显示）
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
-                    ),
-                  ),
                 SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),
@@ -509,11 +499,6 @@ class _WishlistView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (cards.isEmpty) {
       return ListView(children: [
-        // 广告置顶：全宽横幅
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
-        ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.25,
             child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.favorite_border, size: 64, color: AppTheme.parchment.withAlpha(128)),
@@ -526,13 +511,6 @@ class _WishlistView extends StatelessWidget {
     }
     return Padding(padding: const EdgeInsets.all(8),
         child: CustomScrollView(slivers: [
-          // 愿望单最前：全宽横幅
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: SizedBox(width: double.infinity, child: const AdBannerSlot()),
-            ),
-          ),
           SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4, childAspectRatio: 0.72, crossAxisSpacing: 6, mainAxisSpacing: 6),

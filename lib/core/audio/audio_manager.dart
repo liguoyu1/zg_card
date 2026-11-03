@@ -100,6 +100,9 @@ class AudioManager {
   /// Get current muted state
   bool get isMuted => _isMuted;
 
+  /// 背景音乐是否正在播放（广告期间停播后据此恢复）
+  bool get isMusicPlaying => _isMusicPlaying;
+
   /// Get volume for a sound type
   double getVolume(SoundType type) {
     return _volumes[type] ?? AudioConfig.getConfig(type).defaultVolume;

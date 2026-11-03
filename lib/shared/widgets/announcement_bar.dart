@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/activity_service.dart';
 import '../../l10n/locale_service.dart';
-import 'ad_slot_scope.dart';
+import 'tab_scope.dart';
 
 /// 主页底部系统公告：服务器配置（多条按序循环滚动，无则不显示）
 /// 每次切回主页 tab 或切换语言时重新拉取，获取对应语言/生效周期内的公告。
@@ -27,7 +27,7 @@ class _AnnouncementBarState extends State<AnnouncementBar> {
   @override
   void initState() {
     super.initState();
-    // 注意：这里不能读 AdSlotScope（inherited 依赖禁止在 initState 中注册），
+    // 注意：这里不能读 TabScope（inherited 依赖禁止在 initState 中注册），
     // tab 归属统一在 didChangeDependencies 里读取。
     _lastActiveIndex = null;
     _lastLocale = LocaleService.I.localeCode;
@@ -61,11 +61,8 @@ class _AnnouncementBarState extends State<AnnouncementBar> {
     _lastActiveIndex = idx;
   }
 
-  /// 当前所在 tab（AdSlotScope 注入）；主页为 0
-  int? _readActiveIndex() {
-    final scope = context.dependOnInheritedWidgetOfExactType<AdSlotScope>();
-    return scope?.activeIndex;
-  }
+  /// 当前所在 tab（TabScope 注入）；主页为 0
+  int? _readActiveIndex() => TabScope.activeIndexOf(context);
 
   Future<void> _load() async {
     // 公告语言映射：zh/zh_TW 用中文公告，其余语言用英文公告（英文为兜底语言）
