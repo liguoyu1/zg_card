@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:warring_states_card/data/persistence/save_manager.dart';
 
 /// Helper to run SaveManager tests in a temp directory to avoid side effects.
@@ -10,6 +11,9 @@ Future<T> withTempDir<T>(Future<T> Function(String dir) fn) async {
   final originalWD = Directory.current;
   try {
     Directory.current = tempDir;
+    // SaveManager 已改为 SharedPreferences 存储，每个用例用空的 mock 存储隔离
+    SaveManager.accountId = null;
+    SharedPreferences.setMockInitialValues({});
     await SaveManager.init();
     return await fn(tempDir.path);
   } finally {
@@ -19,14 +23,7 @@ Future<T> withTempDir<T>(Future<T> Function(String dir) fn) async {
 }
 
 void main() {
-  group('SaveManager - lifecycle', () {
-    test('init creates saves directory', () async {
-      await withTempDir((dir) async {
-        final saveDir = Directory('$dir/saves');
-        expect(await saveDir.exists(), isTrue);
-      });
-    });
-  });
+  TestWidgetsFlutterBinding.ensureInitialized();
 
   group('SaveManager - PlayerData', () {
     test('loadPlayerData returns null when no data', () async {

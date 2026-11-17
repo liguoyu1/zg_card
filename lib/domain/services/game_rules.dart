@@ -115,8 +115,11 @@ class BattlefieldService {
     // 消耗法力
     final newMana = player.mana - card.cost;
 
-    // 从手牌移除（按 id 匹配，不依赖 Equatable 对比）
-    final newHand = List<Card>.from(player.hand)..removeWhere((c) => c.id == card.id);
+    // 从手牌移除一张（按 id 匹配，不依赖 Equatable 对比）。
+    // 不能 removeWhere：卡组允许同名多张，会把手里所有副本一起删掉。
+    final newHand = List<Card>.from(player.hand);
+    final handIdx = newHand.indexWhere((c) => c.id == card.id);
+    if (handIdx >= 0) newHand.removeAt(handIdx);
 
     // 按类型处理
     List<Card> newBoard = player.board;
@@ -208,19 +211,17 @@ class BattlefieldService {
     
     // 处理目标的圣盾
     var newOpponentBoard = List<Card>.from(opponent.board);
+    var targetDied = false;
+    var attackerDied = false;
     if (target.hasDivineShield) {
       // 圣盾：抵消伤害，移除圣盾关键词
       final newTargetKeywords = target.keywords.where((k) => k != Keyword.divineShield).toList();
       final updatedTarget = target.copyWith(keywords: newTargetKeywords);
       newOpponentBoard[targetIndex] = updatedTarget;
     } else if (newTargetHealth <= 0) {
-      // 目标死亡
+      // 目标死亡（亡语在战斗结算写回后再触发，见下方）
       newOpponentBoard.removeAt(targetIndex);
-      if (target.hasDeathrattle) {
-        state = state.updatePlayer(opponent.copyWith(board: newOpponentBoard));
-        state = _executor.executeDeathrattle(state, opponent.id, target);
-        newOpponentBoard = state.getCurrentPlayer(opponent.id).board;
-      }
+      targetDied = true;
     } else {
       final updatedTarget = target.copyWith(health: newTargetHealth);
       newOpponentBoard[targetIndex] = updatedTarget;
@@ -242,12 +243,7 @@ class BattlefieldService {
       if (attackerIndex >= 0) {
         newCurrentBoard.removeAt(attackerIndex);
       }
-      // 触发亡语
-      if (attacker.hasDeathrattle) {
-        state = state.updatePlayer(currentPlayer.copyWith(board: newCurrentBoard));
-        state = _executor.executeDeathrattle(state, currentPlayer.id, attacker);
-        newCurrentBoard = state.getCurrentPlayer(currentPlayer.id).board;
-      }
+      attackerDied = true;
     } else {
       // 更新攻击者
       final attackerIndex = currentPlayer.board.indexWhere((c) => c.id == attacker.id);
@@ -277,7 +273,11 @@ class BattlefieldService {
       final newHealth = player.health + combat.defenderDamage;
       state = state.updatePlayer(player.copyWith(health: newHealth));
     }
-    
+
+    // 亡语最后触发：此前若先触发再用战前快照写回，会抹掉亡语对英雄血量/手牌/对方场面的改动
+    if (targetDied) state = _executor.executeDeathrattle(state, opponent.id, target);
+    if (attackerDied) state = _executor.executeDeathrattle(state, currentPlayer.id, attacker);
+
     return state;
   }
   
@@ -312,14 +312,15 @@ class BattlefieldService {
         ? weapon.copyWith(health: newDurability, hasAttackedThisTurn: true)
         : null;
 
-    var newState = state.updatePlayer(opponent.copyWith(health: newHealth, armor: newArmor));
+    var newState = state
+        .updatePlayer(opponent.copyWith(health: newHealth, armor: newArmor))
+        .updatePlayer(attacker.copyWith(weapon: newWeapon));
 
-    // 武器耐久归零：触发武器亡语（如越王剑）
-    if (newWeapon == null && weapon.hasDeathrattle) {
+    // 武器耐久归零：最后触发武器亡语（如越王剑），避免被攻击者旧快照覆盖
+    if (newWeapon == null) {
       newState = _executor.executeDeathrattle(newState, attacker.id, weapon);
     }
-
-    return newState.updatePlayer(attacker.copyWith(weapon: newWeapon));
+    return newState;
   }
   
   /// 随从攻击敌方英雄
@@ -384,16 +385,10 @@ class BattlefieldService {
     final opponent = state.opponent;
     final target = opponent.board.firstWhere((c) => c.id == targetId);
 
-    // 触发亡语
-    var newState = state;
-    if (target.hasDeathrattle) {
-      newState = _executor.executeDeathrattle(state, opponent.id, target);
-    }
-
+    // 先移除再触发亡语：反序会用旧快照覆盖亡语召唤的随从
     final newBoard = opponent.board.where((c) => c.id != targetId).toList();
-    final updatedOpponent = opponent.copyWith(board: newBoard);
-
-    return newState.updatePlayer(updatedOpponent);
+    final removed = state.updatePlayer(opponent.copyWith(board: newBoard));
+    return _executor.executeDeathrattle(removed, opponent.id, target);
   }
 }
 

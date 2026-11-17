@@ -3,6 +3,7 @@ import 'package:warring_states_card/domain/models/models.dart';
 import 'package:warring_states_card/domain/services/ai_controller.dart';
 import 'package:warring_states_card/domain/services/combo_system.dart';
 import 'package:warring_states_card/domain/services/effects.dart';
+import 'package:warring_states_card/domain/services/effect_executor.dart';
 import 'package:warring_states_card/domain/services/game_rules.dart';
 import 'package:warring_states_card/presentation/providers/game_provider.dart';
 
@@ -183,8 +184,9 @@ void main() {
   // ═══════════════════════════════════════════════════════
   group('3 亡语', () {
     test('3.1 亡语死亡召唤', () {
-      const card = Card(id:'N001',name:'民兵',type:CardType.minion,cost:2,attack:2,health:1,
-        keywords:[Keyword.deathrattle],description:'',owner:CardOwner.neutral,rarity:Rarity.common);
+      // 场上实例 id 带序号后缀（M002_3），亡语需按卡牌 id M002（机关兽：召唤小机关）触发
+      const card = Card(id:'M002_3',name:'机关兽',type:CardType.minion,cost:2,attack:2,health:1,
+        keywords:[Keyword.deathrattle],description:'',owner:CardOwner.mojia,rarity:Rarity.common);
       const atk = Card(id:'a',name:'a',type:CardType.minion,cost:2,attack:5,health:5,
         description:'',owner:CardOwner.neutral,rarity:Rarity.common);
       var gs = GameState(
@@ -193,6 +195,43 @@ void main() {
         activePlayerId:'p1');
       gs = bf.minionAttack(gs, 'p1', atk, card.id);
       expect(gs.player2.board.length, greaterThanOrEqualTo(1));
+      expect(gs.player2.board.any((c) => c.id == 'M002_3'), isFalse);
+    });
+
+    test('3.4 亡语伤害不被战斗结算覆盖', () {
+      // B004 燕死士 亡语：对敌方英雄造成2点伤害。被 p1 随从击杀 → p1 英雄 -2
+      const dr = Card(id:'B004_1',name:'燕死士',type:CardType.minion,cost:2,attack:1,health:1,
+        keywords:[Keyword.deathrattle],description:'',owner:CardOwner.bingjia,rarity:Rarity.common);
+      const atk = Card(id:'a',name:'a',type:CardType.minion,cost:2,attack:5,health:5,
+        description:'',owner:CardOwner.neutral,rarity:Rarity.common);
+      var gs = GameState(
+        player1:Player(id:'p1',hero:testHero,board:[atk],mana:10),
+        player2:Player(id:'p2',hero:opponentHero,board:[dr],mana:10),
+        activePlayerId:'p1');
+      final before = gs.player1.health;
+      gs = bf.minionAttack(gs, 'p1', atk, dr.id);
+      expect(gs.player2.board, isEmpty);
+      expect(gs.player1.health, before - 2);
+    });
+
+    test('3.2 实例 id 还原', () {
+      expect(EffectExecutor.baseCardId('M002_5'), 'M002');
+      expect(EffectExecutor.baseCardId('M002_5_copy_9'), 'M002');
+      expect(EffectExecutor.baseCardId('t_xiaojiguan_summon_3'), 't_xiaojiguan');
+      expect(EffectExecutor.baseCardId('t_xiaoxi'), 't_xiaoxi');
+      expect(EffectExecutor.baseCardId('BW002_12'), 'BW002');
+    });
+
+    test('3.3 出牌只移除一张同名卡', () {
+      const c = Card(id:'N001',name:'民兵',type:CardType.minion,cost:1,attack:1,health:2,
+        description:'',owner:CardOwner.neutral,rarity:Rarity.common);
+      final gs = GameState(
+        player1:Player(id:'p1',hero:testHero,hand:const [c,c],mana:10),
+        player2:Player(id:'p2',hero:opponentHero),
+        activePlayerId:'p1');
+      final r = bf.playCard(gs, 'p1', c);
+      expect(r.player1.hand.length, 1);
+      expect(r.player1.board.length, 1);
     });
   });
 
@@ -299,7 +338,7 @@ void main() {
         description:'',keywords:[Keyword.battlecry],owner:CardOwner.zonghengjia,rarity:Rarity.rare);
       const w = Card(id:'W',name:'W',type:CardType.minion,cost:2,attack:2,health:2,
         description:'',owner:CardOwner.neutral,rarity:Rarity.common);
-      const gs = GameState(
+      final gs = GameState(
         player1:Player(id:'p1',hero:testHero,hand:[a,b],board:[w],mana:10),
         player2:Player(id:'p2',hero:opponentHero),
         activePlayerId:'p1');
@@ -315,7 +354,7 @@ void main() {
         description:'',keywords:[Keyword.battlecry],owner:CardOwner.mojia,rarity:Rarity.legendary);
       const b = Card(id:'M009',name:'公输班',type:CardType.minion,cost:5,attack:4,health:4,
         description:'',keywords:[Keyword.battlecry],owner:CardOwner.mojia,rarity:Rarity.epic);
-      const gs = GameState(
+      final gs = GameState(
         player1:Player(id:'p1',hero:testHero,hand:[a,b],mana:10),
         player2:Player(id:'p2',hero:opponentHero),
         activePlayerId:'p1');

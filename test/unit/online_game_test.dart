@@ -14,6 +14,10 @@ class _MockHttpOverrides extends http.BaseClient {
       _mockClient.send(request);
 }
 
+// ponytail: 这些用例直连 ApiConfig.baseUrl（线上服务），结果取决于网络。
+// 默认跳过；需要时 `flutter test --run-skipped`。改为注入 http.Client 后再恢复。
+const _netSkip = '依赖线上网络，非确定性';
+
 void main() {
   late OnlineGameService service;
 
@@ -39,14 +43,14 @@ void main() {
     });
   });
 
-  group('OnlineGameService - getPlayerProfile', () {
+  group('OnlineGameService - getPlayerProfile', skip: _netSkip, () {
     test('returns null on network error', () async {
       final result = await service.getPlayerProfile('od_001');
       expect(result, isNull);
     });
   });
 
-  group('OnlineGameService - joinMatchQueue', () {
+  group('OnlineGameService - joinMatchQueue', skip: _netSkip, () {
     test('returns null on network error', () async {
       final result = await service.joinMatchQueue(
         odID: 'od_001',
@@ -58,7 +62,7 @@ void main() {
     });
   });
 
-  group('OnlineGameService - checkMatchStatus', () {
+  group('OnlineGameService - checkMatchStatus', skip: _netSkip, () {
     test('returns null on network error', () async {
       final result = await service.checkMatchStatus(
         odID: 'od_001',
@@ -76,14 +80,14 @@ void main() {
     });
   });
 
-  group('OnlineGameService - getLeaderboard', () {
+  group('OnlineGameService - getLeaderboard', skip: _netSkip, () {
     test('returns empty list on network error', () async {
       final result = await service.getLeaderboard();
       expect(result, isEmpty);
     });
   });
 
-  group('OnlineGameService - getPlayerRank', () {
+  group('OnlineGameService - getPlayerRank', skip: _netSkip, () {
     test('returns -1 on network error', () async {
       final result = await service.getPlayerRank('od_001');
       expect(result, equals(-1));

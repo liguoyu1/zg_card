@@ -22,6 +22,17 @@ class EffectExecutor {
     return state;
   }
 
+  /// 上场实例 id（如 `M002_5`、`M002_summon_7`、`M002_5_copy_9`）还原为卡牌 id。
+  /// 效果表按卡牌 id 建索引，不还原则场上随从/武器的亡语、激励永不触发。
+  static String baseCardId(String id) {
+    final re = RegExp(r'_(?:summon_|copy_|ret_)?\d+$');
+    var s = id;
+    while (re.hasMatch(s)) {
+      s = s.replaceFirst(re, '');
+    }
+    return s;
+  }
+
   /// 执行亡语效果
   GameState executeDeathrattle(
     GameState state,
@@ -30,9 +41,15 @@ class EffectExecutor {
   ) {
     if (!card.hasDeathrattle) return state;
 
-    final effect = deathrattleFor(card.id);
+    final effect = deathrattleFor(baseCardId(card.id));
     if (effect != null) {
-      return effect.execute(state, playerId, null);
+      // 效果内"敌方"= state.opponent（相对当前行动方）。亡语常在对手回合触发，
+      // 须临时切到亡语持有者视角执行，否则伤害/召唤会作用到错误一方。
+      final active = state.activePlayerId;
+      if (active == playerId) return effect.execute(state, playerId, null);
+      return effect
+          .execute(state.copyWith(activePlayerId: playerId), playerId, null)
+          .copyWith(activePlayerId: active);
     }
 
     return state;
@@ -46,7 +63,7 @@ class EffectExecutor {
   ) {
     if (!card.hasInspire) return state;
 
-    final effect = _getInspireEffect(card.id);
+    final effect = _getInspireEffect(baseCardId(card.id));
     if (effect != null) {
       return effect.execute(state, playerId, null);
     }
