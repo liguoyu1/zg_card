@@ -22,8 +22,9 @@ class EffectExecutor {
     return state;
   }
 
-  /// 上场实例 id（如 `M002_5`、`M002_summon_7`、`M002_5_copy_9`）还原为卡牌 id。
-  /// 效果表按卡牌 id 建索引，不还原则场上随从/武器的亡语、激励永不触发。
+  /// 实例 id（如 `M002_5`、`M002_summon_7`、`M002_5_copy_9`）还原为卡牌 id。
+  /// 效果表按卡牌 id 建索引；所有查表入口都先还原，否则复制/回手后再打出的牌
+  /// 战吼、法术、亡语、激励全部失效。
   static String baseCardId(String id) {
     final re = RegExp(r'_(?:summon_|copy_|ret_)?\d+$');
     var s = id;
@@ -112,24 +113,26 @@ class EffectExecutor {
   }
 
   /// 根据卡牌ID获取战吼效果
-  CardEffect? _getBattlecryEffect(String cardId) => _battlecryEffects[cardId];
+  CardEffect? _getBattlecryEffect(String cardId) => _battlecryEffects[baseCardId(cardId)];
 
   /// 根据卡牌ID获取激励效果
-  CardEffect? _getInspireEffect(String cardId) => _inspireEffects[cardId];
+  CardEffect? _getInspireEffect(String cardId) => _inspireEffects[baseCardId(cardId)];
 
   /// 公开 API —— 战吼效果
-  CardEffect? effectFor(String id) => _battlecryEffects[id];
+  CardEffect? effectFor(String id) => _battlecryEffects[baseCardId(id)];
 
   /// 公开 API —— 亡语效果（含武器亡语）
-  CardEffect? deathrattleFor(String id) =>
-      _deathrattleEffects[id] ?? _weaponDeathrattleEffects[id];
+  CardEffect? deathrattleFor(String id) {
+    final b = baseCardId(id);
+    return _deathrattleEffects[b] ?? _weaponDeathrattleEffects[b];
+  }
 
   /// 公开 API —— 武器佩戴效果（无战吼关键字的武器）
-  CardEffect? weaponEquipEffectFor(String id) => _weaponEquipEffects[id];
+  CardEffect? weaponEquipEffectFor(String id) => _weaponEquipEffects[baseCardId(id)];
 
   /// 公开 API —— 武器亡语效果
   CardEffect? weaponDeathrattleEffectFor(String id) =>
-      _weaponDeathrattleEffects[id];
+      _weaponDeathrattleEffects[baseCardId(id)];
 
   /// 执行武器佩戴效果（战吼型武器走战吼；否则戴装备效果）
   /// 注意：学派共振由 SpellSystem 另行处理，此处不触碰英雄归属。

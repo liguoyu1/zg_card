@@ -5,6 +5,7 @@ import 'package:warring_states_card/domain/services/combo_system.dart';
 import 'package:warring_states_card/domain/services/effects.dart';
 import 'package:warring_states_card/domain/services/effect_executor.dart';
 import 'package:warring_states_card/domain/services/game_rules.dart';
+import 'package:warring_states_card/domain/services/spell_system.dart';
 import 'package:warring_states_card/presentation/providers/game_provider.dart';
 
 void main() {
@@ -58,7 +59,8 @@ void main() {
       }
       gn.startTurn('p1');
       final hand = gn.state!.activePlayer.hand;
-      final affordable = hand.where((c) => c.isMinion && c.cost <= gn.state!.activePlayer.mana).toList();
+      // 排除战吼：抽牌类战吼会让手牌数不确定（随机起手导致偶发失败）
+      final affordable = hand.where((c) => c.isMinion && !c.hasBattlecry && c.cost <= gn.state!.activePlayer.mana).toList();
       if (affordable.isEmpty) {
         expect(true, isTrue);
         return;
@@ -196,6 +198,13 @@ void main() {
       gs = bf.minionAttack(gs, 'p1', atk, card.id);
       expect(gs.player2.board.length, greaterThanOrEqualTo(1));
       expect(gs.player2.board.any((c) => c.id == 'M002_3'), isFalse);
+    });
+
+    test('3.5 回手/复制后的实例 id 仍能查到效果表', () {
+      final ex = EffectExecutor();
+      expect(ex.deathrattleFor('B004_3_ret_7'), isNotNull);
+      expect(ex.deathrattleFor('B004_3_copy_2'), isNotNull);
+      expect(SpellSystem.effectFor('Z020_ret_4'), isNotNull);
     });
 
     test('3.4 亡语伤害不被战斗结算覆盖', () {

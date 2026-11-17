@@ -767,63 +767,69 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     final boardCardWidth = cardHeight / 1.45;
     final handCardWidth = cardHeight / 1.45;
 
-    return Scaffold(
-      backgroundColor: AppTheme.bgDark,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isShort = constraints.maxHeight < 700;
-          final adjCW = min(boardCardWidth, isShort ? 64.0 : boardCardWidth);
-          final adjCH = min(cardHeight, isShort ? 88.0 : cardHeight);
-          final adjHW = isShort ? 72.0 : handCardWidth;
-          return SafeArea(
-            child: Container(
-              decoration: AppTheme.boardDecoration,
-              child: Column(
-                children: [
-                  // 对手区域（固定）
-                  _buildHeroPanel(opponent, isOpponent: true, compact: isShort),
-                  _buildHandArea(opponent, adjHW, gameState, isShort: isShort, isEnemy: true, handHeight: cardHeight),
-                  // 对战区：对手战场 + 分隔线 + 玩家战场（均分）
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: _buildBoardSection(opponent.board, isOpponent: true, boardCardWidth: adjCW, boardCardHeight: adjCH, gameState: gameState),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          child: Container(
-                            height: 2,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.transparent,
-                                  AppTheme.borderGold.withAlpha(100),
-                                  AppTheme.borderGold.withAlpha(150),
-                                  AppTheme.borderGold.withAlpha(100),
-                                  Colors.transparent,
-                                ],
+    // 对局中按返回/浏览器后退会直接掉线重开，先让玩家确认
+    return PopScope(
+        canPop: gameState.phase == GamePhase.ended,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _confirmExit();
+        },
+        child: Scaffold(
+        backgroundColor: AppTheme.bgDark,
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final isShort = constraints.maxHeight < 700;
+            final adjCW = min(boardCardWidth, isShort ? 64.0 : boardCardWidth);
+            final adjCH = min(cardHeight, isShort ? 88.0 : cardHeight);
+            final adjHW = isShort ? 72.0 : handCardWidth;
+            return SafeArea(
+              child: Container(
+                decoration: AppTheme.boardDecoration,
+                child: Column(
+                  children: [
+                    // 对手区域（固定）
+                    _buildHeroPanel(opponent, isOpponent: true, compact: isShort),
+                    _buildHandArea(opponent, adjHW, gameState, isShort: isShort, isEnemy: true, handHeight: cardHeight),
+                    // 对战区：对手战场 + 分隔线 + 玩家战场（均分）
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: _buildBoardSection(opponent.board, isOpponent: true, boardCardWidth: adjCW, boardCardHeight: adjCH, gameState: gameState),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            child: Container(
+                              height: 2,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.transparent,
+                                    AppTheme.borderGold.withAlpha(100),
+                                    AppTheme.borderGold.withAlpha(150),
+                                    AppTheme.borderGold.withAlpha(100),
+                                    Colors.transparent,
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: _buildBoardSection(player.board, isOpponent: false, boardCardWidth: adjCW, boardCardHeight: adjCH, gameState: gameState),
-                        ),
-                      ],
+                          Expanded(
+                            child: _buildBoardSection(player.board, isOpponent: false, boardCardWidth: adjCW, boardCardHeight: adjCH, gameState: gameState),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  // 下方固定：玩家手牌 + 英雄面板 + 操作栏
-                  _buildHandArea(player, adjHW, gameState, isShort: isShort, handHeight: cardHeight),
-                  _buildHeroPanel(player, compact: isShort),
-                  _buildBottomControls(),
-                ],
+                    // 下方固定：玩家手牌 + 英雄面板 + 操作栏
+                    _buildHandArea(player, adjHW, gameState, isShort: isShort, handHeight: cardHeight),
+                    _buildHeroPanel(player, compact: isShort),
+                    _buildBottomControls(),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+    ));
   }
 
   /// 构建英雄面板（对手/玩家通用）

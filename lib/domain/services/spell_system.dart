@@ -248,9 +248,10 @@ class SpellSystem {
 
   static bool _oddCost(Card c) => c.cost.isOdd;
 
-  static CardEffect? effectFor(String id) => _spellEffects[id];
+  static CardEffect? effectFor(String id) => _spellEffects[EffectExecutor.baseCardId(id)];
 
-  static SpellRule? ruleFor(String id) {
+  static SpellRule? ruleFor(String rawId) {
+    final id = EffectExecutor.baseCardId(rawId);
     if (_autoTargetIds.contains(id)) {
       return SpellRule(targetKind: SpellTargetKind.none, condition: _condFor(id));
     }
@@ -260,8 +261,8 @@ class SpellSystem {
   static bool Function(GameState, Player)? _condFor(String id) =>
       id == 'B015' ? _damagedMinionExists : null;
 
-  static CardEffect? weaponEffectFor(String id) => _weaponEquipEffects[id];
-  static CardEffect? resonanceFor(String id) => _weaponResonance[id];
+  static CardEffect? weaponEffectFor(String id) => _weaponEquipEffects[EffectExecutor.baseCardId(id)];
+  static CardEffect? resonanceFor(String id) => _weaponResonance[EffectExecutor.baseCardId(id)];
 
   /// 法术是否可打出（费用与条件）
   static bool canPlay(GameState state, Player player, Card card) {
