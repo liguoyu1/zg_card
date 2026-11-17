@@ -1,3 +1,4 @@
+import '../widgets/theme_widgets.dart';
 import 'package:flutter/material.dart' hide Card;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -231,7 +232,7 @@ class _CardGridViewState extends State<_CardGridView> {
                 const SizedBox(height: 12),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                   _statusChip(owned ? LocaleService.I.t('card_library.owned') : trial ? LocaleService.I.t('card_library.trial') : LocaleService.I.t('card_library.unowned'),
-                      owned ? AppTheme.healGreen : trial ? Colors.cyan : Colors.grey),
+                      owned ? AppTheme.healGreen : trial ? AppTheme.jade : Colors.grey),
                   if (owned && card.rarity == cm.Rarity.common)
                     TextButton(onPressed: () => _dust(card, ctx),
                         child: Text(LocaleService.I.t('card_library.dust_action'), style: const TextStyle(color: Colors.orange))),
@@ -294,7 +295,7 @@ class _CardGridViewState extends State<_CardGridView> {
           style: const TextStyle(color: AppTheme.parchment, fontSize: 40))));
 
   Color _costColor(int cost) {
-    if (cost <= 2) return Colors.grey[700]!;
+    if (cost <= 2) return const Color(0xFF6E6257);
     if (cost <= 5) return Colors.blue[700]!;
     if (cost <= 7) return Colors.purple[700]!;
     return Colors.orange[700]!;
@@ -364,30 +365,20 @@ class _CardGridViewState extends State<_CardGridView> {
   Widget _chip(String v, String l) {
     final s = _filter == v;
     return Padding(padding: const EdgeInsets.symmetric(horizontal: 2),
-        child: ChoiceChip(label: Text(l, style: TextStyle(fontSize: 11,
-            color: s ? Colors.white : AppTheme.parchment)),
-            selected: s, selectedColor: AppTheme.goldAccent,
-            backgroundColor: Colors.grey[800],
-            onSelected: (_) => setState(() => _filter = v),
-            visualDensity: VisualDensity.compact));
+        child: WChip(label: l, selected: s, compact: true, onTap: () => setState(() => _filter = v)));
   }
 
   Widget _ownChip(String v, String l) {
     final s = _statusFilter == v;
     return Padding(padding: const EdgeInsets.symmetric(horizontal: 2),
-        child: ChoiceChip(label: Text(l, style: TextStyle(fontSize: 11,
-            color: s ? Colors.white : AppTheme.parchment)),
-            selected: s, selectedColor: AppTheme.goldAccent,
-            backgroundColor: Colors.grey[800],
-            onSelected: (_) => setState(() => _statusFilter = v),
-            visualDensity: VisualDensity.compact));
+        child: WChip(label: l, selected: s, compact: true, onTap: () => setState(() => _statusFilter = v)));
   }
 
   Color _rarityBorder(cm.Rarity r) => switch (r) {
     cm.Rarity.common => AppTheme.parchment.withAlpha(76),
-    cm.Rarity.rare => Colors.blue.withAlpha(180),
-    cm.Rarity.epic => Colors.purple.withAlpha(180),
-    cm.Rarity.legendary => Colors.orange.withAlpha(200),
+    cm.Rarity.rare => AppTheme.rarityRare.withAlpha(200),
+    cm.Rarity.epic => AppTheme.rarityEpic.withAlpha(200),
+    cm.Rarity.legendary => AppTheme.rarityLegendary.withAlpha(230),
   };
 
   Widget _cardItem(cm.Card card) {
@@ -395,17 +386,22 @@ class _CardGridViewState extends State<_CardGridView> {
     final trial = widget.trial.contains(card.id);
     final imgPath = CardImageService.getImageByType(card.id, _typeEng(card.type));
     final rc = _rarityBorder(card.rarity);
-    final bc = trial ? Colors.cyan : owned ? AppTheme.healGreen : rc;
+    // 边框始终表达稀有度；拥有/试用状态由角标表示
+    final bc = rc;
 
     return GestureDetector(
       onTap: () => _detail(card),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: bc, width: trial || owned ? 2 : 1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: bc, width: 1.5),
+          boxShadow: [
+            if (card.rarity == cm.Rarity.legendary) BoxShadow(color: AppTheme.rarityLegendary.withAlpha(90), blurRadius: 10),
+            const BoxShadow(color: Color(0x88000000), blurRadius: 5, offset: Offset(0, 2)),
+          ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(6.5),
           child: Stack(fit: StackFit.expand, children: [
             // 底图
             if (imgPath.isNotEmpty)
@@ -457,7 +453,7 @@ class _CardGridViewState extends State<_CardGridView> {
             if (trial && !owned)
               Positioned(bottom: 0, right: 0, child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                  decoration: BoxDecoration(color: Colors.cyan.withAlpha(179),
+                  decoration: BoxDecoration(color: AppTheme.jade.withAlpha(179),
                       borderRadius: const BorderRadius.only(topLeft: Radius.circular(4))),
                   child: Text(LocaleService.I.t('card_library.badge_trial'), style: const TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold)))),
             if (owned)
@@ -541,7 +537,7 @@ class _WishlistView extends StatelessWidget {
                   border: Border.all(color: Colors.redAccent.withAlpha(76))),
               child: ClipRRect(borderRadius: BorderRadius.circular(5),
                   child: Stack(fit: StackFit.expand, children: [
-                    Container(color: Colors.grey[700]),
+                    Container(color: AppTheme.bgLight),
                     Positioned(left: 2, top: 2, child: Container(width: 22, height: 22,
                         decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
                         child: Center(child: Text('${cards[i].cost}',

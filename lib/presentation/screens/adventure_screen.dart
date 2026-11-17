@@ -165,7 +165,7 @@ class _AdventureScreenState extends State<AdventureScreen> {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: hpPercent.clamp(0.0, 1.0),
-              backgroundColor: Colors.grey[800],
+              backgroundColor: const Color(0xFF14100D),
               valueColor: AlwaysStoppedAnimation(
                 hpPercent > 0.5 ? Colors.green : (hpPercent > 0.25 ? Colors.orange : Colors.red),
               ),

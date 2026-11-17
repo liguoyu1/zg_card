@@ -1,3 +1,4 @@
+import '../widgets/theme_widgets.dart';
 import 'dart:math';
 import 'dart:io' show Platform;
 
@@ -613,11 +614,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           // === 金币 ===
           _foldable(LocaleService.I.t('shop.gold_title'), _goldExpanded, (v) => setState(() => _goldExpanded = v), LocaleService.I.t('shop.gold_exchange')),
           if (_goldExpanded) ...[
-            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '1000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '20'}), const Text('20💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(20, 1000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '1000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '20'}), const WCurrency(amount: 20, diamond: true, size: 16), () => _buyGoldExchange(20, 1000)),
             const SizedBox(height: 4),
-            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '5000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '100'}), const Text('100💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(100, 5000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '5000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '100'}), const WCurrency(amount: 100, diamond: true, size: 16), () => _buyGoldExchange(100, 5000)),
             const SizedBox(height: 4),
-            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '10000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '200'}), const Text('200💎', style: TextStyle(color: AppTheme.manaBlue, fontSize: 16, fontWeight: FontWeight.bold)), () => _buyGoldExchange(200, 10000)),
+            _card(Icons.monetization_on, LocaleService.I.t('shop.gold_amount', args: {'amount': '10000'}), LocaleService.I.t('shop.gems_exchange', args: {'gems': '200'}), const WCurrency(amount: 200, diamond: true, size: 16), () => _buyGoldExchange(200, 10000)),
           ],
           const SizedBox(height: 16),
 
@@ -694,11 +695,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       return GestureDetector(
         onTap: isOwned ? null : () => _buySingleCard(c),
         child: Container(
-          padding: const EdgeInsets.all(10), margin: const EdgeInsets.only(bottom: 4),
+          padding: const EdgeInsets.all(10), margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
-            color: AppTheme.cardBack,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: isOwned ? borderColor.withAlpha(80) : borderColor.withAlpha(200), width: isOwned ? 1.5 : 2),
+            gradient: LinearGradient(colors: [borderColor.withAlpha(isOwned ? 10 : 34), AppTheme.bgMedium]),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: borderColor.withAlpha(isOwned ? 60 : 150)),
           ),
           child: Opacity(
             opacity: isOwned ? 0.5 : 1.0,
@@ -723,8 +724,9 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                 Text(LocaleService.I.t('shop.owned_tag'), style: const TextStyle(color: AppTheme.textMuted, fontSize: 11))
               else
                 Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Text('$gold💰', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 13, fontWeight: FontWeight.bold)),
-                  Text('$gem💎', style: const TextStyle(color: AppTheme.manaBlue, fontSize: 11)),
+                  WCurrency(amount: gold, size: 13),
+                  const SizedBox(height: 3),
+                  WCurrency(amount: gem, diamond: true, size: 11),
                 ]),
             ]),
           ),
@@ -797,8 +799,9 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                   Text(LocaleService.I.t('shop.owned_tag'), style: const TextStyle(color: AppTheme.textMuted, fontSize: 11))
                 else
                   Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                    Text('$gold💰', style: const TextStyle(color: AppTheme.goldAccent, fontSize: 13, fontWeight: FontWeight.bold)),
-                    Text('$gem💎', style: const TextStyle(color: AppTheme.manaBlue, fontSize: 11)),
+                    WCurrency(amount: gold, size: 13),
+                    const SizedBox(height: 3),
+                  WCurrency(amount: gem, diamond: true, size: 11),
                   ]),
               ])),
         ),
@@ -807,8 +810,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 
   Color _rc(cm.Rarity r) => switch (r) {
-    cm.Rarity.common => Colors.grey, cm.Rarity.rare => Colors.blue,
-    cm.Rarity.epic => Colors.purple, cm.Rarity.legendary => Colors.orange,
+    cm.Rarity.common => AppTheme.textMuted, cm.Rarity.rare => AppTheme.rarityRare,
+    cm.Rarity.epic => AppTheme.rarityEpic, cm.Rarity.legendary => AppTheme.rarityLegendary,
   };
   String _rn(cm.Rarity r) => switch (r) {
     cm.Rarity.common => LocaleService.I.t('card_library.rarity_common'), cm.Rarity.rare => LocaleService.I.t('card_library.rarity_rare'),

@@ -301,7 +301,7 @@ class _HeroAvatarState extends State<HeroAvatar> with TickerProviderStateMixin {
       width: 20,
       height: 20,
       decoration: BoxDecoration(
-        color: Colors.grey[700],
+        color: const Color(0xFF3A3029),
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white),
         boxShadow: [

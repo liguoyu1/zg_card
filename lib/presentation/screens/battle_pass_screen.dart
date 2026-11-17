@@ -72,7 +72,7 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
             child: LinearProgressIndicator(
               value: pct.clamp(0.0, 1.0),
               minHeight: 12,
-              backgroundColor: Colors.grey[800],
+              backgroundColor: const Color(0xFF14100D),
               valueColor: const AlwaysStoppedAnimation(AppTheme.goldAccent),
             ),
           ),
@@ -98,7 +98,7 @@ class _BattlePassScreenState extends State<BattlePassScreen> {
           margin: const EdgeInsets.only(bottom: 6),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: unlocked ? AppTheme.goldAccent : Colors.grey[700],
+              backgroundColor: unlocked ? AppTheme.goldAccent : AppTheme.borderLight,
               child: Text('$level', style: const TextStyle(color: Colors.white, fontSize: 12)),
             ),
             title: Row(

@@ -201,63 +201,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           _buildGuestHint(),
                         if (ref.watch(authProvider)?.email != null)
                           _buildCheckinBar(),
-                        _buildMenuButton(
-                            icon: Icons.shield_outlined,
-                            label: LocaleService.I.t('home.btn_battle'),
-                            color: AppTheme.healthRed,
-                            onTap: () => context.push('/battle/hero-select')),
-                        _buildMenuButton(
-                            icon: Icons.sports_kabaddi,
-                            label: LocaleService.I.t('home.pk'),
-                            color: AppTheme.goldAccent,
-                            onTap: () =>
-                                context.push('/battle/hero-select?mode=pk')),
-                        _buildMenuButton(
-                            icon: Icons.explore_outlined,
-                            label: LocaleService.I.t('home.btn_adventure'),
-                            color: AppTheme.damageOrange,
-                            onTap: () => context.push('/shop/adventure')),
-                        // 次级功能入口：任务 / 成就 / 排行榜 / 训练
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 2),
-                          child: Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              _buildChipEntry(
-                                  Icons.event_note_outlined,
-                                  LocaleService.I.t('home.btn_quests'),
-                                  AppTheme.manaBlue,
-                                  () => context.push('/progress/quest')),
-                              _buildChipEntry(
-                                  Icons.emoji_events_outlined,
-                                  LocaleService.I.t('home.btn_achievements'),
-                                  AppTheme.goldAccent,
-                                  () => context.push('/progress/achievement')),
-                              _buildChipEntry(
-                                  Icons.leaderboard_outlined,
-                                  LocaleService.I.t('home.btn_leaderboard'),
-                                  const Color(0xFF7C9ECF),
-                                  () => context.push('/progress/leaderboard')),
-                              _buildChipEntry(
-                                  Icons.school_outlined,
-                                  LocaleService.I.t('home.btn_training'),
-                                  const Color(0xFF9C88C4),
-                                  () => context.push('/battle/training')),
-                            ],
+                        // 主行动：开始对战（大横幅）
+                        WStaggerIn(index: 0, child: _buildHeroBanner()),
+                        const SizedBox(height: 12),
+                        // 次行动：PK / 冒险（双列）
+                        WStaggerIn(
+                          index: 1,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(children: [
+                              Expanded(
+                                  child: _buildModeTile(
+                                      icon: Icons.sports_kabaddi,
+                                      label: LocaleService.I.t('home.pk').replaceAll('⚔', '').trim(),
+                                      color: AppTheme.goldAccent,
+                                      onTap: () => context.push('/battle/hero-select?mode=pk'))),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                  child: _buildModeTile(
+                                      icon: Icons.explore_outlined,
+                                      label: LocaleService.I.t('home.btn_adventure'),
+                                      color: AppTheme.jade,
+                                      onTap: () => context.push('/shop/adventure'))),
+                            ]),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        // 次级功能入口：任务 / 成就 / 排行榜 / 训练（4 宫格）
+                        WStaggerIn(
+                          index: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(children: [
+                              for (final e in [
+                                (Icons.event_note_outlined, LocaleService.I.t('home.btn_quests'), AppTheme.manaBlue, '/progress/quest'),
+                                (Icons.emoji_events_outlined, LocaleService.I.t('home.btn_achievements'), AppTheme.goldBright, '/progress/achievement'),
+                                (Icons.leaderboard_outlined, LocaleService.I.t('home.btn_leaderboard'), AppTheme.healthRed, '/progress/leaderboard'),
+                                (Icons.school_outlined, LocaleService.I.t('home.btn_training'), AppTheme.daojia, '/battle/training'),
+                              ])
+                                Expanded(child: _buildChipEntry(e.$1, e.$2, e.$3, () => context.push(e.$4))),
+                            ]),
                           ),
                         ),
                         const SizedBox(height: 8),
                         // 游戏选择菜单下方：广告横幅（真实 Adsterra 横幅，高度自适应素材）
                         const Padding(
-                          padding: EdgeInsets.fromLTRB(24, 20, 24, 4),
+                          padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
                           child: SizedBox(
                               width: double.infinity,
                               child: AdBannerSlot()),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         // 下载 Android/iOS 的页面按钮仅 Web 端展示（Android/iOS 原生不提供）
                         if (kIsWeb) ...[
                           _buildDownloadSection(),
@@ -290,28 +284,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// 游客提示：注册登录后解锁新手 20 张卡牌与每周试用卡牌
   Widget _buildGuestHint() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+      padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
       decoration: BoxDecoration(
-        color: AppTheme.goldAccent.withAlpha(20),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.goldAccent.withAlpha(90), width: 1),
+        gradient: LinearGradient(colors: [AppTheme.goldAccent.withAlpha(34), AppTheme.bgMedium]),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.goldAccent.withAlpha(90)),
       ),
       child: Row(children: [
         Expanded(
-            child: Text(LocaleService.I.t('home.guest_hint'),
-                style: const TextStyle(
-                    color: AppTheme.textPrimary, fontSize: 12))),
+            child: Row(children: [
+          const Icon(Icons.card_giftcard_rounded, color: AppTheme.goldBright, size: 22),
+          const SizedBox(width: 10),
+          Expanded(
+              child: Text(LocaleService.I.t('home.guest_hint'),
+                  style: const TextStyle(color: AppTheme.textPrimary, fontSize: 12, height: 1.35))),
+        ])),
         const SizedBox(width: 10),
-        OutlinedButton(
+        ElevatedButton(
           onPressed: () => context.push('/auth/login'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppTheme.goldAccent,
-            side: BorderSide(color: AppTheme.goldAccent.withAlpha(120)),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(0, 34),
+            padding: const EdgeInsets.symmetric(horizontal: 14),
           ),
           child: Text(LocaleService.I.t('home.guest_register'),
-              style: const TextStyle(fontSize: 12)),
+              style: const TextStyle(fontSize: 12.5)),
         ),
       ]),
     );
@@ -321,12 +318,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildCheckinBar() {
     final auth = ref.watch(authProvider);
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+      padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
       decoration: BoxDecoration(
-        color: AppTheme.goldAccent.withAlpha(20),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.goldAccent.withAlpha(90), width: 1),
+        gradient: LinearGradient(colors: [AppTheme.goldAccent.withAlpha(34), AppTheme.bgMedium]),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.goldAccent.withAlpha(90)),
       ),
       child: Row(children: [
         const Icon(Icons.event_available_outlined,
@@ -336,12 +333,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Text(LocaleService.I.t('home.checkin_tip'),
               style: const TextStyle(color: AppTheme.textPrimary, fontSize: 12)),
         ),
-        OutlinedButton(
+        ElevatedButton(
           onPressed: () => _doCheckin(auth?.token),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppTheme.goldAccent,
-            side: BorderSide(color: AppTheme.goldAccent.withAlpha(120)),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(0, 34),
+            padding: const EdgeInsets.symmetric(horizontal: 14),
           ),
           child: Text(LocaleService.I.t('home.btn_checkin'),
               style: const TextStyle(fontSize: 12)),
@@ -375,10 +371,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final auth = ref.watch(authProvider);
     final loggedIn = auth != null;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: AppTheme.borderGold.withAlpha(60)))),
+      padding: const EdgeInsets.fromLTRB(16, 10, 8, 10),
       child: Row(children: [
         _buildSchoolEmblem(),
         const SizedBox(width: 12),
@@ -386,14 +379,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(LocaleService.I.t('home.title'),
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              style: const TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w900,
                   color: AppTheme.textPrimary,
-                  letterSpacing: 4)),
+                  letterSpacing: 2)),
+          const SizedBox(height: 1),
           Text(LocaleService.I.t('home.subtitle'),
-              style: TextStyle(
-                  fontSize: 10, color: AppTheme.textMuted, letterSpacing: 3)),
+              style: const TextStyle(
+                  fontSize: 10.5, color: AppTheme.goldAccent, letterSpacing: 1.2, fontWeight: FontWeight.w600)),
         ])),
         _buildUserMenu(loggedIn, auth),
       ]),
@@ -826,20 +820,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildSchoolEmblem() {
+    // 朱砂方印
     return Container(
-      width: 40,
-      height: 40,
+      width: 42,
+      height: 42,
       decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: AppTheme.borderGold, width: 1.5),
-          gradient: const RadialGradient(
-              colors: [Color(0x1EB8860B), Color(0xFF3D2B1F)])),
+          borderRadius: BorderRadius.circular(10),
+          gradient: AppTheme.cinnabarGradient,
+          border: Border.all(color: AppTheme.goldAccent.withAlpha(160), width: 1.2),
+          boxShadow: [BoxShadow(color: AppTheme.cinnabar.withAlpha(90), blurRadius: 10)]),
       child: const Center(
           child: Text('戰',
               style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.goldAccent))),
+                  fontSize: 24,
+                  height: 1.1,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFFFFF1DC)))),
     );
   }
 
@@ -856,43 +852,148 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ])));
   }
 
-  Widget _buildMenuButton(
-      {required IconData icon,
-      required String label,
-      required Color color,
-      required VoidCallback onTap}) {
-    return WMenuPlaque(
-        icon: icon, label: label, accentColor: color, onTap: onTap);
-  }
-
-  /// 次级功能入口：小而精致的胶囊按钮（任务/成就/排行榜/训练等）
-  Widget _buildChipEntry(
-      IconData icon, String label, Color color, VoidCallback onTap) {
-    return Material(
-      color: color.withAlpha(16),
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
+  /// 首页主 CTA：朱砂漆面大横幅 + 水墨纹样 + 呼吸光
+  Widget _buildHeroBanner() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: WPressable(
+        onTap: () => context.push('/battle/hero-select'),
+        scale: 0.975,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          height: 148,
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            border: Border.all(color: color.withAlpha(70), width: 1),
             borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 16),
-              const SizedBox(width: 6),
-              Text(label,
-                  style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600)),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF8E2118), Color(0xFF5A140F), Color(0xFF1E0B08)],
+            ),
+            border: Border.all(color: AppTheme.goldAccent.withAlpha(150), width: 1.2),
+            boxShadow: [
+              BoxShadow(color: AppTheme.cinnabar.withAlpha(80), blurRadius: 24, offset: const Offset(0, 10)),
             ],
           ),
+          child: Stack(children: [
+            // 背景巨字「戰」作水印
+            Positioned(
+              right: -14,
+              top: -30,
+              child: Text('戰',
+                  style: TextStyle(
+                      fontSize: 190,
+                      height: 1,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white.withAlpha(16))),
+            ),
+            // 顶部高光
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.center,
+                    colors: [Colors.white.withAlpha(22), Colors.transparent],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 18, 18),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(70),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: AppTheme.goldAccent.withAlpha(120)),
+                  ),
+                  child: Text(LocaleService.I.t('home.subtitle').toUpperCase(),
+                      style: const TextStyle(
+                          fontSize: 9.5, letterSpacing: 1.6, fontWeight: FontWeight.w800, color: AppTheme.goldBright)),
+                ),
+                const Spacer(),
+                Text(LocaleService.I.t('home.btn_battle'),
+                    style: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: 2,
+                        shadows: [Shadow(color: Colors.black54, blurRadius: 8, offset: Offset(0, 2))])),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.goldGradient,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [BoxShadow(color: AppTheme.goldAccent.withAlpha(110), blurRadius: 12)],
+                    ),
+                    child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.play_arrow_rounded, size: 18, color: Color(0xFF1A1206)),
+                      SizedBox(width: 2),
+                      Text('PLAY',
+                          style: TextStyle(
+                              fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 2, color: Color(0xFF1A1206))),
+                    ]),
+                  ),
+                ]),
+              ]),
+            ),
+          ]),
         ),
+      ),
+    );
+  }
+
+  /// 次级模式卡（PK / 冒险）
+  Widget _buildModeTile(
+      {required IconData icon, required String label, required Color color, required VoidCallback onTap}) {
+    return WPressable(
+      onTap: onTap,
+      child: Container(
+        height: 84,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [color.withAlpha(46), const Color(0xFF1C1612)],
+          ),
+          border: Border.all(color: color.withAlpha(110)),
+          boxShadow: const [BoxShadow(color: Color(0x66000000), blurRadius: 12, offset: Offset(0, 5))],
+        ),
+        child: Row(children: [
+          WIconMedal(icon: icon, color: color, size: 44),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppTheme.textPrimary)),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  /// 次级功能入口：图标徽章 + 标签的宫格
+  Widget _buildChipEntry(
+      IconData icon, String label, Color color, VoidCallback onTap) {
+    return WPressable(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          WIconMedal(icon: icon, color: color, size: 52),
+          const SizedBox(height: 6),
+          Text(label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w700)),
+        ]),
       ),
     );
   }
@@ -1018,8 +1119,7 @@ class _WeeklyTrialDialog extends StatelessWidget {
     // 手机竖屏小屏下内容可能超高：限制最大高度并允许滚动，
     // 避免按钮被挤出屏幕外（不可见/不可点击）。
     return Dialog(
-      backgroundColor: const Color(0xFF1A1A2E),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+
       child: ConstrainedBox(
         constraints:
             BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
@@ -1028,7 +1128,7 @@ class _WeeklyTrialDialog extends StatelessWidget {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             Text(LocaleService.I.t('home.trial_weekly_title'),
                 style: const TextStyle(
-                    color: Color(0xFFFFD700),
+                    color: AppTheme.goldBright,
                     fontSize: 18,
                     fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
@@ -1062,7 +1162,7 @@ class _WeeklyTrialDialog extends StatelessWidget {
                               : _trialPlaceholder(c, rc)),
                       Container(
                           padding: const EdgeInsets.all(4),
-                          color: const Color(0xFF16213E),
+                          color: const Color(0xFF1C1612),
                           child: Column(children: [
                             Text(c.name,
                                 style: const TextStyle(

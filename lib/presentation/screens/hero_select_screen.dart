@@ -1,3 +1,4 @@
+import '../widgets/theme_widgets.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart' as mat show Card;
@@ -172,14 +173,8 @@ class _HeroSelectScreenState extends ConsumerState<HeroSelectScreen> {
           final isSelected = _selectedClass == cls;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(classMap[cls]!),
-              selected: isSelected,
-              onSelected: (s) { if (s) setState(() => _selectedClass = cls); },
-              selectedColor: AppTheme.goldAccent,
-              backgroundColor: AppTheme.agedWood,
-              labelStyle: TextStyle(color: isSelected ? Colors.white : AppTheme.parchment, fontSize: 12),
-            ),
+            child: Center(child: WChip(label: classMap[cls]!, selected: isSelected, compact: true,
+                onTap: () => setState(() => _selectedClass = cls))),
           );
         },
       ),
@@ -375,11 +370,7 @@ class _DifficultyButton extends StatelessWidget {
           child: Ink(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  color.withAlpha(36),
-                  AppTheme.bgMedium.withAlpha(220),
-                  color.withAlpha(22),
-                ],
+                colors: [color.withAlpha(60), color.withAlpha(22)],
               ),
               borderRadius: BorderRadius.circular(AppTheme.radiusMd),
               border: Border.all(color: color.withAlpha(110), width: 1.4),

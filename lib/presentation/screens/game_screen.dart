@@ -774,7 +774,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           if (!didPop) _confirmExit();
         },
         child: Scaffold(
-        backgroundColor: AppTheme.bgDark,
+        backgroundColor: AppTheme.bg,
         body: LayoutBuilder(
           builder: (context, constraints) {
             final isShort = constraints.maxHeight < 700;
@@ -794,27 +794,13 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                       child: Column(
                         children: [
                           Expanded(
-                            child: _buildBoardSection(opponent.board, isOpponent: true, boardCardWidth: adjCW, boardCardHeight: adjCH, gameState: gameState),
+                            child: _boardLane(isOpponent: true,
+                              child: _buildBoardSection(opponent.board, isOpponent: true, boardCardWidth: adjCW, boardCardHeight: adjCH, gameState: gameState)),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                            child: Container(
-                              height: 2,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.transparent,
-                                    AppTheme.borderGold.withAlpha(100),
-                                    AppTheme.borderGold.withAlpha(150),
-                                    AppTheme.borderGold.withAlpha(100),
-                                    Colors.transparent,
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                          _buildMidline(gameState),
                           Expanded(
-                            child: _buildBoardSection(player.board, isOpponent: false, boardCardWidth: adjCW, boardCardHeight: adjCH, gameState: gameState),
+                            child: _boardLane(isOpponent: false,
+                              child: _buildBoardSection(player.board, isOpponent: false, boardCardWidth: adjCW, boardCardHeight: adjCH, gameState: gameState)),
                           ),
                         ],
                       ),
@@ -840,8 +826,18 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
       decoration: BoxDecoration(
-        color: AppTheme.agedWood.withAlpha(128),
-        border: Border(bottom: BorderSide(color: AppTheme.goldAccent.withAlpha(76))),
+        gradient: LinearGradient(
+          begin: isOpponent ? Alignment.topCenter : Alignment.bottomCenter,
+          end: isOpponent ? Alignment.bottomCenter : Alignment.topCenter,
+          colors: [
+            const Color(0xF0140F0C),
+            (isOpponent ? AppTheme.cinnabar : AppTheme.goldAccent).withAlpha(28),
+          ],
+        ),
+        border: Border(
+          bottom: isOpponent ? BorderSide(color: AppTheme.cinnabar.withAlpha(90)) : BorderSide.none,
+          top: !isOpponent ? BorderSide(color: AppTheme.goldAccent.withAlpha(90)) : BorderSide.none,
+        ),
       ),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -854,7 +850,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 const SizedBox(height: 2),
                 SizedBox(width: 56,
                   child: Text(player.hero.lname, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppTheme.parchment, fontSize: 10, fontWeight: FontWeight.bold))),
+                    style: const TextStyle(color: AppTheme.textPrimary, fontSize: 10.5, fontWeight: FontWeight.w800))),
               ],
             ),
           ),
@@ -878,9 +874,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   _buildHeroPowerButton(player)
                 else
                   Row(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(Icons.auto_awesome, color: Colors.red.withAlpha(150), size: 14),
-                    const SizedBox(width: 2),
-                    Text(player.hero.lpowerName, style: const TextStyle(color: Colors.red, fontSize: 10)),
+                    Icon(Icons.auto_awesome, color: AppTheme.healthRed.withAlpha(200), size: 13),
+                    const SizedBox(width: 3),
+                    Text(player.hero.lpowerName, style: TextStyle(color: AppTheme.healthRed.withAlpha(230), fontSize: 10.5, fontWeight: FontWeight.w700)),
                   ]),
                 const SizedBox(width: 4),
                 _buildHandCountBadge(player, isOpponent),
@@ -904,9 +900,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            color: _aiPaused ? AppTheme.goldAccent.withAlpha(180) : AppTheme.cardBack,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: _aiPaused ? AppTheme.goldAccent : Colors.red.withAlpha(100)),
+            color: _aiPaused ? AppTheme.goldAccent.withAlpha(180) : const Color(0xFF1C1612),
+            borderRadius: BorderRadius.circular(23),
+            border: Border.all(color: _aiPaused ? AppTheme.goldAccent : AppTheme.cinnabar.withAlpha(140)),
           ),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             Icon(_aiPaused ? Icons.play_arrow : Icons.pause, color: Colors.white, size: 20),
@@ -917,19 +913,16 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       ),
       const SizedBox(width: 8),
       const SizedBox(width: 16, height: 16,
-        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.red)),
-      const SizedBox(width: 4),
-      Text(_aiPhaseText, style: const TextStyle(color: Colors.red, fontSize: 11)),
+        child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.cinnabar)),
+      const SizedBox(width: 6),
+      Flexible(child: Text(_aiPhaseText, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.healthRed, fontSize: 11.5, fontWeight: FontWeight.w700))),
     ]);
   }
 
   Widget _buildBottomControls() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppTheme.bgDark,
-        border: Border(top: BorderSide(color: AppTheme.goldAccent.withAlpha(76))),
-      ),
+      padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+      decoration: const BoxDecoration(color: Color(0xFF100C0A)),
       child: Row(children: [
         if (_isPlayerTurn)
           Expanded(child: _buildEndTurnButton())
@@ -937,10 +930,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           Expanded(child: _buildPauseControls()),
         if (_battleLog.isNotEmpty) ...[
           const SizedBox(width: 8),
-          GestureDetector(onTap: () => setState(() => _showBattleLog = !_showBattleLog),
-            child: _miniBadge(Icons.article, '${_battleLog.length}', AppTheme.textSecondary)),
+          _roundIconBtn(Icons.receipt_long_rounded, () => setState(() => _showBattleLog = !_showBattleLog),
+              badge: '${_battleLog.length}'),
         ],
-        const SizedBox(width: 4),
+        const SizedBox(width: 8),
         _confirmExitButton(),
       ]),
     );
@@ -1000,9 +993,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               child: Text(
                 isOpponent ? LocaleService.I.t('game.enemy_board_empty') : LocaleService.I.t('game.my_board_empty'),
                 style: TextStyle(
-                  color: AppTheme.parchment.withAlpha(128),
-                  fontSize: 14,
-                  fontStyle: FontStyle.italic,
+                  color: AppTheme.textMuted.withAlpha(150),
+                  fontSize: 12.5,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             )
@@ -1343,18 +1337,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           if (isEnemyHand) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Container(
-                width: handCardWidth,
-                height: handHeight,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4A3728),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: const Color(0xFF6B5B3E).withAlpha(120), width: 1),
-                ),
-                child: const Center(
-                  child: Icon(Icons.auto_awesome, color: Color(0xFFB8860B), size: 20),
-                ),
-              ),
+              child: _CardBack(width: handCardWidth, height: handHeight),
             );
           }
 
@@ -1440,21 +1423,92 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   /// 法术目标是否有效
   bool _isValidSpellTarget(String id) => _spellTargetIds.contains(id);
 
-  Widget _confirmExitButton() {
-    return GestureDetector(
-      onTap: _confirmExit,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: AppTheme.healthRed.withAlpha(180),
-          borderRadius: BorderRadius.circular(4),
+  Widget _confirmExitButton() =>
+      _roundIconBtn(Icons.flag_rounded, _confirmExit, tooltip: LocaleService.I.t('game.exit'));
+
+  /// 底栏圆形图标按钮（日志/认输）
+  Widget _roundIconBtn(IconData icon, VoidCallback onTap, {String? badge, String? tooltip}) {
+    final btn = WPressable(
+      onTap: onTap,
+      child: Stack(clipBehavior: Clip.none, children: [
+        Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: AppTheme.panelGradient,
+            border: Border.all(color: AppTheme.borderLight),
+          ),
+          child: Icon(icon, size: 20, color: AppTheme.textSecondary),
         ),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.exit_to_app, size: 14, color: Colors.white),
-          const SizedBox(width: 4),
-          Text(LocaleService.I.t('game.exit'), style: const TextStyle(color: Colors.white, fontSize: 12)),
-        ]),
+        if (badge != null)
+          Positioned(
+            right: -3,
+            top: -3,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              decoration: BoxDecoration(color: AppTheme.cinnabar, borderRadius: BorderRadius.circular(8)),
+              child: Text(badge, style: const TextStyle(color: Colors.white, fontSize: 9.5, fontWeight: FontWeight.w800)),
+            ),
+          ),
+      ]),
+    );
+    return tooltip == null ? btn : Tooltip(message: tooltip, child: btn);
+  }
+
+  /// 阵地底板：敌方偏红、我方偏金的淡色区域
+  Widget _boardLane({required bool isOpponent, required Widget child}) {
+    final c = isOpponent ? AppTheme.cinnabar : AppTheme.goldAccent;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        gradient: LinearGradient(
+          begin: isOpponent ? Alignment.topCenter : Alignment.bottomCenter,
+          end: isOpponent ? Alignment.bottomCenter : Alignment.topCenter,
+          colors: [c.withAlpha(22), Colors.black.withAlpha(40)],
+        ),
+        border: Border.all(color: c.withAlpha(40)),
       ),
+      child: Center(child: child),
+    );
+  }
+
+  /// 中线：两侧渐隐金线 + 回合徽记（我方回合金、敌方回合红）
+  Widget _buildMidline(GameState gameState) {
+    final mine = _isPlayerTurn;
+    final c = mine ? AppTheme.goldAccent : AppTheme.cinnabar;
+    Widget line(bool left) => Expanded(
+          child: Container(
+            height: 1.5,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: left ? [Colors.transparent, c.withAlpha(170)] : [c.withAlpha(170), Colors.transparent],
+              ),
+            ),
+          ),
+        );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      child: Row(children: [
+        line(true),
+        AnimatedContainer(
+          duration: AppTheme.durMed,
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: const Color(0xFF140F0C),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: c.withAlpha(200)),
+            boxShadow: [BoxShadow(color: c.withAlpha(80), blurRadius: 10)],
+          ),
+          child: Text(
+            '${LocaleService.I.t(mine ? 'game.your_turn' : 'game.opponent_turn')} · ${gameState.turnNumber}',
+            style: TextStyle(color: c, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1),
+          ),
+        ),
+        line(false),
+      ]),
     );
   }
 
@@ -1462,12 +1516,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.agedWood,
-        title: Text(LocaleService.I.t('game.confirm_exit_title'), style: const TextStyle(color: AppTheme.parchment)),
-        content: Text(LocaleService.I.t('game.confirm_exit_content'), style: const TextStyle(color: AppTheme.textSecondary)),
+        title: Text(LocaleService.I.t('game.confirm_exit_title')),
+        content: Text(LocaleService.I.t('game.confirm_exit_content')),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text(LocaleService.I.t('common.cancel'), style: const TextStyle(color: AppTheme.textSecondary))),
-          TextButton(onPressed: () { Navigator.pop(ctx); context.go('/'); }, child: Text(LocaleService.I.t('game.confirm_exit_action'), style: const TextStyle(color: AppTheme.healthRed))),
+          FilledButton(onPressed: () { Navigator.pop(ctx); context.go('/'); }, child: Text(LocaleService.I.t('game.confirm_exit_action'))),
         ],
       ),
     );
@@ -1492,43 +1545,35 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   Widget _buildHeroPowerButton(Player player) {
     final canUse = player.mana >= 2 && _isPlayerTurn;
     final isTargeting = _interactionMode == _InteractionMode.heroPowerTargeting;
-    return GestureDetector(
+    final c = isTargeting ? AppTheme.goldBright : (canUse ? AppTheme.goldAccent : AppTheme.textMuted);
+    return WPressable(
       onTap: canUse ? () => _onPlayerHeroTap() : null,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      child: AnimatedContainer(
+        duration: AppTheme.durMed,
+        padding: const EdgeInsets.fromLTRB(4, 4, 10, 4),
         decoration: BoxDecoration(
-          color: isTargeting
-              ? AppTheme.goldAccent.withAlpha(80)
-              : AppTheme.cardBack.withAlpha(180),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: isTargeting ? AppTheme.goldAccent : AppTheme.parchment.withAlpha(100),
-            width: isTargeting ? 2 : 1,
+          gradient: canUse || isTargeting
+              ? LinearGradient(colors: [c.withAlpha(70), c.withAlpha(20)])
+              : null,
+          color: canUse || isTargeting ? null : Colors.black.withAlpha(60),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: c.withAlpha(isTargeting ? 255 : 150), width: isTargeting ? 1.6 : 1),
+          boxShadow: [if (canUse) BoxShadow(color: c.withAlpha(70), blurRadius: 10)],
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            width: 22,
+            height: 22,
+            decoration: BoxDecoration(shape: BoxShape.circle, color: AppTheme.manaBlue.withAlpha(canUse ? 255 : 90)),
+            alignment: Alignment.center,
+            child: const Text('2', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w900)),
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.auto_awesome,
-              size: 14,
-              color: canUse ? AppTheme.goldAccent : AppTheme.parchment.withAlpha(100),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              isTargeting ? LocaleService.I.t('game.select_target') : player.hero.lpowerName,
-              style: TextStyle(
-                color: isTargeting
-                    ? AppTheme.goldAccent
-                    : canUse
-                        ? AppTheme.parchment
-                        : AppTheme.parchment.withAlpha(100),
-                fontSize: 12,
-                fontWeight: isTargeting ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
+          const SizedBox(width: 6),
+          Text(
+            isTargeting ? LocaleService.I.t('game.select_target') : player.hero.lpowerName,
+            style: TextStyle(color: canUse || isTargeting ? AppTheme.textPrimary : AppTheme.textMuted, fontSize: 12, fontWeight: FontWeight.w800),
+          ),
+        ]),
       ),
     );
   }
@@ -1537,8 +1582,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey[700],
+        gradient: const LinearGradient(colors: [Color(0xFF5B5F66), Color(0xFF34373C)]),
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFA9AEB6)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1559,68 +1605,37 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   Widget _buildEndTurnButton() {
-    final timerColor = _turnTimeRemaining <= 5
-        ? Colors.red
+    final urgent = _turnTimeRemaining <= 5;
+    final timerColor = urgent
+        ? AppTheme.healthRed
         : _turnTimeRemaining <= 10
-            ? Colors.orange
-            : AppTheme.parchment;
-
-    return ElevatedButton.icon(
-      onPressed: _endTurn,
-      icon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.skip_next, color: AppTheme.parchment, size: 18),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: timerColor.withAlpha(51),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '$_turnTimeRemaining',
-                    style: TextStyle(
-                      color: timerColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  SizedBox(
-                    width: 28,
-                    child: LinearProgressIndicator(
-                      value: _turnTimeRemaining / 20,
-                      backgroundColor: timerColor.withAlpha(38),
-                      valueColor: AlwaysStoppedAnimation(timerColor),
-                      minHeight: 2,
-                    ),
-                  ),
-                ],
-              ),
+            ? AppTheme.damageOrange
+            : const Color(0xFF1A1206);
+    return _Breathing(
+      active: urgent,
+      child: WPrimaryButton(
+        label: LocaleService.I.t('game.end_turn'),
+        icon: Icons.hourglass_bottom_rounded,
+        height: 46,
+        danger: urgent,
+        onTap: _endTurn,
+        trailing: SizedBox(
+          width: 26,
+          height: 26,
+          child: Stack(alignment: Alignment.center, children: [
+            CircularProgressIndicator(
+              value: (_turnTimeRemaining / 20).clamp(0.0, 1.0),
+              strokeWidth: 2.5,
+              color: urgent ? Colors.white : timerColor,
+              backgroundColor: Colors.black.withAlpha(40),
             ),
-          ],
+            Text('$_turnTimeRemaining',
+                style: TextStyle(
+                    color: urgent ? Colors.white : timerColor, fontSize: 11, fontWeight: FontWeight.w900)),
+          ]),
         ),
-        label: Text(
-          LocaleService.I.t('game.end_turn'),
-          style: TextStyle(
-            color: AppTheme.parchment,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.cardBack,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(color: AppTheme.goldAccent),
-          ),
-        ),
-      );
+      ),
+    );
   }
 
   Widget _buildBattleLog() {
@@ -1972,4 +1987,95 @@ class _FloatingCastTextState extends State<_FloatingCastText>
       ),
     );
   }
+}
+
+
+/// 敌方手牌卡背：漆红底 + 金色回纹边 + 中心印章
+class _CardBack extends StatelessWidget {
+  const _CardBack({required this.width, required this.height});
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF7A1E16), Color(0xFF3E0E0A)],
+        ),
+        border: Border.all(color: AppTheme.goldAccent.withAlpha(200), width: 1.2),
+        boxShadow: const [BoxShadow(color: Color(0x88000000), blurRadius: 6, offset: Offset(0, 3))],
+      ),
+      padding: const EdgeInsets.all(3),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: AppTheme.goldAccent.withAlpha(90)),
+        ),
+        alignment: Alignment.center,
+        child: Container(
+          width: width * 0.46,
+          height: width * 0.46,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black.withAlpha(60),
+            border: Border.all(color: AppTheme.goldAccent.withAlpha(170)),
+          ),
+          alignment: Alignment.center,
+          child: Text('戰',
+              style: TextStyle(
+                  fontSize: width * 0.24, height: 1.1, fontWeight: FontWeight.w900, color: AppTheme.goldBright)),
+        ),
+      ),
+    );
+  }
+}
+
+/// 呼吸缩放：倒计时将尽时提醒
+class _Breathing extends StatefulWidget {
+  const _Breathing({required this.active, required this.child});
+  final bool active;
+  final Widget child;
+
+  @override
+  State<_Breathing> createState() => _BreathingState();
+}
+
+class _BreathingState extends State<_Breathing> with SingleTickerProviderStateMixin {
+  late final AnimationController _c =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 700));
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.active) _c.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(covariant _Breathing old) {
+    super.didUpdateWidget(old);
+    if (widget.active && !_c.isAnimating) {
+      _c.repeat(reverse: true);
+    } else if (!widget.active && _c.isAnimating) {
+      _c.stop();
+      _c.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ScaleTransition(
+        scale: Tween(begin: 1.0, end: 1.04).animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut)),
+        child: widget.child,
+      );
 }

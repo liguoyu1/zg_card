@@ -24,8 +24,8 @@ const String _nativeBannerContainerId = 'container-2cbc3e5f4588b232019879b4813fb
 
 // 广告实际渲染高度存于全局（window），供 Flutter 侧轮询读取以自适应插槽高度。
 const String _adHeightKey = '__zgAdH';
-// 初始兜底高度：广告尚未渲染时占位，避免塌陷。
-const double _defaultHeight = 90;
+// 未填充前不占位（1px 保住 platform view 挂载），避免出现大块空黑框；填充后自适应撑开。
+const double _defaultHeight = 1;
 
 bool _registered = false;
 
@@ -42,7 +42,7 @@ void _ensureRegistered() {
         ..style.display = 'flex'
         ..style.alignItems = 'center'
         ..style.justifyContent = 'center'
-        ..style.background = 'rgba(0,0,0,0.35)'
+        ..style.background = 'transparent'
         ..style.overflow = 'hidden';
       final container = web.HTMLDivElement()
         ..id = _nativeBannerContainerId

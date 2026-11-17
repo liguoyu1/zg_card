@@ -1,3 +1,4 @@
+import '../widgets/theme_widgets.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:warring_states_card/l10n/locale_service.dart';
@@ -61,13 +62,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final myScore = board?['myScore'] as int?;
 
     return Scaffold(
-      backgroundColor: AppTheme.bgDark,
+      backgroundColor: AppTheme.bg,
       appBar: AppBar(
-        title: Text(loc.t('leaderboard.title'),
-            style: const TextStyle(color: AppTheme.parchment, fontWeight: FontWeight.bold)),
-        backgroundColor: AppTheme.agedWood,
-        iconTheme: const IconThemeData(color: AppTheme.goldAccent),
-        elevation: 0,
+        title: Text(loc.t('leaderboard.title')),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: AppTheme.goldAccent),
@@ -96,7 +93,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   if (list.isEmpty)
                     _emptyCard()
                   else ...[
-                    ...list.map((e) => _buildRankTile(e)),
+                    ...list.asMap().entries.map((e) => WStaggerIn(index: e.key, child: _buildRankTile(e.value))),
                     const SizedBox(height: 12),
                     // 我的排名
                     _buildMyRank(myRank, myScore),
@@ -114,30 +111,39 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       ('week', loc.t('leaderboard.tab_week')),
       ('month', loc.t('leaderboard.tab_month')),
     ];
-    return Row(
-      children: periods.map((e) {
-        final sel = _period == e.$1;
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => _switchPeriod(e.$1),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              decoration: BoxDecoration(
-                color: sel ? AppTheme.goldAccent : AppTheme.cardBack,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: sel ? AppTheme.goldBright : AppTheme.borderLight, width: 1),
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: const Color(0xFF14100D),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.borderLight),
+      ),
+      child: Row(
+        children: periods.map((e) {
+          final sel = _period == e.$1;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => _switchPeriod(e.$1),
+              child: AnimatedContainer(
+                duration: AppTheme.durMed,
+                curve: AppTheme.curveOut,
+                padding: const EdgeInsets.symmetric(vertical: 9),
+                decoration: BoxDecoration(
+                  gradient: sel ? AppTheme.goldGradient : null,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [if (sel) BoxShadow(color: AppTheme.goldAccent.withAlpha(80), blurRadius: 10)],
+                ),
+                alignment: Alignment.center,
+                child: Text(e.$2,
+                    style: TextStyle(
+                        color: sel ? const Color(0xFF1A1206) : AppTheme.textSecondary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13)),
               ),
-              alignment: Alignment.center,
-              child: Text(e.$2,
-                  style: TextStyle(
-                      color: sel ? Colors.white : AppTheme.parchment,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13)),
             ),
-          ),
-        );
-      }).toList(),
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -164,25 +170,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     );
   }
 
-  Widget _chip(String label, bool sel, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: sel ? AppTheme.goldAccent : AppTheme.cardBack,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: sel ? AppTheme.goldBright : AppTheme.borderLight),
-        ),
-        child: Text(label,
-            style: TextStyle(
-                color: sel ? Colors.white : AppTheme.parchment,
-                fontWeight: FontWeight.w600,
-                fontSize: 12)),
-      ),
-    );
-  }
+  Widget _chip(String label, bool sel, VoidCallback onTap) =>
+      Center(child: WChip(label: label, selected: sel, onTap: onTap, compact: true));
 
   Widget _buildRewardInfo() {
     final loc = LocaleService.I;
@@ -190,9 +179,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: AppTheme.cardBack,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.borderLight),
+        gradient: LinearGradient(colors: [AppTheme.goldAccent.withAlpha(36), AppTheme.goldAccent.withAlpha(8)]),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.goldAccent.withAlpha(70)),
       ),
       child: Row(
         children: [
@@ -231,34 +220,37 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final score = entry['score'] as int? ?? 0;
     final isMe = entry['isMe'] == true;
 
-    // 排名颜色
-    Color rankColor;
-    Widget rankWidget;
-    if (rank == 1) {
-      rankWidget = const Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 22);
-      rankColor = const Color(0xFFFFD700);
-    } else if (rank == 2) {
-      rankWidget = const Icon(Icons.emoji_events, color: Color(0xFFC0C0C0), size: 20);
-      rankColor = const Color(0xFFC0C0C0);
-    } else if (rank == 3) {
-      rankWidget = const Icon(Icons.emoji_events, color: Color(0xFFCD7F32), size: 20);
-      rankColor = const Color(0xFFCD7F32);
-    } else {
-      rankWidget = Text('$rank', style: const TextStyle(color: AppTheme.textMuted, fontWeight: FontWeight.bold, fontSize: 14));
-      rankColor = AppTheme.textMuted;
-    }
+    const medals = [Color(0xFFF2C46B), Color(0xFFC9D1D9), Color(0xFFD08A4E)];
+    final top = rank <= 3;
+    final rankColor = top ? medals[rank - 1] : AppTheme.textMuted;
+    final rankWidget = top
+        ? Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(colors: [Color.lerp(rankColor, Colors.white, 0.4)!, rankColor, Color.lerp(rankColor, Colors.black, 0.4)!]),
+              boxShadow: [BoxShadow(color: rankColor.withAlpha(110), blurRadius: 8)],
+            ),
+            alignment: Alignment.center,
+            child: Text('$rank', style: const TextStyle(color: Color(0xFF2A1A08), fontWeight: FontWeight.w900, fontSize: 14)),
+          )
+        : Text('$rank', style: const TextStyle(color: AppTheme.textMuted, fontWeight: FontWeight.w800, fontSize: 14));
 
     // wins=ELO 综合分（PK 对局胜场加分），gold=对局金币
     final unit = _metric == 'wins' ? LocaleService.I.t('leaderboard.elo_pt') : LocaleService.I.t('leaderboard.gold');
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: top ? 11 : 8),
       decoration: BoxDecoration(
-        color: isMe ? AppTheme.bgLight.withAlpha(200) : AppTheme.cardBack,
-        borderRadius: BorderRadius.circular(6),
+        gradient: top
+            ? LinearGradient(colors: [rankColor.withAlpha(40), AppTheme.bgMedium])
+            : AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-            color: rank <= 3 ? rankColor.withAlpha(100) : AppTheme.borderLight, width: 1),
+            color: isMe ? AppTheme.goldAccent : (top ? rankColor.withAlpha(120) : AppTheme.borderLight),
+            width: isMe ? 1.5 : 1),
       ),
       child: Row(
         children: [
@@ -266,16 +258,18 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(name,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                    color: isMe ? AppTheme.goldBright : AppTheme.parchment,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13)),
+                    color: isMe ? AppTheme.goldBright : AppTheme.textPrimary,
+                    fontWeight: top ? FontWeight.w800 : FontWeight.w600,
+                    fontSize: top ? 14.5 : 13)),
           ),
           Text('$score $unit',
               style: TextStyle(
-                  color: rank <= 3 ? rankColor : AppTheme.textSecondary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13)),
+                  color: top ? rankColor : AppTheme.textSecondary,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                  fontFeatures: const [FontFeature.tabularFigures()])),
         ],
       ),
     );
@@ -299,9 +293,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.bgLight,
-        borderRadius: BorderRadius.circular(8),
+        gradient: LinearGradient(colors: [AppTheme.goldAccent.withAlpha(50), AppTheme.bgMedium]),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppTheme.goldAccent, width: 1.5),
+        boxShadow: [BoxShadow(color: AppTheme.goldAccent.withAlpha(50), blurRadius: 12)],
       ),
       child: Row(
         children: [
@@ -312,7 +307,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               myRank != null
                   ? '${loc.t('leaderboard.my_rank')}: #$myRank — $myScore $unit'
                   : loc.t('leaderboard.not_in_list'),
-              style: const TextStyle(color: AppTheme.parchment, fontWeight: FontWeight.bold, fontSize: 13),
+              style: const TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w800, fontSize: 13.5),
             ),
           ),
           if (name.isNotEmpty)

@@ -146,13 +146,13 @@ class _ManaCrystalsState extends State<ManaCrystals> with TickerProviderStateMix
                   : const AlwaysStoppedAnimation(0),
           builder: (context, child) {
             double scale = 1.0;
-            final double opacity = isFilled ? 1.0 : 0.3;
-            Color color = isFilled ? Colors.blue : Colors.grey[400]!;
+            final double opacity = isFilled ? 1.0 : 0.55;
+            Color color = const Color(0xFF3D8FD6);
             
             if (isAnimating) {
               if (widget.animationState == ManaAnimationState.spending && isFilled) {
                 scale = _spendingScale.value;
-                color = Colors.red.withAlpha(128);
+                color = const Color(0xFFD9483B);
               } else if (widget.animationState == ManaAnimationState.gaining && !isFilled) {
                 scale = _gainingScale.value;
               }
@@ -177,65 +177,43 @@ class _ManaCrystalsState extends State<ManaCrystals> with TickerProviderStateMix
     );
   }
 
+  /// 菱形法力水晶：亮蓝渐变 + 高光；空槽为暗色描边
   Widget _buildCrystal(Color color, bool isFilled, double opacity) {
     return Opacity(
       opacity: opacity,
-      child: Container(
-        width: 12,
+      child: SizedBox(
+        width: 14,
         height: 16,
-        decoration: BoxDecoration(
-          color: isFilled ? color : Colors.grey[300],
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(6),
-            topRight: Radius.circular(6),
-            bottomLeft: Radius.circular(2),
-            bottomRight: Radius.circular(2),
+        child: Center(
+          child: Transform.rotate(
+            angle: 0.785398,
+            child: Container(
+              width: 10.5,
+              height: 10.5,
+              decoration: BoxDecoration(
+                gradient: isFilled
+                    ? LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color.lerp(color, Colors.white, 0.55)!, color, Color.lerp(color, Colors.black, 0.35)!],
+                      )
+                    : null,
+                color: isFilled ? null : const Color(0xFF14100D),
+                borderRadius: BorderRadius.circular(2),
+                border: Border.all(
+                  color: isFilled ? const Color(0xFFCFE8FF) : const Color(0xFF3D5670),
+                  width: 1,
+                ),
+                boxShadow: isFilled ? [BoxShadow(color: color.withAlpha(150), blurRadius: 5)] : null,
+              ),
+            ),
           ),
-          border: Border.all(
-            color: isFilled ? Colors.blue[700]! : Colors.grey[400]!,
-          ),
-          boxShadow: isFilled
-              ? [
-                  BoxShadow(
-                    color: Colors.blue.withAlpha(76),
-                    blurRadius: 2,
-                  ),
-                ]
-              : null,
         ),
-        child: isFilled
-            ? CustomPaint(
-                painter: _CrystalHighlightPainter(),
-              )
-            : null,
       ),
     );
   }
 }
 
-/// 水晶高光绘制器
-class _CrystalHighlightPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withAlpha(76)
-      ..style = PaintingStyle.fill;
-    
-    // 顶部高光
-    final path = Path()
-      ..moveTo(size.width * 0.2, size.height * 0.3)
-      ..lineTo(size.width * 0.4, size.height * 0.1)
-      ..lineTo(size.width * 0.6, size.height * 0.3)
-      ..lineTo(size.width * 0.5, size.height * 0.35)
-      ..lineTo(size.width * 0.3, size.height * 0.35)
-      ..close();
-    
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
 
 /// 法力水晶组件（紧凑版）- 用于显示在英雄头像旁边
 class CompactManaCrystals extends StatelessWidget {

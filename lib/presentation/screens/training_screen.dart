@@ -1,3 +1,4 @@
+import '../../core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:warring_states_card/domain/services/adventure_manager.dart';
 import 'package:warring_states_card/domain/services/training_manager.dart';
@@ -68,7 +69,7 @@ class TrainingScreenState extends State<TrainingScreen> {
     switch (level) {
       case MedalLevel.bronze: color = Colors.brown; break;
       case MedalLevel.silver: color = Colors.grey; break;
-      case MedalLevel.gold: color = Colors.amber; break;
+      case MedalLevel.gold: color = AppTheme.goldBright; break;
       case MedalLevel.special: color = Colors.purple; break;
     }
     return CircleAvatar(backgroundColor: color, child: const Icon(Icons.star, color: Colors.white));
@@ -138,7 +139,7 @@ class _TrainingCard extends StatelessWidget {
                   children: [
                     Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                    Text(subtitle, style: TextStyle(color: AppTheme.textMuted, fontSize: 13)),
                   ],
                 ),
               ),

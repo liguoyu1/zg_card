@@ -9,6 +9,7 @@ import '../../domain/models/quest.dart';
 import '../../domain/services/achievement_service.dart';
 import '../../l10n/locale_service.dart';
 import '../../shared/widgets/ad_banner_slot.dart';
+import '../widgets/theme_widgets.dart';
 
 enum _AchCategory { all, battle, collection, adventure, gold, streak, hero }
 
@@ -64,14 +65,12 @@ class _AchievementScreenState extends State<AchievementScreen>
           body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
-      backgroundColor: AppTheme.bgDark,
+      backgroundColor: AppTheme.bg,
       appBar: AppBar(
         title: Text(LocaleService.I.t('achievement.title')),
-        backgroundColor: AppTheme.agedWood,
-        foregroundColor: AppTheme.parchment,
         actions: [
           IconButton(
-            icon: const Icon(Icons.leaderboard, color: AppTheme.goldAccent),
+            icon: const Icon(Icons.leaderboard_outlined, color: AppTheme.goldAccent),
             tooltip: LocaleService.I.t('leaderboard.title'),
             onPressed: () => context.push('/progress/leaderboard'),
           ),
@@ -83,13 +82,8 @@ class _AchievementScreenState extends State<AchievementScreen>
         ],
         bottom: TabBar(
           controller: _tabCtrl,
-          indicatorColor: AppTheme.goldAccent,
-          labelColor: AppTheme.goldAccent,
-          unselectedLabelColor: AppTheme.parchment.withAlpha(153),
           tabs: [
-            Tab(
-                text:
-                    '${LocaleService.I.t('achievement.title')} (${(_data ?? _defaultPlayerData()).achievedMedals.length}/${AchievementService.allAchievements.length})'),
+            Tab(text: LocaleService.I.t('achievement.title')),
             Tab(text: LocaleService.I.t('achievement.stats_title')),
           ],
         ),
@@ -113,70 +107,87 @@ class _AchievementScreenState extends State<AchievementScreen>
         ? achList
         : achList.where((a) => _categoryFilter(a.id)).toList();
 
+    final total = achList.length;
+    final done = achieved.length;
+    final title = _titleText(data, achList);
     return Column(children: [
+      // 总览：完成度环 + 等级 + 称号
+      Container(
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppTheme.goldAccent.withAlpha(46), const Color(0xFF1C1612)],
+          ),
+          border: Border.all(color: AppTheme.goldAccent.withAlpha(110)),
+        ),
+        child: Row(children: [
+          SizedBox(
+            width: 64,
+            height: 64,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: total == 0 ? 0 : done / total),
+              duration: const Duration(milliseconds: 900),
+              curve: AppTheme.curveOut,
+              builder: (_, v, __) => Stack(alignment: Alignment.center, children: [
+                SizedBox.expand(
+                  child: CircularProgressIndicator(
+                    value: v,
+                    strokeWidth: 6,
+                    strokeCap: StrokeCap.round,
+                    color: AppTheme.goldBright,
+                    backgroundColor: Colors.black.withAlpha(90),
+                  ),
+                ),
+                Text('${(v * 100).round()}%',
+                    style: const TextStyle(color: AppTheme.goldBright, fontSize: 15, fontWeight: FontWeight.w900)),
+              ]),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                  LocaleService.I.t('achievement.unlocked_count',
+                      args: {'unlocked': '$done', 'total': '$total'}),
+                  style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16, fontWeight: FontWeight.w900)),
+              const SizedBox(height: 4),
+              Text(LocaleService.I.t('achievement.level_label', args: {'level': '${data.level}'}),
+                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12.5)),
+              if (title != '') ...[
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.goldGradient,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Color(0xFF1A1206), fontSize: 11.5, fontWeight: FontWeight.w800)),
+                ),
+              ],
+            ]),
+          ),
+        ]),
+      ),
       // 分类栏
-      Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          color: AppTheme.cardBack,
-          child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                  children: _AchCategory.values.map((cat) {
-                final sel = _category == cat;
-                return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: ChoiceChip(
-                      label: Text(_catLabel(cat),
-                          style: TextStyle(
-                              fontSize: 11,
-                              color: sel ? Colors.white : AppTheme.parchment)),
-                      selected: sel,
-                      selectedColor: AppTheme.goldAccent,
-                      backgroundColor: Colors.grey[800],
-                      onSelected: (_) => setState(() => _category = cat),
-                      visualDensity: VisualDensity.compact,
-                    ));
-              }).toList()))),
-      // 统计摘要 + 称号
-      Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          color: AppTheme.bgMedium.withAlpha(120),
-          child: Row(children: [
-            Text(
-                LocaleService.I.t('achievement.unlocked_count', args: {
-                  'unlocked': '${achieved.length}',
-                  'total': '${achList.length}'
-                }),
-                style:
-                    const TextStyle(color: AppTheme.goldAccent, fontSize: 13)),
-            const Spacer(),
-            Text(
-                LocaleService.I.t('achievement.level_label',
-                    args: {'level': '${data.level}'}),
-                style: const TextStyle(
-                    color: AppTheme.textSecondary, fontSize: 13)),
-          ])),
-      // 称号行
-      if (_titleText(data, achList) != '')
-        Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            color: AppTheme.goldAccent.withAlpha(25),
-            child: Row(children: [
-              const Icon(Icons.emoji_events,
-                  color: AppTheme.goldAccent, size: 16),
-              const SizedBox(width: 6),
-              Expanded(
-                  child: Text(_titleText(data, achList),
-                      style: const TextStyle(
-                          color: AppTheme.goldAccent,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold))),
-            ])),
+      WFilterBar<_AchCategory>(
+        values: _AchCategory.values,
+        selected: _category,
+        label: _catLabel,
+        onSelected: (c) => setState(() => _category = c),
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+      ),
       // 列表
       Expanded(
           child: CustomScrollView(slivers: [
         SliverPadding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
           sliver: SliverList(
               delegate: SliverChildBuilderDelegate((_, i) {
             final ach = filtered[i];
@@ -187,13 +198,13 @@ class _AchievementScreenState extends State<AchievementScreen>
             final isRate = pi?.isRate ?? false;
             // 胜率成就：不足20场样本时 UI 显示 0% 避免假满条
             if (isRate && (stats['totalMatches'] ?? 0) < 20) current = 0;
-            return _AchCard(
+            return WStaggerIn(index: i, child: _AchCard(
               ach: ach,
               unlocked: unlocked,
               current: current,
               maxVal: maxVal,
               isRate: isRate,
-            );
+            ));
           }, childCount: filtered.length)),
         ),
         // 列表末尾：广告横幅
@@ -355,15 +366,19 @@ class _AchievementScreenState extends State<AchievementScreen>
 
   Widget _st(IconData ic, String l, String v) {
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        margin: const EdgeInsets.only(bottom: 10),
         decoration: AppTheme.panelDecoration(),
         child: Row(children: [
-          Icon(ic, color: AppTheme.goldAccent, size: 22),
+          WIconMedal(icon: ic, color: AppTheme.goldAccent, size: 38),
           const SizedBox(width: 12),
-          Text('$l: $v',
-              style:
-                  const TextStyle(color: AppTheme.textPrimary, fontSize: 14)),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(l, style: const TextStyle(color: AppTheme.textMuted, fontSize: 12)),
+              const SizedBox(height: 2),
+              Text(v, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 15, fontWeight: FontWeight.w800)),
+            ]),
+          ),
         ]));
   }
 }
@@ -381,88 +396,130 @@ class _AchCard extends StatelessWidget {
   final int maxVal;
   final bool isRate;
 
+  /// 按奖励分档：铜 / 银 / 金（越难的成就越亮）
+  Color get _tier => ach.goldReward >= 500
+      ? AppTheme.goldBright
+      : ach.goldReward >= 150
+          ? const Color(0xFFCBD5DE)
+          : const Color(0xFFC98B5A);
+
+  IconData get _icon {
+    final id = ach.id;
+    if (id.contains('collect')) return Icons.collections_bookmark_rounded;
+    if (id.contains('adventure')) return Icons.explore_rounded;
+    if (id.contains('gold')) return Icons.savings_rounded;
+    if (id.contains('streak')) return Icons.local_fire_department_rounded;
+    if (id.contains('hero')) return Icons.person_rounded;
+    if (id.contains('damage')) return Icons.flash_on_rounded;
+    return Icons.emoji_events_rounded;
+  }
+
   @override
   Widget build(BuildContext context) {
     final pct = unlocked
         ? 1.0
         : (maxVal > 0 ? (current / maxVal).clamp(0.0, 1.0) : 0.0);
     final label = isRate ? '$current%' : '${current.clamp(0, maxVal)}/$maxVal';
+    final tier = _tier;
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: AppTheme.panelDecoration(),
-      child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(children: [
-                Icon(unlocked ? Icons.emoji_events : Icons.lock,
-                    color: unlocked ? AppTheme.goldAccent : Colors.grey,
-                    size: 28),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      Text(LocaleService.I.t('achievement.${ach.id}.name'),
-                          style: TextStyle(
-                              color: unlocked
-                                  ? AppTheme.goldAccent
-                                  : AppTheme.parchment,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14)),
-                      Text(LocaleService.I.t('achievement.${ach.id}.desc'),
-                          style: TextStyle(
-                              color: AppTheme.parchment.withAlpha(150),
-                              fontSize: 12)),
-                    ])),
-                if (ach.titleReward != null)
-                  Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppTheme.goldAccent.withAlpha(30),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                            color: AppTheme.goldAccent.withAlpha(80)),
-                      ),
-                      child: Text(
-                          LocaleService.I
-                              .t('achievement.${ach.id}.reward', args: {}),
-                          style: const TextStyle(
-                              color: AppTheme.goldAccent, fontSize: 10))),
-              ]),
-              const SizedBox(height: 6),
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(3),
-                  child: LinearProgressIndicator(
-                    value: pct,
-                    backgroundColor: Colors.grey[800],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        unlocked ? AppTheme.healGreen : AppTheme.goldAccent),
-                    minHeight: 6,
-                  )),
-              const SizedBox(height: 4),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(
-                    unlocked
-                        ? LocaleService.I.t('achievement.completed')
-                        : label,
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: unlocked
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [tier.withAlpha(40), const Color(0xFF1E1813)])
+            : AppTheme.panelGradient,
+        border: Border.all(color: unlocked ? tier.withAlpha(160) : AppTheme.borderLight),
+        boxShadow: [
+          if (unlocked) BoxShadow(color: tier.withAlpha(50), blurRadius: 14),
+          const BoxShadow(color: Color(0x44000000), blurRadius: 8, offset: Offset(0, 3)),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(12, 12, 14, 12),
+      child: Row(children: [
+        // 奖章
+        Stack(clipBehavior: Clip.none, children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: unlocked
+                  ? RadialGradient(colors: [Color.lerp(tier, Colors.white, 0.35)!, tier, tier.withAlpha(140)])
+                  : const RadialGradient(colors: [Color(0xFF3A3029), Color(0xFF241D18)]),
+              border: Border.all(color: unlocked ? Colors.white.withAlpha(120) : AppTheme.borderLight, width: 1.5),
+              boxShadow: [if (unlocked) BoxShadow(color: tier.withAlpha(110), blurRadius: 12)],
+            ),
+            child: Icon(_icon, size: 26, color: unlocked ? const Color(0xFF2A1A08) : AppTheme.textMuted),
+          ),
+          if (!unlocked)
+            Positioned(
+              right: -2,
+              bottom: -2,
+              child: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF14100D),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppTheme.borderLight),
+                ),
+                child: const Icon(Icons.lock_rounded, size: 11, color: AppTheme.textMuted),
+              ),
+            ),
+        ]),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Expanded(
+                child: Text(LocaleService.I.t('achievement.${ach.id}.name'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                        color:
-                            unlocked ? AppTheme.healGreen : AppTheme.textMuted,
-                        fontSize: 11)),
-                if (!unlocked && ach.goldReward > 0)
-                  Text('+${ach.goldReward}💰',
+                        color: unlocked ? AppTheme.goldBright : AppTheme.textPrimary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14.5)),
+              ),
+              if (ach.titleReward != null)
+                Container(
+                    margin: const EdgeInsets.only(left: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cinnabar.withAlpha(unlocked ? 200 : 60),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(LocaleService.I.t('achievement.${ach.id}.reward', args: {}),
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700))),
+            ]),
+            const SizedBox(height: 2),
+            Text(LocaleService.I.t('achievement.${ach.id}.desc'),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12, height: 1.3)),
+            const SizedBox(height: 8),
+            Row(children: [
+              Expanded(child: WProgressBar(value: pct, height: 7, done: unlocked)),
+              const SizedBox(width: 10),
+              unlocked
+                  ? const Icon(Icons.check_circle_rounded, size: 16, color: AppTheme.healGreen)
+                  : Text(label,
                       style: const TextStyle(
-                          color: AppTheme.goldAccent, fontSize: 11)),
-                if (unlocked && ach.goldReward > 0)
-                  Text('✅ +${ach.goldReward}💰',
-                      style: const TextStyle(
-                          color: AppTheme.healGreen, fontSize: 11)),
-              ]),
-            ],
-          )),
+                          color: AppTheme.textMuted,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          fontFeatures: [FontFeature.tabularFigures()])),
+              if (ach.goldReward > 0) ...[
+                const SizedBox(width: 10),
+                Opacity(
+                    opacity: unlocked ? 0.55 : 1,
+                    child: WCurrency(amount: ach.goldReward, prefix: '+', size: 12)),
+              ],
+            ]),
+          ]),
+        ),
+      ]),
     );
   }
 }

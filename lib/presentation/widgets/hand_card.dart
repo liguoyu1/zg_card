@@ -3,6 +3,8 @@ import '../../../data/card_image_service.dart';
 import '../../../domain/models/card.dart';
 import '../../../l10n/locale_service.dart';
 import '../../../shared/widgets/queued_asset_image.dart';
+import '../../../core/theme/app_theme.dart';
+import 'card_visuals.dart';
 
 /// 手牌选择状态
 enum HandCardState {
@@ -46,6 +48,7 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
   late Animation<double> _tooltipOpacity;
 
   bool _showTooltip = false;
+  bool _hover = false;
 
   @override
   void initState() {
@@ -123,22 +126,7 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
     }
   }
 
-  Color _getBorderColor() {
-    switch (widget.cardState) {
-      case HandCardState.selected:
-        return Colors.orange;
-      case HandCardState.playable:
-        return Colors.green;
-      case HandCardState.unplayable:
-        return Colors.grey;
-      case HandCardState.normal:
-        return _getRarityColor().withAlpha(128);
-    }
-  }
 
-  double _getBorderWidth() {
-    return widget.cardState == HandCardState.selected ? 3 : 2;
-  }
 
   void _onLongPressStart(LongPressStartDetails details) {
     setState(() => _showTooltip = true);
@@ -157,18 +145,26 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
     return AnimatedBuilder(
       animation: Listenable.merge([_enteringController, _selectionController, _tooltipController]),
       builder: (context, child) {
-        return Transform(
-          transform: Matrix4.translationValues(0, _selectionLift.value.dy, 0)
-            ..scale(isSelected ? 1.08 : 1.0),
-          alignment: Alignment.bottomCenter,
+        final hoverLift = _hover && !isSelected ? -6.0 : 0.0;
+        return AnimatedContainer(
+          duration: AppTheme.durFast,
+          curve: AppTheme.curveOut,
+          transform: Matrix4.translationValues(0, _selectionLift.value.dy + hoverLift, 0)
+            ..scale(isSelected ? 1.08 : (_hover ? 1.04 : 1.0)),
+          transformAlignment: Alignment.bottomCenter,
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              GestureDetector(
-                onTap: widget.onTap,
-                onLongPressStart: _onLongPressStart,
-                onLongPressEnd: _onLongPressEnd,
-                child: _buildCardBody(),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                onEnter: (_) => setState(() => _hover = true),
+                onExit: (_) => setState(() => _hover = false),
+                child: GestureDetector(
+                  onTap: widget.onTap,
+                  onLongPressStart: _onLongPressStart,
+                  onLongPressEnd: _onLongPressEnd,
+                  child: _buildCardBody(),
+                ),
               ),
               // 长按提示框
               if (_showTooltip)
@@ -186,150 +182,89 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
   }
 
   Widget _buildCardBody() {
-    final rarityColor = _getRarityColor();
-    final borderColor = _getBorderColor();
-    final borderWidth = _getBorderWidth();
-    final costColor = widget.canAfford ? Colors.blue : Colors.grey;
+    final rarity = rarityFrameColor(widget.card.rarity);
+    final selected = widget.cardState == HandCardState.selected;
+    final playable = widget.cardState == HandCardState.playable;
+    final dim = widget.cardState == HandCardState.unplayable;
+    final frame = selected ? AppTheme.goldBright : rarity;
+
+    final body = Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: frame, width: selected ? 2.4 : 1.6),
+        color: const Color(0xFF15100C),
+        boxShadow: [
+          if (selected)
+            BoxShadow(color: AppTheme.goldBright.withAlpha(150), blurRadius: 16, spreadRadius: 1)
+          else if (playable)
+            BoxShadow(color: AppTheme.healGreen.withAlpha(_hover ? 170 : 110), blurRadius: _hover ? 14 : 9),
+          const BoxShadow(color: Color(0x99000000), blurRadius: 6, offset: Offset(0, 3)),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(6.5),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _buildBackground(),
+            // 底部渐暗，托住名字与数值
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.45, 1],
+                  colors: [Colors.transparent, Color(0xE6000000)],
+                ),
+              ),
+            ),
+            if (widget.card.rarity == Rarity.legendary) const ShimmerSweep(),
+            // 卡名
+            Positioned(
+              left: 3,
+              right: 3,
+              bottom: widget.card.isMinion && widget.showAttackHealth ? 20 : 4,
+              child: Text(
+                widget.card.lname,
+                style: const TextStyle(
+                  fontSize: 9,
+                  height: 1.1,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFFF7EBD6),
+                  shadows: [Shadow(color: Colors.black, blurRadius: 3)],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            // 关键词
+            if (widget.card.keywords.isNotEmpty)
+              Positioned(left: 2, top: 24, child: _buildKeywordIcons()),
+            // 不可打出：压暗
+            if (dim) Container(color: Colors.black.withAlpha(110)),
+          ],
+        ),
+      ),
+    );
 
     return Opacity(
       opacity: _enteringOpacity.value,
       child: Transform.translate(
-        offset: Offset(0, _enteringSlide.value * 20),
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: borderColor, width: borderWidth),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                borderColor.withAlpha(30),
-                borderColor.withAlpha(8),
-              ],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: widget.cardState == HandCardState.selected
-                    ? Colors.orange.withAlpha(76)
-                    : Colors.black.withAlpha(38),
-                blurRadius: widget.cardState == HandCardState.selected ? 6 : 3,
-                offset: Offset(0, widget.cardState == HandCardState.selected ? 4 : 2),
-              ),
+        offset: Offset(0, _enteringSlide.value * 24),
+        child: Transform.scale(
+          scale: 1 - _enteringSlide.value * 0.15,
+          child: Stack(clipBehavior: Clip.none, children: [
+            Positioned.fill(child: body),
+            // 费用宝石
+            Positioned(left: -4, top: -4, child: CostGem(cost: widget.card.cost, dim: !widget.canAfford)),
+            // 攻 / 血
+            if (widget.card.isMinion && widget.showAttackHealth) ...[
+              Positioned(left: -3, bottom: -3, child: StatBadge(value: widget.card.attack, attack: true)),
+              Positioned(right: -3, bottom: -3, child: StatBadge(value: widget.card.health, attack: false)),
             ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                // 卡牌背景（图片优先）
-                _buildBackground(),
-                
-                // 费用角标 - 左上角
-                Positioned(
-                  left: 2,
-                  top: 2,
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: costColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white),
-                      boxShadow: [
-                        BoxShadow(
-                          color: costColor.withAlpha(128),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${widget.card.cost}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                
-                // 稀有度宝石指示器已移除
-                
-                // 卡牌名称
-                Positioned(
-                  left: 2,
-                  right: 2,
-                  top: 24,
-                  child: Text(
-                    widget.card.lname,
-                    style: const TextStyle(
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                
-                // 攻击/血量
-                if (widget.card.isMinion && widget.showAttackHealth)
-                  Positioned(
-                    right: 2,
-                    bottom: 2,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: Colors.orange[800]!.withAlpha(200),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                          child: Text(
-                            '${widget.card.attack}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 2),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: Colors.red[800]!.withAlpha(200),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                          child: Text(
-                            '${widget.card.health}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                
-                // 关键词图标
-                if (widget.card.keywords.isNotEmpty)
-                  Positioned(
-                    left: 2,
-                    bottom: 2,
-                    child: _buildKeywordIcons(),
-                  ),
-              ],
-            ),
-          ),
+          ]),
         ),
       ),
     );
@@ -461,18 +396,6 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
     );
   }
 
-  Color _getGemColor() {
-    switch (widget.card.rarity) {
-      case Rarity.common:
-        return Colors.grey;
-      case Rarity.rare:
-        return Colors.blue;
-      case Rarity.epic:
-        return Colors.purple;
-      case Rarity.legendary:
-        return Colors.orange;
-    }
-  }
 
   Widget _buildKeywordIcons() {
     final icons = <Widget>[];
@@ -480,44 +403,45 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
     if (widget.card.keywords.contains(Keyword.charge)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
-        decoration: BoxDecoration(color: Colors.orange.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: Text(LocaleService.I.t('basic_card.keyword_charge'), style: const TextStyle(color: Colors.white, fontSize: 7)),
+        decoration: BoxDecoration(color: const Color(0xCC14100D), borderRadius: BorderRadius.circular(3), border: Border.all(color: AppTheme.goldAccent.withAlpha(140), width: 0.6)),
+        child: Text(LocaleService.I.t('basic_card.keyword_charge'), style: const TextStyle(color: AppTheme.goldBright, fontSize: 7, fontWeight: FontWeight.w700)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.taunt)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
-        decoration: BoxDecoration(color: Colors.brown.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: Text(LocaleService.I.t('basic_card.keyword_taunt'), style: const TextStyle(color: Colors.white, fontSize: 7)),
+        decoration: BoxDecoration(color: const Color(0xCC14100D), borderRadius: BorderRadius.circular(3), border: Border.all(color: AppTheme.goldAccent.withAlpha(140), width: 0.6)),
+        child: Text(LocaleService.I.t('basic_card.keyword_taunt'), style: const TextStyle(color: AppTheme.goldBright, fontSize: 7, fontWeight: FontWeight.w700)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.divineShield)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
-        decoration: BoxDecoration(color: Colors.cyan.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: Text(LocaleService.I.t('basic_card.keyword_divine_shield'), style: const TextStyle(color: Colors.white, fontSize: 7)),
+        decoration: BoxDecoration(color: const Color(0xCC14100D), borderRadius: BorderRadius.circular(3), border: Border.all(color: AppTheme.goldAccent.withAlpha(140), width: 0.6)),
+        child: Text(LocaleService.I.t('basic_card.keyword_divine_shield'), style: const TextStyle(color: AppTheme.goldBright, fontSize: 7, fontWeight: FontWeight.w700)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.windfury)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
-        decoration: BoxDecoration(color: Colors.lime.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: Text(LocaleService.I.t('basic_card.keyword_windfury'), style: const TextStyle(color: Colors.white, fontSize: 7)),
+        decoration: BoxDecoration(color: const Color(0xCC14100D), borderRadius: BorderRadius.circular(3), border: Border.all(color: AppTheme.goldAccent.withAlpha(140), width: 0.6)),
+        child: Text(LocaleService.I.t('basic_card.keyword_windfury'), style: const TextStyle(color: AppTheme.goldBright, fontSize: 7, fontWeight: FontWeight.w700)),
       ));
     }
     if (widget.card.keywords.contains(Keyword.lifesteal)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
-        decoration: BoxDecoration(color: Colors.pink.withAlpha(180), borderRadius: BorderRadius.circular(2)),
-        child: Text(LocaleService.I.t('basic_card.keyword_lifesteal'), style: const TextStyle(color: Colors.white, fontSize: 7)),
+        decoration: BoxDecoration(color: const Color(0xCC14100D), borderRadius: BorderRadius.circular(3), border: Border.all(color: AppTheme.goldAccent.withAlpha(140), width: 0.6)),
+        child: Text(LocaleService.I.t('basic_card.keyword_lifesteal'), style: const TextStyle(color: AppTheme.goldBright, fontSize: 7, fontWeight: FontWeight.w700)),
       ));
     }
 
     if (icons.isEmpty) return const SizedBox.shrink();
 
-    return Row(
+    return Column(
       mainAxisSize: MainAxisSize.min,
-      children: icons.take(3).toList(),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [for (final w in icons.take(3)) Padding(padding: const EdgeInsets.only(bottom: 2), child: w)],
     );
   }
 
@@ -550,7 +474,7 @@ class _HandCardState extends State<HandCard> with TickerProviderStateMixin {
       case Keyword.divineShield:
         return (name: LocaleService.I.t('basic_card.keyword_divine_shield'), color: Colors.white);
       case Keyword.windfury:
-        return (name: LocaleService.I.t('basic_card.keyword_windfury'), color: Colors.cyan);
+        return (name: LocaleService.I.t('basic_card.keyword_windfury'), color: AppTheme.jade);
       case Keyword.lifesteal:
         return (name: LocaleService.I.t('basic_card.keyword_lifesteal'), color: Colors.red);
       case Keyword.poisonous:

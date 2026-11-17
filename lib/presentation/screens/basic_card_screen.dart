@@ -286,7 +286,7 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
     Keyword.charge => (name: LocaleService.I.t('basic_card.keyword_charge'), color: Colors.yellow),
     Keyword.taunt => (name: LocaleService.I.t('basic_card.keyword_taunt'), color: Colors.grey),
     Keyword.divineShield => (name: LocaleService.I.t('basic_card.keyword_divine_shield'), color: Colors.white),
-    Keyword.windfury => (name: LocaleService.I.t('basic_card.keyword_windfury'), color: Colors.cyan),
+    Keyword.windfury => (name: LocaleService.I.t('basic_card.keyword_windfury'), color: AppTheme.jade),
     Keyword.lifesteal => (name: LocaleService.I.t('basic_card.keyword_lifesteal'), color: Colors.red),
     Keyword.poisonous => (name: LocaleService.I.t('basic_card.keyword_poisonous'), color: Colors.green),
     Keyword.battlecry => (name: LocaleService.I.t('basic_card.keyword_battlecry'), color: Colors.blue),
@@ -305,7 +305,7 @@ class _BasicCardScreenState extends State<BasicCardScreen> with TickerProviderSt
   };
 
   Color _getCostColor(int cost) {
-    if (cost <= 2) return Colors.grey[700]!;
+    if (cost <= 2) return const Color(0xFF6E6257);
     if (cost <= 5) return Colors.blue[700]!;
     if (cost <= 7) return Colors.purple[700]!;
     return Colors.orange[700]!;

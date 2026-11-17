@@ -102,7 +102,7 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
             icon: Icon(_tabIcons[i]), selectedIcon: Icon(_tabIconsActive[i]), label: Text(_tabLabels[i]),
           )),
         ),
-        const VerticalDivider(width: 1),
+        const VerticalDivider(width: 1, color: Color(0x40D9A441)),
         Expanded(child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 480),
           child: IndexedStack(index: _currentIndex, children: screens),
@@ -111,16 +111,19 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
     } else {
       body = Scaffold(
         body: IndexedStack(index: _currentIndex, children: screens),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: _onNav,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.amber.shade300,
-          unselectedItemColor: Colors.grey,
-          backgroundColor: const Color(0xFF1A1A2E),
-          items: List.generate(4, (i) => BottomNavigationBarItem(
-            icon: Icon(_tabIcons[i]), activeIcon: Icon(_tabIconsActive[i]), label: _tabLabels[i],
-          )),
+        bottomNavigationBar: DecoratedBox(
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: Color(0x40D9A441))),
+            boxShadow: [BoxShadow(color: Color(0x99000000), blurRadius: 16, offset: Offset(0, -4))],
+          ),
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: _onNav,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            destinations: List.generate(4, (i) => NavigationDestination(
+              icon: Icon(_tabIcons[i]), selectedIcon: Icon(_tabIconsActive[i]), label: _tabLabels[i],
+            )),
+          ),
         ),
       );
     }

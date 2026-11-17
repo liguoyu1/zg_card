@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart' hide Card;
+import 'card_visuals.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../data/card_image_service.dart';
 import '../../../domain/models/card.dart';
 import '../../../l10n/locale_service.dart';
@@ -252,32 +254,20 @@ class _BoardCardState extends State<BoardCard> with TickerProviderStateMixin {
     }
   }
 
-  String _getGemAsset() {
-    switch (widget.card.rarity) {
-      case Rarity.common:
-        return 'assets/gems/common.png';
-      case Rarity.rare:
-        return 'assets/gems/rare.png';
-      case Rarity.epic:
-        return 'assets/gems/epic.png';
-      case Rarity.legendary:
-        return 'assets/gems/legendary.png';
-    }
-  }
 
   Color _getBorderColor() {
     switch (widget.selectionState) {
       case CardSelectionState.none:
-        return Colors.black54;
+        return rarityFrameColor(widget.card.rarity);
       case CardSelectionState.canAttack:
         final pulse = _pulseAnimation.value;
-        return Color.lerp(Colors.green, Colors.lightGreen, pulse)!;
+        return Color.lerp(AppTheme.healGreen, const Color(0xFFA6F0BE), pulse)!;
       case CardSelectionState.hasAttacked:
-        return Colors.grey;
+        return const Color(0xFF5A5048);
       case CardSelectionState.selected:
-        return Colors.orange;
+        return AppTheme.goldBright;
       case CardSelectionState.targetable:
-        return Colors.red;
+        return AppTheme.healthRed;
     }
   }
 
@@ -286,9 +276,9 @@ class _BoardCardState extends State<BoardCard> with TickerProviderStateMixin {
       case CardSelectionState.canAttack:
       case CardSelectionState.selected:
       case CardSelectionState.targetable:
-        return 3;
+        return 2.4;
       default:
-        return 1;
+        return 1.5;
     }
   }
 
@@ -344,140 +334,92 @@ class _BoardCardState extends State<BoardCard> with TickerProviderStateMixin {
   }
 
   Widget _buildCardContent() {
-    final rarityColor = _getRarityColor();
     final borderColor = _getBorderColor();
     final borderWidth = _getBorderWidth();
     final isDormant = widget.card.isDormant;
     final hasAttacked = widget.card.hasAttackedThisTurn;
+    final sel = widget.selectionState;
+    final glow = switch (sel) {
+      CardSelectionState.canAttack => AppTheme.healGreen.withAlpha((90 + 90 * _pulseAnimation.value).toInt()),
+      CardSelectionState.selected => AppTheme.goldBright.withAlpha(170),
+      CardSelectionState.targetable => AppTheme.healthRed.withAlpha(150),
+      _ => null,
+    };
+    final taunt = widget.card.keywords.contains(Keyword.taunt);
+    final shield = widget.card.hasDivineShield;
 
-    return Container(
+    final body = Container(
       width: double.infinity,
       height: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: borderColor, width: borderWidth),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            rarityColor.withAlpha(30),
-            rarityColor.withAlpha(8),
-          ],
-        ),
+        borderRadius: BorderRadius.circular(taunt ? 4 : 10),
+        border: Border.all(color: borderColor, width: taunt ? borderWidth + 1 : borderWidth),
+        color: const Color(0xFF15100C),
         boxShadow: [
-          BoxShadow(
-            color: widget.selectionState == CardSelectionState.selected
-                ? Colors.orange.withAlpha(76)
-                : Colors.black.withAlpha(38),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
+          if (glow != null) BoxShadow(color: glow, blurRadius: 14, spreadRadius: 1),
+          if (shield) BoxShadow(color: const Color(0xFFFFE9A0).withAlpha(200), blurRadius: 10, spreadRadius: 2),
+          const BoxShadow(color: Color(0x99000000), blurRadius: 6, offset: Offset(0, 3)),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(taunt ? 2.5 : 8.5),
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 卡牌背景（图片优先）
             _buildBackground(),
-
-
-            // 稀有度宝石已移除
-
-            // 关键词图标 - 左上角
-            if (widget.showKeywordIcons && widget.card.keywords.isNotEmpty)
-              Positioned(
-                left: 2,
-                top: 2,
-                child: _buildKeywordIcons(),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.55, 1],
+                  colors: [Colors.transparent, Color(0xCC000000)],
+                ),
               ),
-            
-            // 已攻击遮罩
-            if (hasAttacked)
-              Container(color: Colors.black.withAlpha(128)),
-            
-            // 休眠遮罩
-            if (isDormant)
-              Container(color: Colors.black.withAlpha(160)),
-            
-            // 选中遮罩
-            if (widget.selectionState == CardSelectionState.selected)
-              Container(color: Colors.yellow.withAlpha(76)),
-            
-            // 伤害闪烁遮罩
+            ),
+            if (widget.card.rarity == Rarity.legendary) const ShimmerSweep(),
+            if (widget.showKeywordIcons && widget.card.keywords.isNotEmpty)
+              Positioned(left: 2, top: 2, child: _buildKeywordIcons()),
+            if (hasAttacked) Container(color: Colors.black.withAlpha(110)),
+            if (isDormant) Container(color: Colors.black.withAlpha(160)),
+            if (sel == CardSelectionState.selected) Container(color: AppTheme.goldBright.withAlpha(40)),
+            // 受伤：红色闪光
             if (_damageController.isAnimating && !_dyingController.isAnimating)
-              Container(color: Colors.red.withAlpha((_damageOpacity.value * 76).toInt())),
-            
-            // 治疗光晕
+              Container(color: AppTheme.healthRed.withAlpha((_damageOpacity.value * 120).toInt())),
+            // 治疗：绿色光晕
             if (_healingController.isAnimating && !_dyingController.isAnimating)
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.green.withAlpha((_healingController.value * 200).toInt()),
-                    width: 2,
-                  ),
+                  gradient: RadialGradient(colors: [
+                    AppTheme.healGreen.withAlpha((_healingController.value * 110).toInt()),
+                    Colors.transparent,
+                  ]),
                 ),
               ),
-            
-            // 攻击/血量底部信息栏
-            if (widget.card.isMinion)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  height: 18,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(5),
-                      bottomRight: Radius.circular(5),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '⚔${widget.card.attack}',
-                        style: const TextStyle(
-                          color: Colors.orangeAccent,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        '❤${widget.card.health}',
-                        style: const TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            
-            // 休眠Zzz指示器
             if (isDormant)
-              Positioned(
-                right: 2,
-                bottom: 20,
-                child: Text(
-                  'Zzz',
-                  style: TextStyle(
-                    color: Colors.white.withAlpha(200),
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              Center(
+                child: Text('Zzz',
+                    style: TextStyle(color: Colors.white.withAlpha(210), fontSize: 13, fontWeight: FontWeight.w900)),
               ),
           ],
         ),
       ),
     );
+
+    return Stack(clipBehavior: Clip.none, children: [
+      Positioned.fill(child: body),
+      if (widget.card.isMinion) ...[
+        Positioned(left: -4, bottom: -4, child: StatBadge(value: widget.card.attack, attack: true, size: 22)),
+        Positioned(
+            right: -4,
+            bottom: -4,
+            child: StatBadge(
+                value: widget.card.health,
+                attack: false,
+                size: 22,
+                state: widget.card.health < widget.card.maxHealth ? -1 : 0)),
+      ],
+    ]);
   }
 
   Widget _buildBackground() {
@@ -517,7 +459,7 @@ class _BoardCardState extends State<BoardCard> with TickerProviderStateMixin {
     if (widget.card.keywords.contains(Keyword.divineShield)) {
       icons.add(Container(
         padding: const EdgeInsets.all(1),
-        decoration: BoxDecoration(color: Colors.cyan.withAlpha(180), borderRadius: BorderRadius.circular(2)),
+        decoration: BoxDecoration(color: AppTheme.jade.withAlpha(200), borderRadius: BorderRadius.circular(3)),
         child: Text(LocaleService.I.t('basic_card.keyword_divine_shield'), style: const TextStyle(color: Colors.white, fontSize: 7)),
       ));
     }
