@@ -8,6 +8,6 @@ HOST=wscard.games
 cd "$(dirname "$0")/.."
 URLS=$(grep -o '<loc>[^<]*' web/sitemap.xml | sed 's/<loc>//' | awk '{printf "%s\"%s\"", (NR>1?",":""), $0}')
 curl -sS -o /dev/null -w "IndexNow HTTP %{http_code} (200/202 = ok)\n" \
-  -X POST https://api.indexnow.org/indexnow \
+  -X POST https://www.bing.com/indexnow \
   -H 'Content-Type: application/json; charset=utf-8' \
   -d "{\"host\":\"$HOST\",\"key\":\"$KEY\",\"keyLocation\":\"https://$HOST/$KEY.txt\",\"urlList\":[$URLS]}"
