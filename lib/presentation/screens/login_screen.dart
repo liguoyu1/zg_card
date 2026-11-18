@@ -1,3 +1,4 @@
+import '../widgets/theme_widgets.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -114,103 +115,150 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isReg = _isRegister;
     return Scaffold(
-      backgroundColor: AppTheme.bgDark,
-      appBar: AppBar(
-        title: Text(LocaleService.I.t(_isRegister ? 'auth.title_register' : 'auth.title_login'), style: const TextStyle(color: AppTheme.parchment)),
-        backgroundColor: AppTheme.agedWood,
-        foregroundColor: AppTheme.parchment,
-      ),
+      backgroundColor: AppTheme.bg,
+      appBar: AppBar(title: Text(LocaleService.I.t(isReg ? 'auth.title_register' : 'auth.title_login'))),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
         child: Column(children: [
-          const SizedBox(height: 16),
-          const Icon(Icons.person_outline, size: 64, color: AppTheme.goldAccent),
-          const SizedBox(height: 8),
-          Text(LocaleService.I.t('auth.app_name'), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.parchment)),
-          const SizedBox(height: 24),
-
-          // Tab: 注册 / 登录
+          const SizedBox(height: 12),
+          // 印章徽记 + 描金标题
+          Container(
+            width: 72, height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const RadialGradient(colors: [Color(0xFFFFE19A), Color(0xFFD9A441), Color(0xFF8A5A14)]),
+              border: Border.all(color: const Color(0xFFFFF0C2), width: 2),
+              boxShadow: [BoxShadow(color: AppTheme.goldAccent.withAlpha(110), blurRadius: 22)],
+            ),
+            alignment: Alignment.center,
+            child: const Text('戰', style: TextStyle(fontSize: 34, height: 1.1, fontWeight: FontWeight.w900, color: Color(0xFF5A1E0E))),
+          ),
+          const SizedBox(height: 14),
+          ShaderMask(
+            shaderCallback: (r) => AppTheme.goldGradient.createShader(r),
+            child: Text(LocaleService.I.t('auth.app_name'),
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white)),
+          ),
+          const SizedBox(height: 22),
+          // 注册 / 登录 胶囊分段
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF14100D),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppTheme.borderLight),
+            ),
+            child: Row(children: [
+              _tabBtn(LocaleService.I.t('auth.register'), isReg),
+              _tabBtn(LocaleService.I.t('auth.login'), !isReg),
+            ]),
+          ),
+          const SizedBox(height: 18),
+          // 表单面板
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+            decoration: BoxDecoration(
+              gradient: AppTheme.panelGradient,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppTheme.borderLight),
+              boxShadow: const [BoxShadow(color: Color(0x66000000), blurRadius: 18, offset: Offset(0, 8))],
+            ),
+            child: Column(children: [
+              _field(_emailCtrl, LocaleService.I.t('auth.email'), Icons.mail_outline_rounded, false),
+              const SizedBox(height: 12),
+              _field(_passwordCtrl, LocaleService.I.t(isReg ? 'auth.password_min' : 'auth.password'), Icons.lock_outline_rounded, true),
+              if (isReg) ...[
+                const SizedBox(height: 12),
+                _field(_nameCtrl, LocaleService.I.t('auth.nickname'), Icons.edit_outlined, false),
+              ],
+              if (_error != null) ...[
+                const SizedBox(height: 12),
+                Row(children: [
+                  const Icon(Icons.error_outline_rounded, size: 16, color: AppTheme.cinnabar),
+                  const SizedBox(width: 6),
+                  Expanded(child: Text(_error!, style: const TextStyle(color: AppTheme.cinnabar, fontSize: 13))),
+                ]),
+              ],
+              const SizedBox(height: 16),
+              WPrimaryButton(
+                label: LocaleService.I.t(isReg ? 'auth.register' : 'auth.login'),
+                icon: isReg ? Icons.person_add_alt_1_rounded : Icons.login_rounded,
+                height: 50,
+                onTap: _loading ? null : _submit,
+                trailing: _loading
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : null,
+              ),
+            ]),
+          ),
+          const SizedBox(height: 20),
           Row(children: [
-            Expanded(child: _tabBtn(LocaleService.I.t('auth.register'), _isRegister)),
-            const SizedBox(width: 8),
-            Expanded(child: _tabBtn(LocaleService.I.t('auth.login'), !_isRegister)),
+            const Expanded(child: Divider(color: AppTheme.borderLight)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(LocaleService.I.t('auth.or'),
+                  style: const TextStyle(color: AppTheme.textMuted, fontSize: 12, letterSpacing: 1)),
+            ),
+            const Expanded(child: Divider(color: AppTheme.borderLight)),
           ]),
           const SizedBox(height: 16),
-
-          // 表单
-          if (_isRegister) ...[
-            _field(_emailCtrl, LocaleService.I.t('auth.email'), Icons.email, false),
-            const SizedBox(height: 12),
-            _field(_passwordCtrl, LocaleService.I.t('auth.password_min'), Icons.lock, true),
-            const SizedBox(height: 12),
-            _field(_nameCtrl, LocaleService.I.t('auth.nickname'), Icons.edit, false),
-          ] else ...[
-            _field(_emailCtrl, LocaleService.I.t('auth.email'), Icons.email, false),
-            const SizedBox(height: 12),
-            _field(_passwordCtrl, LocaleService.I.t('auth.password'), Icons.lock, true),
-          ],
-          const SizedBox(height: 8),
-          if (_error != null)
-            Padding(padding: const EdgeInsets.only(bottom: 8),
-              child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 13))),
-
-          SizedBox(
-            width: double.infinity, height: 48,
-            child: ElevatedButton(
-              onPressed: _loading ? null : _submit,
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.goldAccent),
-              child: _loading
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text(LocaleService.I.t(_isRegister ? 'auth.register' : 'auth.login'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-          Row(children: [const Expanded(child: Divider(color: AppTheme.borderLight)), Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text(LocaleService.I.t('auth.or'), style: const TextStyle(color: AppTheme.textMuted))), const Expanded(child: Divider(color: AppTheme.borderLight))]),
-          const SizedBox(height: 16),
-
-          // Xsolla 平台登录（Web 构建配置了 XSOLLA_CLIENT_ID 时显示）
+          // Xsolla（Web 构建配置了 XSOLLA_CLIENT_ID 时显示）
           if (kIsWeb && AuthService.kXsollaClientId.isNotEmpty) ...[
-            SizedBox(
-              width: double.infinity, height: 44,
-              child: OutlinedButton.icon(
-                onPressed: _loading ? null : _xsollaLogin,
-                icon: const Icon(Icons.language, size: 18),
-                label: Text(LocaleService.I.t('auth.xsolla_login'),
-                    style: const TextStyle(color: AppTheme.textSecondary)),
-                style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppTheme.borderGold.withAlpha(120))),
-              ),
-            ),
+            _outline(Icons.language_rounded, LocaleService.I.t('auth.xsolla_login'), _loading ? null : _xsollaLogin),
             const SizedBox(height: 12),
           ],
-
-          // 游客登录
-          _field(_guestNameCtrl, LocaleService.I.t('auth.guest_name_hint'), Icons.person, false),
+          _field(_guestNameCtrl, LocaleService.I.t('auth.guest_name_hint'), Icons.person_outline_rounded, false),
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity, height: 44,
-            child: OutlinedButton(
-              onPressed: _loading ? null : _guestLogin,
-              style: OutlinedButton.styleFrom(side: BorderSide(color: AppTheme.borderGold.withAlpha(120))),
-              child: Text(LocaleService.I.t('auth.guest_login'), style: const TextStyle(color: AppTheme.textSecondary)),
-            ),
-          ),
+          _outline(Icons.sports_esports_outlined, LocaleService.I.t('auth.guest_login'), _loading ? null : _guestLogin, primary: true),
         ]),
       ),
     );
   }
 
   Widget _tabBtn(String label, bool active) {
-    return GestureDetector(
-      onTap: () => setState(() { _isRegister = label == LocaleService.I.t('auth.register'); _error = null; }),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: active ? AppTheme.goldAccent : AppTheme.borderLight, width: active ? 2 : 1)),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() { _isRegister = label == LocaleService.I.t('auth.register'); _error = null; }),
+        child: AnimatedContainer(
+          duration: AppTheme.durMed,
+          curve: AppTheme.curveOut,
+          padding: const EdgeInsets.symmetric(vertical: 11),
+          decoration: BoxDecoration(
+            gradient: active ? AppTheme.goldGradient : null,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [if (active) BoxShadow(color: AppTheme.goldAccent.withAlpha(90), blurRadius: 10)],
+          ),
+          child: Center(
+            child: Text(label,
+                style: TextStyle(
+                  color: active ? const Color(0xFF1A1206) : AppTheme.textSecondary,
+                  fontWeight: active ? FontWeight.w800 : FontWeight.w600,
+                  fontSize: 14.5,
+                )),
+          ),
         ),
-        child: Center(child: Text(label, style: TextStyle(color: active ? AppTheme.goldAccent : AppTheme.textMuted, fontWeight: active ? FontWeight.bold : FontWeight.normal, fontSize: 15))),
+      ),
+    );
+  }
+
+  /// 描金次级按钮（Xsolla / 游客）
+  Widget _outline(IconData icon, String label, VoidCallback? onTap, {bool primary = false}) {
+    final c = primary ? AppTheme.goldBright : AppTheme.textSecondary;
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: OutlinedButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon, size: 18, color: c),
+        label: Text(label, style: TextStyle(color: c, fontWeight: FontWeight.w700, fontSize: 14)),
+        style: OutlinedButton.styleFrom(
+          backgroundColor: primary ? AppTheme.goldAccent.withAlpha(26) : Colors.transparent,
+          side: BorderSide(color: AppTheme.goldAccent.withAlpha(primary ? 150 : 90), width: 1.2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
       ),
     );
   }
@@ -219,12 +267,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return TextField(
       controller: ctrl,
       obscureText: obscure,
-      style: const TextStyle(color: AppTheme.parchment),
+      cursorColor: AppTheme.goldBright,
+      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 15),
       decoration: InputDecoration(
-        hintText: hint, hintStyle: const TextStyle(color: AppTheme.textMuted),
-        filled: true, fillColor: AppTheme.cardBack,
-        prefixIcon: Icon(icon, color: AppTheme.goldAccent, size: 20),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+        hintText: hint,
+        hintStyle: const TextStyle(color: AppTheme.textMuted, fontSize: 14),
+        filled: true, fillColor: const Color(0xFF14100D),
+        prefixIcon: Icon(icon, color: AppTheme.goldAccent, size: 19),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.borderLight)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.borderLight)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.goldAccent, width: 1.4)),
       ),
     );
   }
