@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warring States Card — เกมการ์ดวางแผนฟรีในตำนานจอมปราชญ์จีน</title>
+<meta name="description" content="เกมการ์ดวางแผนออนไลน์ฟรี เล่นได้ในเบราว์เซอร์ไม่ต้องโหลด 7 สำนักคิด 196 การ์ด 21 ฮีโร่ในตำนาน แพ้ชนะตัดสินใน 3 นาที มีระบบจัดอันดับและเนื้อเรื่องโหมดเดี่ยว">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Warring States: Card Battles">
+<meta property="og:title" content="Warring States Card — เกมการ์ดวางแผนฟรีในตำนานจอมปราชญ์จีน">
+<meta property="og:description" content="7 สำนักคิดกลายเป็น 7 สไตล์การเล่น 196 การ์ด 21 ฮีโร่ในตำนาน จบเกมใน 3 นาที ฟรี เล่นได้ทันทีในเบราว์เซอร์">
+<meta property="og:url" content="https://wscard.games/landing-th.html">
+<meta property="og:image" content="https://wscard.games/screens/cover.webp">
+<link rel="canonical" href="https://wscard.games/landing-th.html">
+<link rel="alternate" hreflang="ja" href="https://wscard.games/landing-jp.html">
+<link rel="alternate" hreflang="ko" href="https://wscard.games/landing-kr.html">
+<link rel="alternate" hreflang="en" href="https://wscard.games/landing-eu.html">
+<link rel="alternate" hreflang="th" href="https://wscard.games/landing-th.html">
+<link rel="alternate" hreflang="vi" href="https://wscard.games/landing-vi.html">
+<link rel="alternate" hreflang="de" href="https://wscard.games/landing-de.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://wscard.games/">
+<link rel="alternate" hreflang="zh-Hant" href="https://wscard.games/zh-tw.html">
+<link rel="alternate" hreflang="x-default" href="https://wscard.games/landing-eu.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700;900&family=Noto+Sans+Thai:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700;900&family=Noto+Sans+Thai:wght@400;500;700&display=swap"></noscript>
+<style>
+  :root{
+    --bg:#120907; --surface:#1B0E0B; --surface-2:#261511;
+    --border:#3A2119; --text:#F0E6D8; --text-muted:#C4A98F; --text-dim:#8A6A54;
+    --accent:#E0B25B; --accent-ink:#1A0F06; --accent-soft:rgba(224,178,91,.14);
+    --crimson:#B8302A; --crimson-soft:rgba(184,48,42,.16);
+    --bing:#C0392B; --fa:#E0B25B; --ru:#27AE60; --dao:#8E44AD;
+    --mo:#D35400; --yin:#1ABC9C; --zong:#F39C12; --neu:#95A5A6;
+    --r-sm:8px; --r-md:12px;
+    --serif:'Noto Serif Thai',serif;
+    --sans:'Noto Sans Thai',sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.9;word-break:break-word;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--crimson);color:#fff}
+
+  .wrap{max-width:1140px;margin:0 auto;padding:0 28px}
+
+  /* ===== Top bar ===== */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(18,9,7,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .topbar-in{max-width:1140px;margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between}
+  .wordmark{font-family:var(--serif);font-weight:900;letter-spacing:.1em;font-size:17px;color:var(--text)}
+  .wordmark em{font-style:normal;color:var(--accent)}
+  .crimson-seal{display:inline-block;width:11px;height:11px;background:var(--crimson);border-radius:2px;margin-right:10px;vertical-align:middle}
+  .langbar{display:flex;gap:2px}
+  .langbar a{font-family:var(--sans);font-size:12px;letter-spacing:.06em;background:transparent;color:var(--text-muted);border:1px solid transparent;border-radius:6px;padding:6px 11px;transition:color .16s var(--ease),background .16s var(--ease),border-color .16s var(--ease)}
+  .langbar a:hover{color:var(--text)}
+  .langbar a.cur{color:var(--text);border-color:var(--border);background:var(--surface-2)}
+
+  /* ===== Hero ===== */
+  .hero{position:relative;min-height:80vh;display:flex;align-items:flex-end;overflow:hidden;border-bottom:1px solid var(--border)}
+  .hero-bg{position:absolute;inset:0;z-index:0}
+  .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,9,7,.3) 0%,rgba(18,9,7,.1) 40%,rgba(18,9,7,.96) 100%)}
+  .hero-in{position:relative;z-index:1;width:100%;padding:120px 0 76px}
+  .kicker{display:inline-flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.32em;color:var(--accent);margin-bottom:24px;font-family:var(--serif);font-weight:700}
+  .kicker::before{content:"";width:30px;height:2px;background:var(--crimson)}
+  .hero h1{font-family:var(--serif);font-weight:900;font-size:clamp(28px,4.7vw,54px);line-height:1.3;letter-spacing:0;max-width:24ch;overflow-wrap:break-word;word-break:normal}
+  .hero .lead{color:var(--text-muted);font-size:clamp(15px,1.7vw,18px);max-width:52ch;margin-top:24px;overflow-wrap:break-word}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--sans);font-weight:700;font-size:15px;border-radius:var(--r-sm);padding:15px 30px;border:1px solid transparent;cursor:pointer;transition:transform .16s var(--ease),box-shadow .16s var(--ease),background .16s var(--ease),border-color .16s var(--ease)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--crimson);color:#fff}
+  .btn.primary:hover{background:#CD3B33;box-shadow:0 10px 30px rgba(184,48,42,.35)}
+  .btn.ghost{border-color:var(--border);color:var(--text);background:rgba(27,14,11,.55)}
+  .btn.ghost:hover{border-color:var(--accent);background:var(--surface-2)}
+  .btn svg{width:16px;height:16px}
+
+  .hero .meta{display:flex;flex-wrap:wrap;gap:0;margin-top:46px;color:var(--text-muted);font-size:13px;border-top:1px solid var(--border);padding-top:24px;max-width:640px}
+  .hero .meta span{display:inline-flex;align-items:center;gap:8px}
+  .hero .meta span+span::before{content:"";width:1px;height:15px;background:var(--border);margin:0 18px}
+
+  /* ===== Sections ===== */
+  section{padding:100px 0}
+  .sect-head{max-width:680px;margin-bottom:58px}
+  .sect-eyebrow{font-family:var(--serif);font-size:12px;letter-spacing:.32em;color:var(--crimson);margin-bottom:16px;font-weight:700}
+  .sect-title{font-family:var(--serif);font-weight:900;font-size:clamp(24px,3.4vw,27px);line-height:1.32;letter-spacing:0;overflow-wrap:break-word}
+  .sect-desc{color:var(--text-muted);font-size:16px;margin-top:18px;max-width:56ch}
+
+  /* ===== Shot strip ===== */
+  .shots{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .shot{border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border);background:var(--surface);transition:border-color .2s var(--ease),transform .2s var(--ease)}
+  .shot:hover{border-color:var(--text-dim);transform:translateY(-4px)}
+  .shot .frame{aspect-ratio:9/16;overflow:hidden;background:var(--surface-2)}
+  .shot .frame img{width:100%;height:100%;object-fit:cover;display:block}
+  .shot figcaption{padding:17px 20px;border-top:1px solid var(--border)}
+  .shot figcaption b{font-family:var(--serif);font-weight:700;font-size:15px;display:block}
+  .shot figcaption span{color:var(--text-muted);font-size:13.5px}
+
+  /* ===== Schools (朱色序号) ===== */
+  .schools{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid var(--border);border-left:1px solid var(--border);background:var(--bg)}
+  .school{display:flex;gap:18px;padding:24px 26px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);align-items:flex-start}
+  .school .kanji{font-family:var(--serif);font-weight:900;font-size:19px;color:var(--crimson);min-width:30px;flex:none;margin-top:2px}
+  .school .nm{font-family:var(--serif);font-weight:700;font-size:16px}
+  .school .de{color:var(--text-muted);font-size:13.5px;margin-top:4px}
+
+  /* ===== Stats ===== */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+  .stat{background:var(--surface);padding:36px 24px}
+  .stat .num{font-family:var(--serif);font-weight:900;font-size:29px;letter-spacing:.02em;font-variant-numeric:tabular-nums;color:var(--text)}
+  .stat .num small{font-size:20px;color:var(--accent);font-weight:700}
+  .stat .lbl{color:var(--text-muted);font-size:13px;margin-top:8px;letter-spacing:.04em}
+
+  /* ===== Editorial ===== */
+  .why{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+  .why-list{border-top:1px solid var(--border)}
+  .why-item{padding:24px 0;border-bottom:1px solid var(--border);display:flex;gap:20px}
+  .why-item .kanji{font-family:var(--serif);font-weight:900;color:var(--crimson);font-size:15px;min-width:36px;flex:none}
+  .why-item h3{font-family:var(--serif);font-weight:700;font-size:19px}
+  .why-item p{color:var(--text-muted);font-size:14.5px;margin-top:7px}
+  .why-visual{position:sticky;top:96px;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border)}
+  .why-visual img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover}
+  .why-visual .cap{padding:18px 22px;background:var(--surface);color:var(--text-muted);font-size:13.5px}
+  .why-visual .cap b{color:var(--text);font-family:var(--serif);font-weight:700;display:block;margin-bottom:4px}
+
+  /* ===== Platforms ===== */
+  .plats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+  .plat{background:var(--surface);padding:30px 24px;display:flex;flex-direction:column;gap:6px}
+  .plat .ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);margin-bottom:10px}
+  .plat .ic svg{width:17px;height:17px;stroke:var(--text-muted)}
+  .plat b{font-family:var(--serif);font-weight:700;font-size:15px}
+  .plat .tag{color:var(--text-dim);font-size:12px;letter-spacing:.06em}
+  .plat a{margin-top:14px;font-weight:700;font-size:13.5px;color:var(--accent);display:inline-flex;align-items:center;gap:6px}
+  .plat a svg{width:13px;height:13px}
+  .plat a:hover{color:#EAC97F}
+
+  /* ===== Final CTA ===== */
+  .final{position:relative;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border);margin-bottom:64px}
+  .final img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .final::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,9,7,.97) 0%,rgba(18,9,7,.78) 55%,rgba(18,9,7,.5) 100%)}
+  .final-in{position:relative;z-index:1;padding:76px 56px;max-width:560px}
+  .final-in h2{font-family:var(--serif);font-weight:900;font-size:clamp(22px,3.2vw,25px);line-height:1.32;letter-spacing:0;overflow-wrap:break-word}
+  .final-in p{color:var(--text-muted);font-size:16px;margin-top:18px}
+  .final-in .cta-row{margin-top:32px}
+
+  /* ===== Footer ===== */
+  footer{border-top:1px solid var(--border);padding:40px 0 56px;color:var(--text-dim);font-size:13px}
+  footer .foot-in{max-width:1140px;margin:0 auto;padding:0 28px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center}
+  footer nav{display:flex;gap:22px}
+  footer nav a{color:var(--text-muted)}
+  footer nav a:hover{color:var(--text)}
+
+  /* ===== Responsive ===== */
+  @media(max-width:900px){
+    .shots{grid-template-columns:1fr;max-width:420px;margin:0 auto}
+    .why{grid-template-columns:1fr}
+    .why-visual{position:static}
+    .plats{grid-template-columns:repeat(2,1fr)}
+    .stats{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:620px){
+    .schools{grid-template-columns:1fr}
+    .plats{grid-template-columns:1fr 1fr}
+    .hero{min-height:0}
+    .final-in{padding:54px 30px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{scroll-behavior:auto}
+    .shot,.btn{transition:none}
+  }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Warring States: Card Battles",
+  "alternateName": "Warring States: Card Battles",
+  "inLanguage": "th",
+  "url": "https://wscard.games/landing-th.html",
+  "description": "เกมการ์ดวางแผนออนไลน์ฟรี เล่นได้ในเบราว์เซอร์ไม่ต้องโหลด 7 สำนักคิด 196 การ์ด 21 ฮีโร่ในตำนาน แพ้ชนะตัดสินใน 3 นาที มีระบบจัดอันดับและเนื้อเรื่องโหมดเดี่ยว",
+  "genre": ["Card game", "Strategy", "Strategy Video Game"],
+  "gamePlatform": "Web",
+  "applicationCategory": "Game",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "THB", "availability": "https://schema.org/InStock" },
+  "image": "https://wscard.games/screens/cover.webp"
+}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="wordmark" href="https://wscard.games/"><span class="crimson-seal"></span>แว<span style="color:var(--crimson)">ring</span> States</a>
+    <div class="langbar">
+      <a href="https://wscard.games/landing-jp.html">日本語</a>
+      <a href="https://wscard.games/landing-kr.html">한국어</a>
+      <a href="https://wscard.games/landing-eu.html">EN</a>
+      <a href="https://wscard.games/landing-sea.html">SEA</a>
+      <a href="https://wscard.games/landing-th.html" class="cur">ไทย</a>
+      <a href="https://wscard.games/landing-vi.html">VI</a>
+      <a href="https://wscard.games/landing-de.html">DE</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-bg"><img src="https://wscard.games/screens/battle.webp" alt="ภาพหน้าจอการต่อสู้ในเกม Warring States Card" fetchpriority="high"></div>
+  <div class="hero-in">
+    <div class="wrap">
+      <div class="kicker">เกมการ์ดวางแผนฟรี</div>
+      <h1>ยกสมรภูมิยุคจั้นกั๋ว<br>มาไว้ในมือคุณ</h1>
+      <p class="lead">7 สำนักคิดกลายเป็น 7 วิธีเล่น 196 การ์ด 21 ฮีโร่ในตำนาน หนึ่งแมตช์จบใน 3 นาที เล่นฟรีได้ทันทีในเบราว์เซอร์</p>
+      <div class="cta-row">
+        <a class="btn primary" href="https://wscard.games/">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>เล่นฟรี
+        </a>
+        <a class="btn ghost" href="https://wscard.games/download.html">ดาวน์โหลดแอป</a>
+      </div>
+      <div class="meta">
+        <span>ฟรี</span><span>ไม่ต้องดาวน์โหลด</span><span>รองรับ 11 ภาษา</span><span>ซิงก์ข้อมูลทุกอุปกรณ์</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="sect-eyebrow">ภาพจากเกมจริง</div>
+      <h2 class="sect-title">เห็นยังไง เล่นอย่างนั้น</h2>
+      <p class="sect-desc">ไม่ใช่ภาพคอนเซปต์อาร์ตหรือภาพเรนเดอร์ นี่คือหน้าจอที่คุณจะได้เล่นจริง</p>
+    </div>
+    <div class="shots">
+      <figure class="shot">
+        <div class="frame"><img src="https://wscard.games/screens/battle.webp" alt="หน้าจอต่อสู้กับการ์ด" loading="lazy"></div>
+        <figcaption><b>ดวลแบบตัวต่อตัว</b><span>บัญชากองทัพของสำนักคุณในเกมที่ตัดสินไวและเด็ดขาด</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <div class="frame"><img src="https://wscard.games/screens/heroes.webp" alt="หน้าจอรวบรวมฮีโร่" loading="lazy"></div>
+        <figcaption><b>ฮีโร่ในตำนาน</b><span>ซุนวู ขงจื๊อ ม่อจื่อ และปราชญ์อีก 21 คน</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <div class="frame"><img src="https://wscard.games/screens/collection.webp" alt="หน้าจอสะสมการ์ด" loading="lazy"></div>
+        <figcaption><b>สร้างเด็คของคุณเอง</b><span>สะสมและประกอบ 196 การ์ด 4 ระดับความหายาก</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="sect-eyebrow">7 สำนักคิด</div>
+      <h2 class="sect-title">เลือกปรัชญา แล้วครองกระดาน</h2>
+      <p class="sect-desc">แต่ละสำนักมีเอกลักษณ์ทางกลยุทธ์ครบถ้วน มองทุกแมตช์ผ่านเลนส์แห่งสำนักของตน</p>
+    </div>
+    <div class="schools">
+      <div class="school"><span class="kanji">兵</span><div><div class="nm">ทหาร</div><div class="de">บุกเร็ว ทุบหนัก</div></div></div>
+      <div class="school"><span class="kanji">法</span><div><div class="nm">กฎหมาย</div><div class="de">วางระเบียบ ครองกระดาน</div></div></div>
+      <div class="school"><span class="kanji">儒</span><div><div class="nm">ขงจื๊อ</div><div class="de">โต้ช้าๆ อย่างมีศีล</div></div></div>
+      <div class="school"><span class="kanji">道</span><div><div class="nm">เต๋า</div><div class="de">ยื้อด้วยความอดทน</div></div></div>
+      <div class="school"><span class="kanji">墨</span><div><div class="nm">ม่อจื่อ</div><div class="de">สร้างเครื่องล้อมแล้วท่วมท้น</div></div></div>
+      <div class="school"><span class="kanji">陰</span><div><div class="nm">หยินหยาง</div><div class="de">ถักธาตุเป็นเวท</div></div></div>
+      <div class="school"><span class="kanji">縦</span><div><div class="nm">ดิ่งจ้ง</div><div class="de">สร้างพันธมิตรแล้วทลาย</div></div></div>
+      <div class="school"><span class="kanji">中</span><div><div class="nm">กลาง</div><div class="de">ไพ่เอนกประสงค์ทุกกลยุทธ์</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><div class="num">196<small>การ์ด</small></div><div class="lbl">การ์ด</div></div>
+      <div class="stat"><div class="num">21<small>ฮีโร่</small></div><div class="lbl">ฮีโร่ในตำนาน</div></div>
+      <div class="stat"><div class="num">7<small>สำนัก</small></div><div class="lbl">สำนัก</div></div>
+      <div class="stat"><div class="num">3<small>นาที</small></div><div class="lbl">นาทีต่อแมตช์</div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:100px">
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="sect-eyebrow">ทำไมต้องเล่น</div>
+      <h2 class="sect-title">แค่ 3 นาที แต่ความคิดอยู่ต่อ</h2>
+    </div>
+    <div class="why">
+      <div class="why-list">
+        <div class="why-item"><span class="kanji">壱</span><div><h3>ทุกสำนักเล่นต่างกัน</h3><p>รุกเร็ว คุมเกม ประคองตัว ปิดล้อม สำนักของคุณคือตัวตน และทุกแมตช์คือโจทย์ใหม่ที่ต้องแก้</p></div></div>
+        <div class="why-item"><span class="kanji">弐</span><div><h3>ตัดสินใจ ไม่ใช่ใช้จ่าย</h3><p>ฟรี ไม่มีกาชา ไม่มีกับดัก ชัยชนะมาจากการอ่านกระดาน ไม่ใช่ขนาดกระเป๋า</p></div></div>
+        <div class="why-item"><span class="kanji">参</span><div><h3>เล่นได้ทันที หยุดได้ทุกเมื่อ</h3><p>แมตช์ 3 นาทีพอดีกับพักเที่ยง ระหว่างเดินทาง หรือก่อนนอน พร้อมซิงก์ทุกอุปกรณ์</p></div></div>
+      </div>
+      <figure class="why-visual">
+        <img src="https://wscard.games/screens/key.webp" alt="ภาพหลักของเกม Warring States Card" loading="lazy">
+        <figcaption class="cap"><b>ปราชญ์ร้อยสำนัก</b><span>21 ฮีโร่ในตำนาน แต่ละคนมีการ์ดและเรื่องราวของตัวเอง</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="sect-eyebrow">แพลตฟอร์ม</div>
+      <h2 class="sect-title">อยู่ที่ไหนก็เล่นได้</h2>
+    </div>
+    <div class="plats">
+      <div class="plat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
+        <b>เว็บ</b><span class="tag">เบราว์เซอร์ ไม่ต้องติดตั้ง</span>
+        <a href="https://wscard.games/">เล่นเลย <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="plat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg></div>
+        <b>Android</b><span class="tag">APK แชร์ข้อมูล</span>
+        <a href="https://dl-production-4a3d.up.railway.app/dl/app-arm64-v8a-release.apk">รับแอป <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="plat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 8h18M8 12h8"/></svg></div>
+        <b>iOS</b><span class="tag">App Store เร็วๆ นี้</span>
+        <a href="https://wscard.games/download.html">เร็วๆ นี้ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="plat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-2 11 4v10l-7 2-11-4zM10 4v14M21 8l-11-4"/></svg></div>
+        <b>itch.io</b><span class="tag">itch.io</span>
+        <a href="https://guoyuli.itch.io/warring-states-card/purchase">ไปที่ itch.io <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:8px">
+  <div class="wrap">
+    <div class="final">
+      <img src="https://wscard.games/screens/collection.webp" alt="" loading="lazy">
+      <div class="final-in">
+        <h2>ปราชญ์ร้อยสำนัก<br>รอคำสั่งจากคุณอยู่</h2>
+        <p>เล่นฟรี ไม่ต้องสมัคร ไม่ต้องโหลด เริ่มแมตช์แรกได้ในหนึ่งนาที</p>
+        <div class="cta-row">
+          <a class="btn primary" href="https://wscard.games/">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>เล่นฟรี
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="related">
+  <div class="wrap">
+    <div class="sect-head" style="margin-bottom:26px">
+      <div class="sect-eyebrow">Guides</div>
+      <h2 class="sect-title">Guides &amp; other languages</h2>
+    </div>
+    <div class="rel-grid">
+      <a class="rel" href="https://wscard.games/blog/rules-zh.html"><b>Rules &amp; keywords</b><span>Every rule and hero power</span></a>
+      <a class="rel" href="https://wscard.games/blog/seven-schools-guide.html"><b>All seven schools</b><span>Playstyles and best heroes</span></a>
+      <a class="rel" href="https://wscard.games/blog/getting-started-guide.html"><b>Beginner's guide</b><span>Your first match in 3 minutes</span></a>
+      <a class="rel" href="https://wscard.games/about.html"><b>About the game</b><span>Design and art direction</span></a>
+      <a class="rel" href="https://wscard.games/download.html"><b>Download</b><span>Android and iOS</span></a>
+      <a class="rel" href="https://wscard.games/landing-jp.html"><b>日本語</b><span>Japanese page</span></a>
+      <a class="rel" href="https://wscard.games/landing-kr.html"><b>한국어</b><span>Korean page</span></a>
+      <a class="rel" href="https://wscard.games/landing-eu.html"><b>English</b><span>Global page</span></a>
+      <a class="rel" href="https://wscard.games/landing-sea.html"><b>SEA</b><span>Southeast Asia</span></a>
+      <a class="rel" href="https://wscard.games/landing-th.html"><b>ไทย</b><span>Thai page</span></a>
+      <a class="rel" href="https://wscard.games/landing-vi.html"><b>Tiếng Việt</b><span>Vietnamese page</span></a>
+      <a class="rel" href="https://wscard.games/landing-de.html"><b>Deutsch</b><span>German page</span></a>
+    </div>
+  </div>
+  <style>
+    .related{padding:0 0 72px}
+    .rel-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+    .rel{display:block;padding:20px 22px;background:var(--surface);transition:background .2s var(--ease)}
+    .rel:hover{background:var(--surface-2)}
+    .rel b{display:block;font-family:var(--serif);font-size:15px;color:var(--text)}
+    .rel span{display:block;color:var(--text-muted);font-size:12.5px;margin-top:5px}
+    @media(max-width:900px){.rel-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.rel-grid{grid-template-columns:1fr}}
+  </style>
+</div>
+<footer>
+  <div class="foot-in">
+    <div>© 2026 Warring States: Card Battles</div>
+    <nav>
+      <a href="https://wscard.games/">เกม</a>
+      <a href="https://wscard.games/download.html">ดาวน์โหลด</a>
+      <a href="https://wscard.games/promo.html">โปรโม</a>
+      <a href="https://wscard.games/privacy.html">ความเป็นส่วนตัว</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
