@@ -394,6 +394,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  /// 语言选择：独立弹窗（菜单内嵌 Dropdown 会因菜单宽度受限而溢出）
+  Future<void> _showLanguagePicker() async {
+    final picked = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.agedWood,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        title: Row(children: [
+          const Icon(Icons.language, color: AppTheme.goldAccent, size: 20),
+          const SizedBox(width: 8),
+          Text(LocaleService.I.t('home.language'),
+              style: const TextStyle(color: AppTheme.parchment, fontSize: 17)),
+        ]),
+        contentPadding: const EdgeInsets.symmetric(vertical: 8),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: _languages.length,
+            itemBuilder: (_, i) {
+              final l = _languages[i];
+              final active = l.code == LocaleService.I.localeCode;
+              return ListTile(
+                dense: true,
+                onTap: () => Navigator.pop(ctx, l.code),
+                title: Text(l.label,
+                    style: TextStyle(
+                        color: active ? AppTheme.goldBright : AppTheme.parchment,
+                        fontWeight:
+                            active ? FontWeight.bold : FontWeight.normal)),
+                trailing: active
+                    ? const Icon(Icons.check,
+                        color: AppTheme.goldBright, size: 18)
+                    : null,
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(LocaleService.I.t('common.cancel'),
+                style: const TextStyle(color: AppTheme.textMuted)),
+          ),
+        ],
+      ),
+    );
+    if (picked != null && mounted) await _changeLanguage(picked);
+  }
+
   Widget _buildUserMenu(bool loggedIn, AuthState? auth) {
     return PopupMenuButton<String>(
       offset: const Offset(0, 44),
@@ -478,6 +528,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             await SharedPreferences.getInstance()
                 .then((p) => p.setString('locale_code', 'zh_TW'));
             setState(() {});
+            break;
+          case 'lang':
+            if (!context.mounted) break;
+            await _showLanguagePicker();
             break;
           case 'legal':
             context.push('/legal');
@@ -596,37 +650,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 visualDensity: VisualDensity.compact,
               )),
           PopupMenuItem<String>(
-            enabled: false,
-            child: Row(children: [
-              const Icon(Icons.language, color: AppTheme.parchment, size: 20),
-              const SizedBox(width: 12),
-              Expanded(
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: LocaleService.I.localeCode,
-                    isExpanded: true,
-                    isDense: true,
-                    dropdownColor: AppTheme.agedWood,
-                    style: const TextStyle(
-                        color: AppTheme.parchment, fontSize: 13),
-                    onChanged: (v) {
-                      if (v != null && v != LocaleService.I.localeCode) {
-                        _changeLanguage(v);
-                      }
-                    },
-                    items: [
-                      for (final l in _languages)
-                        DropdownMenuItem(
-                          value: l.code,
-                          child: Text(l.label,
-                              style: const TextStyle(
-                                  color: AppTheme.parchment, fontSize: 13)),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ]),
+            value: 'lang',
+            child: ListTile(
+              leading: const Icon(Icons.language,
+                  color: AppTheme.parchment, size: 20),
+              title: Text(
+                  _languages.firstWhere(
+                          (l) => l.code == LocaleService.I.localeCode,
+                          orElse: () => _languages.first)
+                      .label,
+                  style: const TextStyle(color: AppTheme.parchment)),
+              trailing: const Icon(Icons.arrow_right,
+                  color: AppTheme.textMuted, size: 20),
+              contentPadding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+            ),
           ),
           // 法律法规与相关声明：所有用户可用
           PopupMenuItem(
@@ -968,10 +1006,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           WIconMedal(icon: icon, color: color, size: 44),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(label,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppTheme.textPrimary)),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(label,
+                  maxLines: 1,
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: AppTheme.textPrimary)),
+            ),
           ),
         ]),
       ),
@@ -989,10 +1033,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           WIconMedal(icon: icon, color: color, size: 52),
           const SizedBox(height: 6),
           Text(label,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.w700)),
+              style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 11.5,
+                  height: 1.25,
+                  fontWeight: FontWeight.w700)),
         ]),
       ),
     );

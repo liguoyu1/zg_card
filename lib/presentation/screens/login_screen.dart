@@ -2,6 +2,7 @@ import '../widgets/theme_widgets.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' hide Card, Hero;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../domain/services/page_nav_io.dart'
     if (dart.library.js_interop) '../../domain/services/page_nav_web.dart';
@@ -70,7 +71,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // 登录成功：补报身份，服务端更新同 deviceId 记录
       final au = ref.read(authProvider);
       DeviceReportService.report(playerId: au?.playerId, playerName: au?.playerName);
-      Navigator.pop(context);
+      _leaveLogin();
     }
   }
 
@@ -88,7 +89,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() => _error = err);
     } else {
       // 游客登录：不补报身份（游客记录保持原样，账号/昵称无值仍按游客统计）
-      Navigator.pop(context);
+      _leaveLogin();
+    }
+  }
+
+  /// 登录成功后离开登录页。
+  /// 直接访问 /auth/login 时路由栈里没有上一页，pop 会把唯一页面弹掉
+  /// （表现为画布消失、只剩 index.html 的 SEO 正文），所以先判断能否 pop。
+  void _leaveLogin() {
+    final nav = Navigator.of(context);
+    if (nav.canPop()) {
+      nav.pop();
+    } else {
+      context.go('/');
     }
   }
 

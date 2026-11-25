@@ -64,13 +64,16 @@ void main() async {
     PurchaseService.I.initialize().then((_) {
       PurchaseService.I.loadProducts();
     }).catchError((_) {});
-    try {
-      QuestManager.I.init();
-    } catch (_) {}
-    try {
-      BattlePassService.I.init();
-    } catch (_) {}
   }
+
+  // 任务与战令存档基于 shared_preferences，Web 上同样可用，
+  // 不能被 kIsWeb 分支排除，否则 Web 端任务页永远是空的。
+  try {
+    await QuestManager.I.init();
+  } catch (_) {}
+  try {
+    await BattlePassService.I.init();
+  } catch (_) {}
 }
 
 class WarringStatesApp extends ConsumerStatefulWidget {
